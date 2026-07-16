@@ -127,6 +127,7 @@ export const MATERIALS: Material[] = [
     zone: "Интерьер, фасад, влажные зоны",
     fire: "НГ · КМ0",
     grad: "linear-gradient(135deg,#edeef0 0%,#9a9ca0 46%,#dadbdd 100%)",
+    video: "/materials/material-3d.mp4",
   },
   {
     family: "metal",
@@ -596,7 +597,6 @@ export const MATERIALS: Material[] = [
     zone: "Интерьер, фасад с защитой, МАФ",
     fire: "КМ1",
     grad: "linear-gradient(135deg,#ff9a52 0%,#a83900 60%,#ff5a00 100%)",
-    video: "/materials/material-3d.mp4",
   },
 ];
 
