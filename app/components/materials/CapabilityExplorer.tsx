@@ -318,7 +318,7 @@ export default function CapabilityExplorer() {
                     <video
                       key={active.video}
                       src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${active.video}`}
-                      className="absolute inset-0 h-full w-full object-cover"
+                      className="absolute inset-0 h-full w-full object-contain"
                       autoPlay
                       muted
                       loop
