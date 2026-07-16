@@ -1,32 +1,8 @@
-// [01] HERO — «Материалы. Возможности, доказанные проектами».
-// Ведёт к двум сценариям: смотреть возможности или открыть каталог.
+import HeroFormAnim from "./HeroFormAnim";
 
-function FormField() {
-  // «Материал становится формой» — сгенерированное поле линий (лист → рельеф).
-  const rows = 26;
-  const paths = Array.from({ length: rows }, (_, i) => {
-    const t = i / (rows - 1);
-    const y = 24 + t * 452;
-    const amp = 46 * Math.sin(t * Math.PI); // максимум прогиба в центре
-    const d = `M 0 ${y} C 130 ${y - amp}, 250 ${y - amp}, 380 ${y} S 620 ${y + amp}, 760 ${y}`;
-    const op = 0.16 + 0.7 * Math.sin(t * Math.PI);
-    return { d, op, key: i };
-  });
-  return (
-    <svg viewBox="0 0 760 500" className="absolute inset-0 h-full w-full" preserveAspectRatio="xMidYMid slice" aria-hidden>
-      <defs>
-        <linearGradient id="matHeroLine" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ff7a2e" />
-          <stop offset="0.55" stopColor="#ff5a00" />
-          <stop offset="1" stopColor="#7a2c00" />
-        </linearGradient>
-      </defs>
-      {paths.map((p) => (
-        <path key={p.key} d={p.d} fill="none" stroke="url(#matHeroLine)" strokeWidth={1.1} opacity={p.op} />
-      ))}
-    </svg>
-  );
-}
+// [01] HERO — «Материалы. Возможности, доказанные проектами».
+// Справа — живое поле линий: материал трансформируется
+// лист → рельеф → двойная кривизна → оболочка.
 
 export default function MaterialsHero() {
   return (
@@ -73,23 +49,9 @@ export default function MaterialsHero() {
             </p>
           </div>
 
-          {/* Right — визуал «материал становится формой» */}
-          <div className="relative min-h-[340px] lg:min-h-0" style={{ border: "1px solid var(--line-dark)" }}>
-            <FormField />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,transparent 45%,rgba(24,24,24,0.85) 100%)" }} />
-            <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
-              <div>
-                <p className="font-mono text-white/45 uppercase" style={{ fontSize: 10, letterSpacing: "0.2em" }}>
-                  Материал становится формой
-                </p>
-                <p className="font-mono text-white mt-1" style={{ fontSize: 13, letterSpacing: "0.04em" }}>
-                  лист → рельеф → элемент → оболочка
-                </p>
-              </div>
-              <span className="font-mono text-orange/70" style={{ fontSize: 10, letterSpacing: "0.2em" }}>
-                R&D
-              </span>
-            </div>
+          {/* Right — живая трансформация формы */}
+          <div className="relative min-h-[340px] lg:min-h-0 overflow-hidden" style={{ border: "1px solid var(--line-dark)" }}>
+            <HeroFormAnim />
           </div>
         </div>
 

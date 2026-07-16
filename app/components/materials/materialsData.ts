@@ -89,6 +89,7 @@ export type Material = {
   zone: string;
   fire: string;
   grad: string;
+  video?: string; // путь в /public — показывается вместо картинки материала
 };
 
 export const MATERIALS: Material[] = [
@@ -595,6 +596,7 @@ export const MATERIALS: Material[] = [
     zone: "Интерьер, фасад с защитой, МАФ",
     fire: "КМ1",
     grad: "linear-gradient(135deg,#ff9a52 0%,#a83900 60%,#ff5a00 100%)",
+    video: "/materials/material-3d.mp4",
   },
 ];
 
