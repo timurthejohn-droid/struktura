@@ -167,6 +167,8 @@ h1, h2, h3, h4, h5, h6 {
 .btn-ghost-dark:hover { border-color: #fff; }
 .btn-ghost-orange { border: 1px solid rgba(255,255,255,0.45); color: #fff; }
 .btn-ghost-orange:hover { background: #fff; color: var(--orange); }
+.btn-white { background: #fff; color: var(--orange); }
+.btn-white:hover { background: var(--ink); color: #fff; }
 
 /* ---- Custom scrollbar ---- */
 ::-webkit-scrollbar { width: 8px; }

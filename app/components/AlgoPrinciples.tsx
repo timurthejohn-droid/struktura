@@ -1,7 +1,6 @@
 "use client";
 import SectionHead from "./SectionHead";
 
-const results = ["Снижение бюджета", "Сокращение сроков", "Исключение коллизий", "Контроль на каждом этапе"];
 
 export default function AlgoPrinciples() {
   return (
@@ -33,18 +32,7 @@ export default function AlgoPrinciples() {
             архитектурной идеи, качества исполнения или кратного удорожания.
           </p>
           <div>
-            <div className="flex flex-wrap gap-2 mb-8">
-              {results.map((r) => (
-                <span
-                  key={r}
-                  className="font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 text-white"
-                  style={{ border: "1px solid rgba(255,255,255,0.4)" }}
-                >
-                  {r}
-                </span>
-              ))}
-            </div>
-            <a href="#digital" className="btn btn-ghost-orange">Подробнее о подходе →</a>
+            <a href="#digital" className="btn btn-white">Подробнее о подходе →</a>
           </div>
         </div>
       </div>
