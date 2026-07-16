@@ -2,21 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Относительные пути → webpack сам кладёт шрифты в бандл
+   и корректно префиксует URL при деплое с basePath (GitHub Pages). */
 @font-face {
   font-family: "CoFo Sans Mono";
-  src: url("/fonts/CoFoSansMono-Medium.ttf") format("truetype");
+  src: url("../public/fonts/CoFoSansMono-Medium.ttf") format("truetype");
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: "CoFo Sans Mono";
-  src: url("/fonts/CoFoSansMono-Regular.ttf") format("truetype");
+  src: url("../public/fonts/CoFoSansMono-Regular.ttf") format("truetype");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: "Onest";
-  src: url("/fonts/Onest-Variable.ttf") format("truetype");
+  src: url("../public/fonts/Onest-Variable.ttf") format("truetype");
   font-weight: 100 900;
   font-display: swap;
 }
