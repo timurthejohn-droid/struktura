@@ -308,8 +308,33 @@ export default function MaterialsBlock() {
                       </div>
                     </div>
                   </div>
-                </div>
-              </article>
+                ))}
+              </div>
+
+              {/* material tags */}
+              <div className="mt-8 flex flex-wrap gap-2">
+                {MATERIALS.map((m, i) => (
+                  <span
+                    key={m.name}
+                    className="font-mono text-[10px] tracking-[0.06em] uppercase px-3 py-1.5 transition-colors"
+                    style={{
+                      border: `1px solid ${i === activeIdx ? "var(--orange)" : "var(--line-light)"}`,
+                      color: i === activeIdx ? "var(--orange)" : "var(--ink-soft)",
+                    }}
+                  >
+                    {m.name}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-auto pt-8 flex flex-wrap gap-3">
+                <Link href="/materials" className="btn btn-dark">
+                  Смотреть возможности
+                </Link>
+                <Link href="/materials#navigator" className="btn btn-ghost-light">
+                  Каталог материалов
+                </Link>
+              </div>
             </div>
           </div>
 
