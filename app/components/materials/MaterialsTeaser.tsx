@@ -529,7 +529,7 @@ export default function MaterialsTeaser() {
             className="text-white mt-6"
             style={{ fontSize: "clamp(28px, 3.8vw, 56px)", lineHeight: 1.04 }}
           >
-            29 материалов. Каждая возможность <span className="text-orange">доказана проектами</span>
+            Безграничные возможности. <span className="text-orange">Доказано проектами.</span>
           </h3>
           <p
             className="font-body text-white/60 mt-6 max-w-xl"
@@ -540,7 +540,7 @@ export default function MaterialsTeaser() {
           </p>
           <div className="mt-10">
             <Link href="/materials" className="btn btn-orange">
-              Смотреть все материалы
+              Смотреть все возможности
             </Link>
           </div>
         </motion.div>
