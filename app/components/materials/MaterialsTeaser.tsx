@@ -259,35 +259,6 @@ export default function MaterialsTeaser() {
         ctx.font = `500 12px "CoFo Sans Mono", ui-monospace, monospace`;
         ctx.textAlign = "left";
         ctx.fillText(`${Math.round(meters)} М`, mid.x + 14, mid.y + 4);
-
-        // человек 1.8 м — референс масштаба
-        const pxPerMeter = (2 * span) / meters;
-        const hh = 1.8 * pxPerMeter;
-        const foot = proj(1.35 * span, 0.55 * span, 0);
-        ctx.strokeStyle = `rgba(255,255,255,${dimA * 0.8})`;
-        ctx.lineWidth = Math.max(1, hh * 0.045);
-        const headR = hh * 0.13;
-        // голова
-        ctx.beginPath();
-        ctx.arc(foot.x, foot.y - hh + headR, headR, 0, Math.PI * 2);
-        ctx.stroke();
-        // тело
-        ctx.beginPath();
-        ctx.moveTo(foot.x, foot.y - hh + headR * 2.2);
-        ctx.lineTo(foot.x, foot.y - hh * 0.38);
-        ctx.stroke();
-        // ноги
-        ctx.beginPath();
-        ctx.moveTo(foot.x, foot.y - hh * 0.38);
-        ctx.lineTo(foot.x - hh * 0.14, foot.y);
-        ctx.moveTo(foot.x, foot.y - hh * 0.38);
-        ctx.lineTo(foot.x + hh * 0.14, foot.y);
-        ctx.stroke();
-        // руки
-        ctx.beginPath();
-        ctx.moveTo(foot.x - hh * 0.16, foot.y - hh * 0.56);
-        ctx.lineTo(foot.x + hh * 0.16, foot.y - hh * 0.56);
-        ctx.stroke();
       }
 
       // --- звук: источник, фронты волны, отражённые кольца (глава «акустика») ---
