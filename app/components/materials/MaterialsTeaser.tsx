@@ -362,10 +362,22 @@ export default function MaterialsTeaser() {
     return (
       <section style={{ background: "var(--coal)" }}>
         <div className="container-x py-24">
-          <span className="eyebrow text-orange">Материалы</span>
-          <h2 className="text-white mt-6 max-w-4xl" style={{ fontSize: "clamp(30px, 4.6vw, 64px)" }}>
-            Подбираем решения под проект, <span className="text-orange">а не под возможности производства</span>
+          <span className="eyebrow text-orange">Раздел · STRUKTURA+</span>
+          <h2 className="text-white mt-6" style={{ fontSize: "clamp(40px, 6.6vw, 96px)", lineHeight: 0.96 }}>
+            Материалы
           </h2>
+          <p
+            className="text-white/85 mt-5 max-w-3xl"
+            style={{
+              fontFamily: '"CoFo Sans Mono", monospace',
+              fontWeight: 500,
+              textTransform: "uppercase",
+              fontSize: "clamp(18px, 2.2vw, 32px)",
+              lineHeight: 1.12,
+            }}
+          >
+            Подбираем решения под проект, <span className="text-orange">а не под возможности производства</span>
+          </p>
           <div className="grid md:grid-cols-2 gap-px mt-14" style={{ background: "var(--line-dark)" }}>
             {STAGES.map((s) => (
               <div key={s.n} className="p-8" style={{ background: "var(--coal)" }}>
@@ -393,14 +405,23 @@ export default function MaterialsTeaser() {
           viewport={{ once: true, amount: 0.4 }}
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
         >
-          <span className="eyebrow text-orange">Материалы</span>
-          <h2
-            className="text-white mt-6 max-w-5xl"
-            style={{ fontSize: "clamp(30px, 4.8vw, 72px)", lineHeight: 1.02 }}
+          <span className="eyebrow text-orange">Раздел · STRUKTURA+</span>
+          <h2 className="text-white mt-6" style={{ fontSize: "clamp(44px, 7.4vw, 118px)", lineHeight: 0.96 }}>
+            Материалы
+          </h2>
+          <p
+            className="text-white/85 mt-6 max-w-4xl"
+            style={{
+              fontFamily: '"CoFo Sans Mono", monospace',
+              fontWeight: 500,
+              textTransform: "uppercase",
+              fontSize: "clamp(20px, 2.6vw, 40px)",
+              lineHeight: 1.12,
+            }}
           >
             Подбираем решения под&nbsp;проект,{" "}
             <span className="text-orange">а&nbsp;не&nbsp;под возможности производства</span>
-          </h2>
+          </p>
         </motion.div>
       </div>
 

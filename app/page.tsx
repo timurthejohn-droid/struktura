@@ -6,7 +6,7 @@ import IntroBlock from "./components/IntroBlock";
 import ProblemsBlock from "./components/ProblemsBlock";
 import AlgoPrinciples from "./components/AlgoPrinciples";
 import DigitalEnvFlow from "./components/DigitalEnvFlow";
-import MaterialsBlock from "./components/MaterialsBlock";
+import MaterialsTeaser from "./components/materials/MaterialsTeaser";
 import Subsystems from "./components/Subsystems";
 import IpdBlock from "./components/IpdBlock";
 import TeamTeaser from "./components/TeamTeaser";
@@ -31,8 +31,8 @@ export default function Home() {
         </div>
         {/* DARK */}
         <DigitalEnvFlow />
-        {/* LIGHT */}
-        <MaterialsBlock />
+        {/* DARK — scroll-story «Материалы» */}
+        <MaterialsTeaser />
         {/* DARK */}
         <Subsystems />
         {/* ORANGE */}
