@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import Preloader from "./components/Preloader";
 
 export const metadata: Metadata = {
   title: "STRUKTURA — Разработчик и интегратор уникальных архитектурных решений",
@@ -11,8 +12,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ru">
-      <body className="antialiased">{children}</body>
+    // .preloading держит rise-in элементов на паузе, пока играет прелоадер
+    <html lang="ru" className="preloading" suppressHydrationWarning>
+      <body className="antialiased">
+        <Preloader />
+        {children}
+      </body>
     </html>
   );
 }

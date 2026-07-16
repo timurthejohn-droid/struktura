@@ -18,8 +18,8 @@ export default function Hero() {
       <div className="container-x w-full flex flex-col flex-1 pt-24 md:pt-28 pb-8 relative z-10">
         {/* Top technical strip — sits well below the fixed nav, on its own hairline */}
         <div
-          className="flex items-center justify-between pb-4 md:pb-5"
-          style={{ borderBottom: "1px solid var(--line-light)" }}
+          className="flex items-center justify-between pb-4 md:pb-5 rise-in"
+          style={{ borderBottom: "1px solid var(--line-light)", animationDelay: "0.05s" }}
         >
           <div className="flex items-center gap-4">
             <span
@@ -46,11 +46,12 @@ export default function Hero() {
         {/* Headline — large, two wide lines, fills the vertical space */}
         <div className="flex-1 flex flex-col justify-center py-10 md:py-14">
           <h1
-            className="text-ink"
+            className="text-ink rise-in"
             style={{
               fontSize: "clamp(32px, 6.2vw, 90px)",
               lineHeight: 0.98,
               letterSpacing: "-0.01em",
+              animationDelay: "0.14s",
             }}
           >
             Превращаем сложные&nbsp;идеи
@@ -59,7 +60,7 @@ export default function Hero() {
         </div>
 
         {/* Bottom row — subcopy + CTA on a hairline, sector tags beneath */}
-        <div className="pt-6" style={{ borderTop: "1px solid var(--line-light)" }}>
+        <div className="pt-6 rise-in" style={{ borderTop: "1px solid var(--line-light)", animationDelay: "0.26s" }}>
           <div className="grid lg:grid-cols-[1fr_auto] gap-7 lg:gap-16 items-end">
             <p
               className="font-body max-w-xl"
@@ -83,7 +84,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
+          <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2 rise-in" style={{ animationDelay: "0.38s" }}>
             {sectors.map((s) => (
               <span
                 key={s}

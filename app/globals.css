@@ -150,6 +150,24 @@ h1, h2, h3, h4, h5, h6 {
   animation: riseIn 0.9s var(--ease-out) both;
 }
 
+/* Пока играет прелоадер — элементы первого экрана ждут своей очереди */
+.preloading .rise-in {
+  animation-play-state: paused;
+}
+
+/* ---- Fade-in (для fixed-элементов: без transform, чтобы не ломать позиционирование) ---- */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.fade-in {
+  opacity: 0;
+  animation: fadeIn 0.7s ease both;
+}
+.preloading .fade-in {
+  animation-play-state: paused;
+}
+
 /* ---- Digital environment: tech-stack slide-out ---- */
 @keyframes envSlide {
   from { opacity: 0; transform: translateY(14px); }
@@ -247,7 +265,8 @@ h1, h2, h3, h4, h5, h6 {
   .reveal,
   .reveal-stagger > *,
   .algo-step,
-  .rise-in {
+  .rise-in,
+  .fade-in {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
