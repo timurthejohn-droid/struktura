@@ -7,7 +7,7 @@ const links = [
   { href: "/#projects", label: "Проекты" },
   { href: "/#digital", label: "Услуги" },
   { href: "/materials", label: "Материалы" },
-  { href: "/approach", label: "Подход" },
+  { href: "/approach", label: "Алгоритмический подход" },
   { href: "/#contact", label: "Контакты" },
   { href: "/#team", label: "Соискателям" },
 ];

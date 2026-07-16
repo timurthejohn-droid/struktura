@@ -61,7 +61,7 @@ export default function MaterialsHero() {
               <a href="#navigator" className="btn btn-orange">
                 Смотреть возможности
               </a>
-              <a href="#catalog" className="btn btn-ghost-dark">
+              <a href="#navigator" className="btn btn-ghost-dark">
                 Каталог материалов
               </a>
             </div>

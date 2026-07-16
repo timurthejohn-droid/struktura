@@ -170,7 +170,7 @@ export default function MaterialsBlock() {
                 <Link href="/materials" className="btn btn-dark">
                   Смотреть возможности
                 </Link>
-                <Link href="/materials#catalog" className="btn btn-ghost-light">
+                <Link href="/materials#navigator" className="btn btn-ghost-light">
                   Каталог материалов
                 </Link>
               </div>

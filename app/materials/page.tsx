@@ -5,7 +5,6 @@ import MaterialsHero from "../components/materials/MaterialsHero";
 import MaterialsManifest from "../components/materials/MaterialsManifest";
 import MaterialsNavigator from "../components/materials/MaterialsNavigator";
 import MaterialsRecords from "../components/materials/MaterialsRecords";
-import MaterialsCatalog from "../components/materials/MaterialsCatalog";
 import MaterialsMatrix from "../components/materials/MaterialsMatrix";
 import MaterialsProcess from "../components/materials/MaterialsProcess";
 import MaterialsLimits from "../components/materials/MaterialsLimits";
@@ -26,13 +25,11 @@ export default function MaterialsPage() {
         <MaterialsHero />
         {/* [02] МАНИФЕСТ — dark */}
         <MaterialsManifest />
-        {/* [03] НАВИГАТОР — light */}
+        {/* [03] НАВИГАТОР — вход в каталог возможностей — light */}
         <MaterialsNavigator />
         {/* [04] МАТЕРИАЛЫ НА ПРЕДЕЛЕ — dark */}
         <MaterialsRecords />
-        {/* [05] КАТАЛОГ — light */}
-        <MaterialsCatalog />
-        {/* [06] МАТРИЦА — dark */}
+        {/* [05] МАТРИЦА — dark */}
         <MaterialsMatrix />
         {/* [07] ИНЖЕНЕРНЫЙ ПРОЦЕСС — light */}
         <MaterialsProcess />
