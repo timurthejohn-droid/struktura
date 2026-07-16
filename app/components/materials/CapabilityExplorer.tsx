@@ -51,7 +51,13 @@ function ContentBlock({ label, items }: { label: string; items?: CaseItem[] }) {
   );
 }
 
-export default function CapabilityExplorer({ capability }: { capability: Capability }) {
+export default function CapabilityExplorer({
+  capability,
+  onSwitch,
+}: {
+  capability: Capability;
+  onSwitch: (slug: string) => void;
+}) {
   // материалы возможности, сгруппированные по семействам (в порядке FAMILIES)
   const groups = useMemo<Group[]>(() => {
     const inCap = capability.materials
@@ -148,12 +154,12 @@ export default function CapabilityExplorer({ capability }: { capability: Capabil
 
           {/* переключение возможности (уровень 1) */}
           <div className="mt-auto px-6 py-5 flex items-center justify-between gap-3" style={{ borderTop: "1px solid var(--line-light)" }}>
-            <Link href={`/materials/${prev.slug}/`} className="font-mono uppercase text-ink-soft hover:text-orange transition-colors" style={{ fontSize: 11, letterSpacing: "0.08em" }}>
+            <button onClick={() => onSwitch(prev.slug)} className="font-mono uppercase text-ink-soft hover:text-orange transition-colors text-left" style={{ fontSize: 11, letterSpacing: "0.08em" }}>
               ← {prev.title}
-            </Link>
-            <Link href={`/materials/${next.slug}/`} className="font-mono uppercase text-ink-soft hover:text-orange transition-colors text-right" style={{ fontSize: 11, letterSpacing: "0.08em" }}>
+            </button>
+            <button onClick={() => onSwitch(next.slug)} className="font-mono uppercase text-ink-soft hover:text-orange transition-colors text-right" style={{ fontSize: 11, letterSpacing: "0.08em" }}>
               {next.title} →
-            </Link>
+            </button>
           </div>
         </aside>
 
