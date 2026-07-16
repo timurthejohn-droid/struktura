@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { useReveal } from "./useReveal";
 
 const metrics = [
   { value: 14, suffix: "", label: "лет реализуем уникальные проекты" },
@@ -45,9 +46,10 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 }
 
 export default function TrustStrip() {
+  const revealRef = useReveal();
   return (
     <section className="py-16 md:py-20" style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}>
-      <div className="container-x">
+      <div className="container-x reveal" ref={revealRef}>
         {/* Metrics */}
         <div className="grid md:grid-cols-3 gap-10 md:gap-6 mb-16">
           {metrics.map((m) => (

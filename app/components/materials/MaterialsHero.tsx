@@ -11,11 +11,16 @@ export default function MaterialsHero() {
         <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-10 lg:gap-16 items-stretch">
           {/* Left — заголовок и действия */}
           <div className="flex flex-col justify-center">
-            <span className="eyebrow text-orange">Материалы · STRUKTURA+</span>
+            <span className="eyebrow text-orange rise-in">Материалы · STRUKTURA+</span>
 
             <h1
-              className="text-white mt-6"
-              style={{ fontSize: "clamp(38px, 6.6vw, 104px)", lineHeight: 0.95, letterSpacing: "-0.01em" }}
+              className="text-white mt-6 rise-in"
+              style={{
+                fontSize: "clamp(38px, 6.6vw, 104px)",
+                lineHeight: 0.95,
+                letterSpacing: "-0.01em",
+                animationDelay: "0.08s",
+              }}
             >
               Возможности,
               <br />
@@ -25,15 +30,15 @@ export default function MaterialsHero() {
             </h1>
 
             <p
-              className="font-body text-white/60 mt-8 max-w-xl"
-              style={{ fontSize: "clamp(16px, 1.4vw, 21px)", lineHeight: 1.55 }}
+              className="font-body text-white/60 mt-8 max-w-xl rise-in"
+              style={{ fontSize: "clamp(16px, 1.4vw, 21px)", lineHeight: 1.55, animationDelay: "0.16s" }}
             >
               Это не каталог поставщика, а&nbsp;карта инженерных возможностей материалов.
               Мы&nbsp;раскрываем потенциал металла, стекла, камня и&nbsp;композитов через
               расчёт, прототипирование и&nbsp;производство.
             </p>
 
-            <div className="flex flex-wrap gap-3 mt-10">
+            <div className="flex flex-wrap gap-3 mt-10 rise-in" style={{ animationDelay: "0.24s" }}>
               <a href="#navigator" className="btn btn-orange">
                 Смотреть возможности
               </a>
@@ -43,14 +48,20 @@ export default function MaterialsHero() {
             </div>
 
             {/* Формула раздела */}
-            <p className="font-mono text-white/40 uppercase mt-12" style={{ fontSize: 11, letterSpacing: "0.18em", lineHeight: 1.8 }}>
+            <p
+              className="font-mono text-white/40 uppercase mt-12 rise-in"
+              style={{ fontSize: 11, letterSpacing: "0.18em", lineHeight: 1.8, animationDelay: "0.32s" }}
+            >
               Материал <span className="text-orange">×</span> геометрия <span className="text-orange">×</span> технология{" "}
               <span className="text-orange">×</span> конструкция
             </p>
           </div>
 
           {/* Right — живая трансформация формы */}
-          <div className="relative min-h-[340px] lg:min-h-0 overflow-hidden" style={{ border: "1px solid var(--line-dark)" }}>
+          <div
+            className="relative min-h-[340px] lg:min-h-0 overflow-hidden rise-in"
+            style={{ border: "1px solid var(--line-dark)", animationDelay: "0.2s" }}
+          >
             <HeroFormAnim />
           </div>
         </div>

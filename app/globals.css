@@ -125,6 +125,16 @@ h1, h2, h3, h4, h5, h6 {
   transform: none;
 }
 
+/* ---- Rise-in on load (hero-стаггер, задержка через inline animation-delay) ---- */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: none; }
+}
+.rise-in {
+  opacity: 0;
+  animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* ---- Digital environment: tech-stack slide-out ---- */
 @keyframes envSlide {
   from { opacity: 0; transform: translateY(14px); }
@@ -166,3 +176,17 @@ h1, h2, h3, h4, h5, h6 {
 /* ---- Hide scrollbar where needed ---- */
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ---- Reduced motion: убираем движение, оставляем контент видимым ---- */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .reveal,
+  .algo-step,
+  .rise-in {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+  .env-slide { animation: none; }
+}

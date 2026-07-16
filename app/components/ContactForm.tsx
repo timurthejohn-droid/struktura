@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useReveal } from "./useReveal";
 
 const fields = [
   { key: "name", label: "Имя", type: "text" },
@@ -11,6 +12,7 @@ const contactBackground =
   "https://www.figma.com/api/mcp/asset/8cc5dc92-091d-467b-9918-dbabd554dea9";
 
 export default function ContactForm() {
+  const revealRef = useReveal();
   const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
   const [agreed, setAgreed] = useState(false);
   const [sent, setSent] = useState(false);
@@ -22,7 +24,7 @@ export default function ContactForm() {
 
   return (
     <section id="contact" className="bg-paper pt-16 md:pt-24">
-      <div className="container-x">
+      <div className="container-x reveal" ref={revealRef}>
         <div
           className="relative min-h-[600px] overflow-hidden px-5 py-5 md:px-10 md:py-8"
           style={{ background: "var(--orange)" }}
