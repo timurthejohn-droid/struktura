@@ -458,11 +458,11 @@ export default function MaterialsTeaser() {
             {STAGES.map((s, i) => (
               <div key={s.n} className="flex items-center gap-3">
                 <div
-                  className="transition-all duration-500"
                   style={{
                     width: i === idx ? 22 : 10,
                     height: 1,
                     background: i === idx ? "var(--orange)" : "rgba(255,255,255,0.25)",
+                    transition: "width 0.4s var(--ease-out), background-color 0.4s ease",
                   }}
                 />
                 <span

@@ -22,13 +22,16 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
       ([e]) => {
         if (e.isIntersecting && !done.current) {
           done.current = true;
-          const steps = 50;
-          let i = 0;
-          const t = setInterval(() => {
-            i++;
-            setN(Math.round((value * i) / steps));
-            if (i >= steps) clearInterval(t);
-          }, 22);
+          // rAF + ease-out: цифры разгоняются и мягко тормозят у цели
+          const dur = 1200;
+          const t0 = performance.now();
+          const tick = (t: number) => {
+            const p = Math.min(1, (t - t0) / dur);
+            const eased = 1 - Math.pow(1 - p, 4);
+            setN(Math.round(value * eased));
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
         }
       },
       { threshold: 0.4 }
@@ -47,14 +50,18 @@ function Counter({ value, suffix }: { value: number; suffix: string }) {
 
 export default function TrustStrip() {
   const revealRef = useReveal();
+  const metricsRef = useReveal(0.3);
   return (
     <section className="py-16 md:py-20" style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}>
       <div className="container-x reveal" ref={revealRef}>
         {/* Metrics */}
-        <div className="grid md:grid-cols-3 gap-10 md:gap-6 mb-16">
+        <div ref={metricsRef} className="reveal-stagger grid md:grid-cols-3 gap-10 md:gap-6 mb-16">
           {metrics.map((m) => (
             <div key={m.label} className="flex flex-col items-center text-center">
-              <div className="font-mono text-ink leading-none" style={{ fontSize: "clamp(56px, 7vw, 104px)" }}>
+              <div
+                className="font-mono text-ink leading-none"
+                style={{ fontSize: "clamp(56px, 7vw, 104px)", fontVariantNumeric: "tabular-nums" }}
+              >
                 <Counter value={m.value} suffix={m.suffix} />
               </div>
               <p className="font-body text-ink-soft text-sm mt-3 max-w-[220px]">{m.label}</p>

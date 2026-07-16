@@ -114,10 +114,11 @@ export default function ProjectsSlider() {
               key={proj.name}
               onClick={() => setIdx(i)}
               aria-label={proj.name}
-              className="h-[3px] transition-all"
+              className="h-[3px]"
               style={{
                 width: i === idx ? 48 : 22,
                 background: i === idx ? "var(--orange)" : "rgba(0,0,0,0.18)",
+                transition: "width 0.35s var(--ease-out), background-color 0.3s ease",
               }}
             />
           ))}

@@ -79,8 +79,11 @@ export default function MaterialsHero() {
           ].map((m, i) => (
             <div
               key={m.l}
-              className="py-7 md:py-9 px-1"
-              style={{ borderLeft: i % 2 === 0 ? "none" : "1px solid var(--line-dark)" }}
+              className="py-7 md:py-9 px-1 rise-in"
+              style={{
+                borderLeft: i % 2 === 0 ? "none" : "1px solid var(--line-dark)",
+                animationDelay: `${0.36 + i * 0.08}s`,
+              }}
             >
               <div className="font-mono text-white" style={{ fontSize: "clamp(32px, 4.4vw, 56px)", lineHeight: 1 }}>
                 {m.v}

@@ -39,6 +39,10 @@
   --coal: #181818;        /* main dark background */
   --coal-deep: #101010;   /* deeper dark (footer) */
   --line-dark: rgba(255, 255, 255, 0.12);
+
+  /* Motion tokens: сильные кривые вместо встроенных CSS-easing */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 * {
@@ -105,20 +109,31 @@ h1, h2, h3, h4, h5, h6 {
 .reveal {
   opacity: 0;
   transform: translateY(34px);
-  transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
 }
 .reveal.visible {
   opacity: 1;
   transform: translateY(0);
 }
 
+/* ---- Stagger: дети reveal-группы приходят каскадом (60ms шаг) ---- */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+}
+.reveal-stagger.visible > * { opacity: 1; transform: translateY(0); }
+.reveal-stagger.visible > *:nth-child(2) { transition-delay: 60ms; }
+.reveal-stagger.visible > *:nth-child(3) { transition-delay: 120ms; }
+.reveal-stagger.visible > *:nth-child(4) { transition-delay: 180ms; }
+.reveal-stagger.visible > *:nth-child(5) { transition-delay: 240ms; }
+.reveal-stagger.visible > *:nth-child(6) { transition-delay: 300ms; }
+
 /* ---- Sequential reveal (algorithmic principles story) ---- */
 .algo-step {
   opacity: 0;
   transform: translateY(32px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
 .algo-step.algo-in {
   opacity: 1;
@@ -132,7 +147,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 .rise-in {
   opacity: 0;
-  animation: riseIn 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: riseIn 0.9s var(--ease-out) both;
 }
 
 /* ---- Digital environment: tech-stack slide-out ---- */
@@ -140,7 +155,7 @@ h1, h2, h3, h4, h5, h6 {
   from { opacity: 0; transform: translateY(14px); }
   to { opacity: 1; transform: none; }
 }
-.env-slide { animation: envSlide 0.42s cubic-bezier(0.22, 1, 0.36, 1); }
+.env-slide { animation: envSlide 0.42s var(--ease-out); }
 
 /* ---- Buttons ---- */
 .btn {
@@ -152,11 +167,21 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 16px 30px;
-  transition: all 0.25s ease;
+  /* только нужные свойства — transition: all тянет лишнее и мимо GPU */
+  transition:
+    transform 0.2s var(--ease-out),
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
   cursor: pointer;
   white-space: nowrap;
 }
-.btn:hover { transform: translateY(-2px); }
+/* hover-движение только там, где есть настоящий hover (не тач) */
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover { transform: translateY(-2px); }
+}
+/* отклик на нажатие: интерфейс «услышал» клик */
+.btn:active { transform: scale(0.97); transition-duration: 0.1s; }
 .btn-orange { background: var(--orange); color: #fff; }
 .btn-orange:hover { background: var(--orange-dark); }
 .btn-dark { background: var(--ink); color: #fff; }
@@ -169,6 +194,43 @@ h1, h2, h3, h4, h5, h6 {
 .btn-ghost-orange:hover { background: #fff; color: var(--orange); }
 .btn-white { background: #fff; color: var(--orange); }
 .btn-white:hover { background: var(--ink); color: #fff; }
+
+/* ---- Nav: подчёркивание ссылок через scaleX (из брендбука анимаций) ---- */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -5px;
+  height: 1px;
+  background: var(--orange);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.25s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .nav-link:hover::after { transform: scaleX(1); }
+}
+
+/* ---- Nav: выпадение мобильного меню ---- */
+@keyframes navDrop {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: none; }
+}
+.nav-drop { animation: navDrop 0.28s var(--ease-out); }
+
+/* ---- Selection: фирменный оранжевый ---- */
+::selection { background: var(--orange); color: #fff; }
+
+/* ---- Keyboard focus: видимый, фирменный, без рамок на клике ---- */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 3px;
+}
 
 /* ---- Custom scrollbar ---- */
 ::-webkit-scrollbar { width: 8px; }
@@ -183,6 +245,7 @@ h1, h2, h3, h4, h5, h6 {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .reveal,
+  .reveal-stagger > *,
   .algo-step,
   .rise-in {
     opacity: 1 !important;

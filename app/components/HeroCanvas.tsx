@@ -177,10 +177,11 @@ export default function HeroCanvas() {
               {cases.map((_, i) => (
                 <span
                   key={i}
-                  className="block w-6 h-px transition-all"
+                  className="block w-6 h-px"
                   style={{
                     background: i === caseIdx ? "#FF5A00" : "rgba(255,255,255,0.3)",
                     height: i === caseIdx ? "2px" : "1px",
+                    transition: "background-color 0.3s ease, height 0.3s ease",
                   }}
                 />
               ))}
