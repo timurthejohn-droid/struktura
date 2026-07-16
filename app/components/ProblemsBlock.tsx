@@ -1,6 +1,5 @@
 "use client";
 import { useReveal } from "./useReveal";
-import SectionHead from "./SectionHead";
 
 const problems = [
   {
@@ -25,70 +24,81 @@ const problems = [
   },
 ];
 
-const PEEK = 60; // px of the previous card left visible
+const PEEK = 58;
 
 export default function ProblemsBlock() {
   const ref = useReveal();
 
   return (
-    <section className="py-24 md:py-36" style={{ background: "var(--coal)" }}>
+    <section className="bg-coal text-white">
       <div className="container-x">
-        <SectionHead index="03" kicker="Проблематика" theme="dark" />
-
-        {/* framing headline */}
-        <div ref={ref} className="reveal grid lg:grid-cols-[1.25fr_0.75fr] gap-8 lg:gap-20 items-end mb-12 md:mb-16">
-          <h2 className="text-white" style={{ fontSize: "clamp(28px, 3.7vw, 58px)", lineHeight: 1.04 }}>
-            Сложные проекты теряют до&nbsp;<span className="text-orange">50%</span> бюджета на&nbsp;ошибках и&nbsp;переделках
-          </h2>
-          <p className="font-body text-white/55" style={{ fontSize: 15, lineHeight: 1.65 }}>
-            По данным McKinsey и&nbsp;KPMG, перерасход на&nbsp;нестандартных объектах
-            достигает 50–70%. И&nbsp;почти всегда — по&nbsp;одним и&nbsp;тем&nbsp;же причинам.
+        <div
+          ref={ref}
+          className="reveal grid min-h-[260px] items-end gap-8 py-14 md:grid-cols-[0.95fr_1.05fr] md:py-20"
+          style={{ borderTop: "1px solid var(--line-dark)" }}
+        >
+          <div>
+            <div className="eyebrow text-white/55 mb-8">Проблематика</div>
+            <h2
+              className="max-w-[720px] text-white"
+              style={{ fontSize: "clamp(30px, 4.4vw, 70px)", lineHeight: 0.98 }}
+            >
+              Где сложные проекты теряют бюджет
+            </h2>
+          </div>
+          <p
+            className="font-body max-w-[620px] text-white/60 md:pb-2"
+            style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.5 }}
+          >
+            Перерасход и&nbsp;сдвиги сроков возникают не&nbsp;в&nbsp;одной точке,
+            а&nbsp;накапливаются по&nbsp;цепочке: от&nbsp;неполного задания до&nbsp;ошибок
+            производства и&nbsp;монтажа.
           </p>
         </div>
+      </div>
 
-        {/* stacking cards */}
-        <div>
-          {problems.map((p, i) => (
+      <div className="pb-10 md:pb-16">
+        {problems.map((p, i) => (
+          <div
+            key={p.n}
+            className="relative"
+            style={{ position: "sticky", top: `calc(78px + ${i * PEEK}px)`, zIndex: i + 1 }}
+          >
             <div
-              key={p.n}
-              style={{ position: "sticky", top: `calc(86px + ${i * PEEK}px)` }}
+              style={{
+                background: "var(--coal)",
+                borderTop: "1px solid var(--line-dark)",
+              }}
             >
-              <div
-                className="grid grid-cols-1 lg:grid-cols-[1fr_1.5fr] gap-2 lg:gap-16 px-6 md:px-10 py-9 md:py-12"
-                style={{
-                  background: "#1c1c1c",
-                  borderTop: "2px solid var(--orange)",
-                  boxShadow: "0 -16px 36px rgba(0,0,0,0.5)",
-                  minHeight: 220,
-                }}
-              >
-                <div className="font-mono text-orange leading-[0.8]" style={{ fontSize: "clamp(54px, 10vw, 168px)" }}>
-                  {p.n}
+              <div className="container-x">
+                <div className="grid min-h-[300px] grid-cols-1 gap-8 py-10 md:min-h-[315px] md:grid-cols-[0.95fr_1.05fr] md:py-12 lg:py-14">
+                <div className="overflow-hidden">
+                  <span
+                    className="block font-body font-semibold leading-[0.78] text-orange"
+                    style={{ fontSize: "clamp(112px, 17vw, 282px)", letterSpacing: "-0.06em" }}
+                  >
+                    {p.n}
+                  </span>
                 </div>
-                <div className="lg:pt-2">
-                  <h3 className="font-mono text-orange mb-4" style={{ fontSize: "clamp(20px, 2.1vw, 32px)", letterSpacing: "0.01em" }}>
+                <div className="flex max-w-[660px] flex-col justify-center md:ml-auto md:w-full">
+                  <h3
+                    className="font-body normal-case text-white"
+                    style={{ fontSize: "clamp(30px, 3.2vw, 48px)", lineHeight: 1.05, letterSpacing: 0 }}
+                  >
                     {p.title}
                   </h3>
-                  <p className="font-body text-white/60 max-w-xl" style={{ fontSize: "clamp(15px, 1.1vw, 18px)", lineHeight: 1.65 }}>
+                  <p
+                    className="mt-6 font-body text-white/72"
+                    style={{ fontSize: "clamp(17px, 1.45vw, 24px)", lineHeight: 1.28 }}
+                  >
                     {p.body}
                   </p>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-
-        {/* bridge to the solution */}
-        <a
-          href="#algo"
-          className="group relative z-10 flex flex-wrap items-baseline gap-x-5 gap-y-2 mt-10 md:mt-16 pt-10 md:pt-14"
-          style={{ background: "var(--coal)", borderTop: "1px solid rgba(255,90,0,0.45)" }}
-        >
-          <span className="font-mono text-white/45 text-xs tracking-[0.22em] uppercase">Решение&nbsp;→</span>
-          <span className="font-mono text-white group-hover:text-orange transition-colors" style={{ fontSize: "clamp(24px, 3.4vw, 52px)", lineHeight: 1 }}>
-            Алгоритмический подход
-          </span>
-        </a>
+          </div>
+          </div>
+        ))}
       </div>
     </section>
   );

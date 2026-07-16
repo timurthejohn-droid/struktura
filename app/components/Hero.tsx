@@ -11,11 +11,11 @@ export default function Hero() {
   return (
     <section
       id="top"
-      className="relative min-h-screen flex flex-col overflow-hidden"
+      className="relative min-h-[640px] md:min-h-[720px] lg:min-h-[760px] flex flex-col overflow-hidden"
       style={{ background: "var(--paper)" }}
     >
       <GridLines theme="light" count={5} />
-      <div className="container-x w-full flex flex-col flex-1 pt-28 md:pt-32 pb-10 relative z-10">
+      <div className="container-x w-full flex flex-col flex-1 pt-24 md:pt-28 pb-8 relative z-10">
         {/* Top technical strip — sits well below the fixed nav, on its own hairline */}
         <div
           className="flex items-center justify-between pb-4 md:pb-5"
@@ -44,7 +44,7 @@ export default function Hero() {
         </div>
 
         {/* Headline — large, two wide lines, fills the vertical space */}
-        <div className="flex-1 flex flex-col justify-center py-14 md:py-20">
+        <div className="flex-1 flex flex-col justify-center py-10 md:py-14">
           <h1
             className="text-ink"
             style={{
@@ -59,7 +59,7 @@ export default function Hero() {
         </div>
 
         {/* Bottom row — subcopy + CTA on a hairline, sector tags beneath */}
-        <div className="pt-7 md:pt-8" style={{ borderTop: "1px solid var(--line-light)" }}>
+        <div className="pt-6" style={{ borderTop: "1px solid var(--line-light)" }}>
           <div className="grid lg:grid-cols-[1fr_auto] gap-7 lg:gap-16 items-end">
             <p
               className="font-body max-w-xl"
@@ -83,7 +83,7 @@ export default function Hero() {
             </div>
           </div>
 
-          <div className="mt-7 md:mt-8 flex flex-wrap gap-x-8 gap-y-2">
+          <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
             {sectors.map((s) => (
               <span
                 key={s}

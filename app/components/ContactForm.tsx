@@ -1,12 +1,14 @@
 "use client";
 import { useState } from "react";
-import SectionHead from "./SectionHead";
 
 const fields = [
   { key: "name", label: "Имя", type: "text" },
   { key: "phone", label: "Номер телефона", type: "tel" },
   { key: "email", label: "E-mail", type: "email" },
 ];
+
+const contactBackground =
+  "https://www.figma.com/api/mcp/asset/8cc5dc92-091d-467b-9918-dbabd554dea9";
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
@@ -19,110 +21,117 @@ export default function ContactForm() {
   };
 
   return (
-    <section id="contact" className="py-24 md:py-36" style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}>
+    <section id="contact" className="bg-paper pt-16 md:pt-24">
       <div className="container-x">
-        <SectionHead index="10" kicker="Контакты" theme="light" />
-        <div className="grid lg:grid-cols-2 gap-14 lg:gap-24">
-          {/* Left */}
-          <div>
-            <h2 className="text-ink mb-8" style={{ fontSize: "clamp(30px, 3.6vw, 60px)", lineHeight: 1.04 }}>
-              Обсудить проект
-            </h2>
-            <p className="font-body text-ink-soft max-w-sm mb-12" style={{ fontSize: "17px", lineHeight: 1.6 }}>
-              Расскажите о&nbsp;проекте — изучим задачу и&nbsp;предложим оптимальное
-              решение. Первая консультация бесплатна.
-            </p>
-
-            <div className="space-y-6">
-              <div>
-                <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-ink/40 mb-1">Телефон</p>
-                <a href="tel:+74956642823" className="font-mono text-ink text-xl hover:text-orange transition-colors">
-                  +7 (495) 664-28-23
-                </a>
-              </div>
-              <div>
-                <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-ink/40 mb-1">E-mail</p>
-                <a href="mailto:office@sk-struktura.ru" className="font-body text-ink-soft hover:text-ink transition-colors">
-                  office@sk-struktura.ru
-                </a>
-              </div>
-              <div>
-                <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-ink/40 mb-1">Адрес</p>
-                <p className="font-body text-ink-soft text-sm leading-relaxed">
-                  125040 Москва, Ленинградский проспект,
-                  <br />
-                  д.&nbsp;15 стр.&nbsp;14, 4&nbsp;этаж
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: form */}
-          {sent ? (
-            <div className="flex items-center justify-center min-h-[360px]" style={{ border: "1px solid var(--line-light)" }}>
-              <div className="text-center px-6">
-                <div className="w-14 h-14 mx-auto mb-6 flex items-center justify-center" style={{ background: "var(--orange)" }}>
-                  <span className="text-white text-2xl">✓</span>
-                </div>
-                <h3 className="font-mono text-ink text-lg mb-3">Заявка отправлена</h3>
-                <p className="font-body text-ink-soft text-sm">Свяжемся с&nbsp;вами в&nbsp;течение рабочего дня</p>
-              </div>
-            </div>
-          ) : (
-            <form onSubmit={onSubmit} className="space-y-5">
-              {fields.map((f) => (
-                <div key={f.key}>
-                  <label className="block font-mono text-[10px] tracking-[0.15em] uppercase text-ink/40 mb-2">{f.label}</label>
-                  <input
-                    type={f.type}
-                    required
-                    value={form[f.key as keyof typeof form]}
-                    onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
-                    className="w-full px-4 py-3 font-body text-ink text-sm outline-none transition-colors"
-                    style={{ border: "1px solid var(--line-light)", background: "var(--paper-card)" }}
-                    onFocus={(e) => (e.currentTarget.style.borderColor = "var(--orange)")}
-                    onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
-                  />
-                </div>
-              ))}
-              <div>
-                <label className="block font-mono text-[10px] tracking-[0.15em] uppercase text-ink/40 mb-2">Сообщение</label>
-                <textarea
-                  rows={4}
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  className="w-full px-4 py-3 font-body text-ink text-sm outline-none resize-none transition-colors"
-                  style={{ border: "1px solid var(--line-light)", background: "var(--paper-card)" }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "var(--orange)")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.1)")}
-                />
-              </div>
-
-              <div className="flex items-start gap-3">
-                <button
-                  type="button"
-                  onClick={() => setAgreed(!agreed)}
-                  className="flex-shrink-0 w-4 h-4 mt-0.5"
-                  style={{ border: "1px solid rgba(0,0,0,0.25)", background: agreed ? "var(--orange)" : "transparent" }}
-                  aria-label="Согласие"
+        <div
+          className="relative min-h-[600px] overflow-hidden px-5 py-5 md:px-10 md:py-8"
+          style={{ background: "var(--orange)" }}
+        >
+          <img
+            src={contactBackground}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+            draggable={false}
+          />
+          <div className="absolute inset-0 bg-orange/20 mix-blend-overlay" />
+          <div className="relative z-10 grid min-h-[560px] gap-6 lg:grid-cols-2">
+            <div className="flex items-end">
+              <div className="w-full max-w-[270px] bg-white px-5 py-6 md:px-8 md:py-7">
+                <a
+                  href="tel:+74956642823"
+                  className="block font-mono text-[20px] uppercase tracking-[0.1em] text-ink transition-colors hover:text-orange"
                 >
-                  {agreed && <span className="block text-white text-[10px] leading-none">✓</span>}
-                </button>
-                <p className="font-body text-ink/45 text-xs leading-relaxed">
-                  Я принимаю условия обработки персональных данных и&nbsp;правила пользования сервисом
+                  +7 495 664 28 23
+                </a>
+                <p className="mt-12 font-body text-[12px] font-medium leading-[18px] text-ink/60">
+                  125040 Москва, Ленинградский проспект, д.&nbsp;15 стр.&nbsp;14,
+                  4&nbsp;этаж
                 </p>
               </div>
+            </div>
 
-              <button
-                type="submit"
-                disabled={!agreed}
-                className="w-full py-4 font-mono text-xs tracking-[0.15em] uppercase text-white transition-all"
-                style={{ background: agreed ? "var(--orange)" : "rgba(0,0,0,0.15)", cursor: agreed ? "pointer" : "not-allowed" }}
+            <div className="bg-white px-6 py-8 md:px-10 md:py-10 lg:min-h-[560px]">
+              <h2
+                className="text-ink"
+                style={{ fontSize: "clamp(30px, 3.2vw, 40px)", lineHeight: 1.1, letterSpacing: "0.05em" }}
               >
-                Отправить
-              </button>
-            </form>
-          )}
+                Обсудить проект
+              </h2>
+
+              {sent ? (
+                <div className="flex min-h-[360px] items-center justify-center">
+                  <div className="text-center">
+                    <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center bg-orange">
+                      <span className="text-2xl text-white">✓</span>
+                    </div>
+                    <h3 className="font-mono text-lg uppercase tracking-[0.1em] text-ink">
+                      Заявка отправлена
+                    </h3>
+                    <p className="mt-3 font-body text-sm text-ink-soft">
+                      Свяжемся с&nbsp;вами в&nbsp;течение рабочего дня
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={onSubmit} className="mt-20 md:mt-28">
+                  <div className="space-y-[17px]">
+                    {fields.map((f) => (
+                      <label key={f.key} className="block">
+                        <span className="block font-mono text-[12px] uppercase leading-10 tracking-[0.16em] text-black">
+                          {f.label}
+                        </span>
+                        <input
+                          type={f.type}
+                          required
+                          value={form[f.key as keyof typeof form]}
+                          onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
+                          className="block h-8 w-full border-0 border-b border-black/10 bg-transparent px-0 font-body text-sm text-ink outline-none transition-colors focus:border-orange"
+                        />
+                      </label>
+                    ))}
+                    <label className="block">
+                      <span className="block font-mono text-[12px] uppercase leading-10 tracking-[0.16em] text-black">
+                        Сообщение
+                      </span>
+                      <textarea
+                        rows={1}
+                        value={form.message}
+                        onChange={(e) => setForm({ ...form, message: e.target.value })}
+                        className="block h-8 w-full resize-none border-0 border-b border-black/10 bg-transparent px-0 font-body text-sm text-ink outline-none transition-colors focus:border-orange"
+                      />
+                    </label>
+                  </div>
+
+                  <div className="mt-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+                    <button
+                      type="submit"
+                      disabled={!agreed}
+                      className="inline-grid h-10 w-[220px] grid-cols-[1fr_40px] bg-orange font-mono text-[12px] uppercase tracking-[0.16em] text-white transition-colors hover:bg-orange-dark disabled:cursor-not-allowed disabled:bg-black/15"
+                    >
+                      <span className="flex items-center px-5">Оставить заявку</span>
+                      <span className="flex items-center justify-center border-l border-white/35" aria-hidden="true">
+                        →
+                      </span>
+                    </button>
+
+                    <label className="flex max-w-[260px] items-start gap-[15px]">
+                      <input
+                        type="checkbox"
+                        checked={agreed}
+                        onChange={(e) => setAgreed(e.target.checked)}
+                        className="mt-0.5 h-[18px] w-[18px] shrink-0 appearance-none border border-black/10 bg-white checked:border-orange checked:bg-orange"
+                        aria-label="Согласие на обработку персональных данных"
+                      />
+                      <span className="font-body text-[10px] leading-[13px] text-[#595959]">
+                        Я принимаю <span className="text-black">условия обработки</span>{" "}
+                        моих персональных данных и правила пользования сервисом
+                      </span>
+                    </label>
+                  </div>
+                </form>
+              )}
+              </div>
+          </div>
         </div>
       </div>
     </section>

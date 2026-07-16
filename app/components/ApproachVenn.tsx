@@ -140,7 +140,7 @@ export default function ApproachVenn() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();
 
-  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start start", "end end"] });
+  const { scrollYProgress } = useScroll({ target: wrapRef, offset: ["start 80%", "end end"] });
 
   // Сфера: обводка и параллели уходят, когда круги разлетаются
   const sphereOpacity = useTransform(scrollYProgress, [0.01, 0.06, SPIN_END, SPIN_END + 0.1], [0, 0.75, 0.75, 0]);

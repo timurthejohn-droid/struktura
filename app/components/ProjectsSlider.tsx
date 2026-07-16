@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import SectionHead from "./SectionHead";
 
 type Project = {
   name: string;
@@ -32,10 +31,8 @@ export default function ProjectsSlider() {
   return (
     <section id="projects" className="py-20 md:py-28" style={{ background: "var(--paper)" }}>
       <div className="container-x">
-        <SectionHead index="01" kicker="Избранные проекты" theme="light" />
-
         {/* Stage */}
-        <div className="relative overflow-hidden" style={{ aspectRatio: "16 / 9", maxHeight: 620 }}>
+        <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9", maxHeight: 620 }}>
           {projects.map((proj, i) => (
             <div
               key={proj.name}
