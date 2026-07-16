@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 // Hero-визуал раздела «Материалы»: поле линий, которое непрерывно
 // трансформируется — лист → рельеф → двойная кривизна → оболочка.
 // Масштаб «дышит»: форма растёт и сжимается. Canvas, 60fps.
+// Реагирует на курсор: линии плавно расступаются от прикосновения.
 // prefers-reduced-motion — статичный кадр.
 
 const LINES = 26;
@@ -52,6 +53,21 @@ export default function HeroFormAnim() {
     let W = 0;
     let H = 0;
 
+    // курсор: target — реальная позиция, cur — сглаженная; power 0..1 — сила эффекта
+    const mouse = { tx: 0, ty: 0, x: 0, y: 0, power: 0, inside: false };
+    const RADIUS = 150; // радиус влияния, px
+    const FORCE = 52; // максимальный сдвиг линии, px
+
+    const onMove = (e: PointerEvent) => {
+      const r = canvas.getBoundingClientRect();
+      mouse.tx = e.clientX - r.left;
+      mouse.ty = e.clientY - r.top;
+      mouse.inside = true;
+    };
+    const onLeave = () => {
+      mouse.inside = false;
+    };
+
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       const r = canvas.getBoundingClientRect();
@@ -66,6 +82,12 @@ export default function HeroFormAnim() {
       const time = ms / 1000;
       const [amp1, freq1, amp2, freq2, twist, env, scale] = shapeAt(time);
       const drift = time * 0.55; // лёгкое течение волны даже в удержании
+
+      // сглаживание курсора и плавное вкл/выкл эффекта
+      mouse.x += (mouse.tx - mouse.x) * 0.12;
+      mouse.y += (mouse.ty - mouse.y) * 0.12;
+      mouse.power += ((mouse.inside ? 1 : 0) - mouse.power) * 0.08;
+      const r2 = RADIUS * RADIUS;
 
       ctx.clearRect(0, 0, W, H);
       const grad = ctx.createLinearGradient(0, 0, W, H);
@@ -94,10 +116,23 @@ export default function HeroFormAnim() {
           const w1 = Math.sin(u * Math.PI * 2 * freq1 + v * twist * Math.PI + drift);
           const w2 = Math.sin(u * Math.PI * 2 * freq2 - v * twist * 2.4 - drift * 1.4);
           const envelope = Math.sin(u * Math.PI); // гасим к краям
-          const y =
+          let y =
             baseY +
             (w1 * amp1 + w2 * amp2) * H * envelope * (0.35 + 0.65 * bell) -
             env * H * 0.16 * envelope * Math.cos(v * Math.PI);
+
+          // отклик на курсор: гауссово «продавливание» — линии расступаются
+          if (mouse.power > 0.01) {
+            const dx = x - mouse.x;
+            const dy = y - mouse.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < r2 * 4) {
+              const fall = Math.exp(-d2 / r2); // мягкий спад к краю радиуса
+              const dist = Math.sqrt(d2) || 1;
+              y += (dy / dist) * FORCE * fall * mouse.power;
+            }
+          }
+
           if (si === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }
@@ -108,6 +143,8 @@ export default function HeroFormAnim() {
 
     resize();
     window.addEventListener("resize", resize);
+    canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerleave", onLeave);
 
     if (reduced) {
       // статичный кадр двойной кривизны
@@ -123,6 +160,8 @@ export default function HeroFormAnim() {
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
+      canvas.removeEventListener("pointermove", onMove);
+      canvas.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
