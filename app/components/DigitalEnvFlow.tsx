@@ -22,29 +22,29 @@ export default function DigitalEnvFlow() {
   const a = stages[active];
 
   return (
-    <section id="digital" className="py-28 md:py-44" style={{ background: "var(--coal)" }}>
+    <section id="digital" className="py-28 md:py-44" style={{ background: "var(--paper)" }}>
       <div className="container-x">
-        <SectionHead index="05" kicker="Цифровая среда" theme="dark" />
+        <SectionHead index="05" kicker="Цифровая среда" theme="light" />
 
         {/* intro */}
         <div ref={ref} className="reveal grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-24 items-end mb-14 md:mb-20">
-          <h2 className="text-white" style={{ fontSize: "clamp(30px, 3.6vw, 60px)", lineHeight: 1.04 }}>
+          <h2 className="text-ink" style={{ fontSize: "clamp(30px, 3.6vw, 60px)", lineHeight: 1.04 }}>
             STRUKTURA<span className="text-orange">+</span>
           </h2>
           <div>
-            <p className="font-body text-white/65" style={{ fontSize: "clamp(15px, 1.2vw, 19px)", lineHeight: 1.6 }}>
+            <p className="font-body text-ink/70" style={{ fontSize: "clamp(15px, 1.2vw, 19px)", lineHeight: 1.6 }}>
               Единая цифровая среда связывает все этапы проекта в&nbsp;одну систему: данные
               передаются между этапами без&nbsp;потерь, а&nbsp;каждый процесс работает
               на&nbsp;общий результат.
             </p>
-            <p className="font-mono text-white/40 text-[11px] tracking-[0.18em] uppercase mt-5">
+            <p className="font-mono text-ink/40 text-[11px] tracking-[0.18em] uppercase mt-5">
               Наведите на&nbsp;этап — раскроется технологический стек
             </p>
           </div>
         </div>
 
         {/* environment board */}
-        <div style={{ border: "1px solid var(--line-dark)", background: "var(--coal)" }}>
+        <div style={{ border: "1px solid var(--line-light)", background: "var(--paper-card)" }}>
           {/* matrix of cells (the "environment") */}
           <div
             className=""
@@ -61,7 +61,7 @@ export default function DigitalEnvFlow() {
                   onMouseEnter={() => setActive(stage)}
                   style={{
                     aspectRatio: "1 / 1",
-                    border: `1px solid ${on ? "rgba(255,90,0,0.9)" : "rgba(255,90,0,0.13)"}`,
+                    border: `1px solid ${on ? "rgba(255,90,0,0.9)" : "rgba(255,90,0,0.2)"}`,
                     background: on ? "var(--orange)" : "transparent",
                     transition: "background 0.35s ease, border-color 0.35s ease",
                     transitionDelay: on ? `${(col % PER) * 34 + row * 26}ms` : "0ms",
@@ -72,7 +72,7 @@ export default function DigitalEnvFlow() {
           </div>
 
           {/* stage labels aligned under the matrix */}
-          <div className="grid grid-cols-3 md:grid-cols-6" style={{ borderTop: "1px solid var(--line-dark)" }}>
+          <div className="grid grid-cols-3 md:grid-cols-6" style={{ borderTop: "1px solid var(--line-light)" }}>
             {stages.map((s, i) => {
               const on = active === i;
               return (
@@ -82,12 +82,12 @@ export default function DigitalEnvFlow() {
                   onFocus={() => setActive(i)}
                   className="text-left p-4 md:p-5 transition-colors"
                   style={{
-                    borderLeft: i % 6 === 0 ? undefined : "1px solid var(--line-dark)",
-                    background: on ? "var(--coal)" : "transparent",
+                    borderLeft: i % 6 === 0 ? undefined : "1px solid var(--line-light)",
+                    background: on ? "var(--paper)" : "transparent",
                   }}
                 >
                   <span className="font-mono text-orange text-xs">{s.n}</span>
-                  <span className="block font-mono text-[12px] tracking-[0.02em] mt-1" style={{ color: on ? "#fff" : "rgba(255,255,255,0.5)" }}>
+                  <span className="block font-mono text-[12px] tracking-[0.02em] mt-1" style={{ color: on ? "var(--ink)" : "rgba(26,26,26,0.5)" }}>
                     {s.name}
                   </span>
                 </button>
@@ -96,20 +96,20 @@ export default function DigitalEnvFlow() {
           </div>
 
           {/* slide-out tech stack for the active stage */}
-          <div className="p-6 md:p-9" style={{ borderTop: "1px solid var(--line-dark)" }}>
+          <div className="p-6 md:p-9" style={{ borderTop: "1px solid var(--line-light)" }}>
             <div key={active} className="env-slide grid md:grid-cols-[auto_1fr_auto] gap-5 md:gap-10 md:items-center">
               <div className="font-mono text-orange" style={{ fontSize: "clamp(34px, 4.4vw, 60px)", lineHeight: 1 }}>
                 {a.n}
               </div>
               <div>
-                <h3 className="font-mono text-white text-lg mb-2 tracking-[0.02em]">{a.name}</h3>
-                <p className="font-body text-white/55 max-w-xl" style={{ fontSize: 15, lineHeight: 1.55 }}>
+                <h3 className="font-mono text-ink text-lg mb-2 tracking-[0.02em]">{a.name}</h3>
+                <p className="font-body text-ink/60 max-w-xl" style={{ fontSize: 15, lineHeight: 1.55 }}>
                   {a.desc}
                 </p>
               </div>
               <div className="flex flex-wrap gap-2 md:justify-end">
                 {a.tech.map((tt) => (
-                  <span key={tt} className="font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 text-white/80 whitespace-nowrap" style={{ border: "1px solid rgba(255,90,0,0.45)" }}>
+                  <span key={tt} className="font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 text-ink/80 whitespace-nowrap" style={{ border: "1px solid rgba(255,90,0,0.5)" }}>
                     {tt}
                   </span>
                 ))}
