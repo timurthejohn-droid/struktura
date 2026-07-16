@@ -244,12 +244,17 @@ export default function Subsystems() {
           <h2 className="text-white" style={{ fontSize: "clamp(28px, 3.4vw, 54px)", lineHeight: 1.05 }}>
             Физическое воплощение опыта
           </h2>
-          <p className="font-body text-white/65" style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.6 }}>
-            Мы выстроили систему реализации сложных архитектурных проектов, результатом которой
-            стали <span className="text-white">подсистемы STRUKTURA</span> — индивидуальные
-            инженерные решения под ваши задачи. Прокрутите — чертёж справа собирается на ваших
-            глазах.
-          </p>
+          <div>
+            <p className="font-body text-white/65" style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.6 }}>
+              Мы выстроили систему реализации сложных архитектурных проектов, результатом которой
+              стали <span className="text-white">подсистемы STRUKTURA</span> — индивидуальные
+              инженерные решения под ваши задачи. Прокрутите — чертёж справа собирается на ваших
+              глазах.
+            </p>
+            <a href="/subsystems" className="btn btn-ghost-dark mt-8">
+              Подробнее →
+            </a>
+          </div>
         </div>
 
         {/* scroll-driven: steps (left) + sticky visual (right) */}

@@ -29,7 +29,7 @@ export default function HeroCanvas() {
     let loadedCount = 0;
     FRAME_INDICES.forEach((fi, i) => {
       const img = new window.Image();
-      img.src = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/cone/frame_${padded(fi)}.jpg`;
+      img.src = `/cone/frame_${padded(fi)}.jpg`;
       img.onload = () => {
         loadedRef.current[i] = true;
         loadedCount++;

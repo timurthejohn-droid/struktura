@@ -44,10 +44,10 @@ export default function DigitalEnvFlow() {
         </div>
 
         {/* environment board */}
-        <div style={{ border: "1px solid var(--line-dark)", background: "var(--coal-deep)" }}>
+        <div style={{ border: "1px solid var(--line-dark)", background: "var(--coal)" }}>
           {/* matrix of cells (the "environment") */}
           <div
-            className="p-4 md:p-6"
+            className=""
             style={{ display: "grid", gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 3 }}
           >
             {Array.from({ length: COLS * ROWS }).map((_, idx) => {
@@ -83,7 +83,7 @@ export default function DigitalEnvFlow() {
                   className="text-left p-4 md:p-5 transition-colors"
                   style={{
                     borderLeft: i % 6 === 0 ? undefined : "1px solid var(--line-dark)",
-                    background: on ? "rgba(255,90,0,0.07)" : "transparent",
+                    background: on ? "var(--coal)" : "transparent",
                   }}
                 >
                   <span className="font-mono text-orange text-xs">{s.n}</span>

@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const links = [
-  { href: "/#about", label: "О компании" },
-  { href: "/#projects", label: "Проекты" },
-  { href: "/#digital", label: "Услуги" },
+  { href: "/about", label: "О компании" },
+  { href: "/projects", label: "Проекты" },
+  { href: "/digital", label: "Услуги" },
   { href: "/materials", label: "Материалы" },
   { href: "/approach", label: "Алгоритмический подход" },
   { href: "/#contact", label: "Контакты" },

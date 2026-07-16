@@ -51,7 +51,7 @@ export default function TrustStrip() {
         {/* Metrics */}
         <div className="grid md:grid-cols-3 gap-10 md:gap-6 mb-16">
           {metrics.map((m) => (
-            <div key={m.label} className="flex flex-col">
+            <div key={m.label} className="flex flex-col items-center text-center">
               <div className="font-mono text-ink leading-none" style={{ fontSize: "clamp(56px, 7vw, 104px)" }}>
                 <Counter value={m.value} suffix={m.suffix} />
               </div>
