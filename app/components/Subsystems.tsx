@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import SectionHead from "./SectionHead";
 import CursorGuides from "./CursorGuides";
+import { useReveal } from "./useReveal";
 
 const steps = [
   {
@@ -204,6 +205,7 @@ function SubsystemViz({ progress, active }: { progress: number; active: number }
 
 export default function Subsystems() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const headRevealRef = useReveal();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -238,6 +240,8 @@ export default function Subsystems() {
     <section id="subsystems" className="relative py-24 md:py-36" style={{ background: "var(--coal)" }}>
       <CursorGuides />
       <div className="container-x">
+        {/* reveal — только на шапке: ниже sticky-чертёж, transform его сломал бы */}
+        <div className="reveal" ref={headRevealRef}>
         <SectionHead index="07" kicker="Подсистемы STRUKTURA" theme="dark" />
 
         <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-20 mb-14 lg:mb-24">
@@ -255,6 +259,7 @@ export default function Subsystems() {
               Подробнее →
             </a>
           </div>
+        </div>
         </div>
 
         {/* scroll-driven: steps (left) + sticky visual (right) */}

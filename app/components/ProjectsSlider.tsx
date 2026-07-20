@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useReveal } from "./useReveal";
 
 type Project = {
   name: string;
@@ -17,6 +18,7 @@ const projects: Project[] = [
 ];
 
 export default function ProjectsSlider() {
+  const revealRef = useReveal();
   const [idx, setIdx] = useState(0);
   const n = projects.length;
   const go = (d: number) => setIdx((p) => (p + d + n) % n);
@@ -30,7 +32,7 @@ export default function ProjectsSlider() {
 
   return (
     <section id="projects" className="py-20 md:py-28" style={{ background: "var(--paper)" }}>
-      <div className="container-x">
+      <div className="container-x reveal" ref={revealRef}>
         {/* Stage */}
         <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9", maxHeight: 620 }}>
           {projects.map((proj, i) => (
@@ -112,10 +114,11 @@ export default function ProjectsSlider() {
               key={proj.name}
               onClick={() => setIdx(i)}
               aria-label={proj.name}
-              className="h-[3px] transition-all"
+              className="h-[3px]"
               style={{
                 width: i === idx ? 48 : 22,
                 background: i === idx ? "var(--orange)" : "rgba(0,0,0,0.18)",
+                transition: "width 0.35s var(--ease-out), background-color 0.3s ease",
               }}
             />
           ))}

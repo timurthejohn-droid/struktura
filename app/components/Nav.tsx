@@ -41,11 +41,12 @@ export default function Nav() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-50 fade-in"
       style={{
         background: scrolled ? "rgba(241,239,233,0.85)" : "transparent",
         backdropFilter: scrolled ? "blur(14px)" : "none",
         borderBottom: scrolled ? "1px solid var(--line-light)" : "1px solid transparent",
+        transition: "background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease",
       }}
     >
       <div className="container-x flex items-center justify-between" style={{ height: 72 }}>
@@ -56,7 +57,7 @@ export default function Nav() {
             <Link
               key={l.href}
               href={l.href}
-              className="font-mono text-[11px] tracking-[0.12em] uppercase text-ink/55 hover:text-ink transition-colors"
+              className="nav-link font-mono text-[11px] tracking-[0.12em] uppercase text-ink/55 hover:text-ink transition-colors"
             >
               {l.label}
             </Link>
@@ -88,7 +89,7 @@ export default function Nav() {
 
       {open && (
         <div
-          className="lg:hidden border-t"
+          className="lg:hidden border-t nav-drop"
           style={{ background: "var(--paper)", borderColor: "var(--line-light)" }}
         >
           <div className="container-x py-6 flex flex-col gap-1">

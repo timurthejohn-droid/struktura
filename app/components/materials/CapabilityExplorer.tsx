@@ -311,12 +311,26 @@ export default function CapabilityExplorer() {
                 </span>
               </div>
 
-              {/* визуал материала */}
+              {/* визуал материала: видео, если есть, иначе градиент */}
               <div className="px-6 md:px-9 mt-6">
-                <div className="relative overflow-hidden" style={{ aspectRatio: "16 / 8", background: active.grad }}>
-                  <div className="absolute inset-0" style={{ backgroundImage: "repeating-linear-gradient(90deg, rgba(0,0,0,0.22) 0 2px, transparent 2px 46px)" }} />
-                  <div className="absolute inset-0" style={{ background: "radial-gradient(90% 70% at 50% 15%, rgba(255,255,255,0.28), transparent 55%)" }} />
-                  <div className="absolute inset-0" style={{ boxShadow: "inset 0 -50px 90px rgba(0,0,0,0.45)" }} />
+                <div className="relative overflow-hidden" style={{ aspectRatio: "16 / 8", background: active.video ? "var(--coal)" : active.grad }}>
+                  {active.video ? (
+                    <video
+                      key={active.video}
+                      src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${active.video}`}
+                      className="absolute inset-0 h-full w-full object-contain"
+                      autoPlay
+                      muted
+                      loop
+                      playsInline
+                    />
+                  ) : (
+                    <>
+                      <div className="absolute inset-0" style={{ backgroundImage: "repeating-linear-gradient(90deg, rgba(0,0,0,0.22) 0 2px, transparent 2px 46px)" }} />
+                      <div className="absolute inset-0" style={{ background: "radial-gradient(90% 70% at 50% 15%, rgba(255,255,255,0.28), transparent 55%)" }} />
+                      <div className="absolute inset-0" style={{ boxShadow: "inset 0 -50px 90px rgba(0,0,0,0.45)" }} />
+                    </>
+                  )}
                   <span className="absolute bottom-3 right-4 font-mono uppercase" style={{ fontSize: 9.5, letterSpacing: "0.16em", color: "rgba(255,255,255,0.65)" }}>
                     {active.sub}
                   </span>

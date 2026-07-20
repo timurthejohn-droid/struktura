@@ -29,7 +29,7 @@ export default function HeroCanvas() {
     let loadedCount = 0;
     FRAME_INDICES.forEach((fi, i) => {
       const img = new window.Image();
-      img.src = `/cone/frame_${padded(fi)}.jpg`;
+      img.src = `${process.env.NEXT_PUBLIC_BASE_PATH || ""}/cone/frame_${padded(fi)}.jpg`;
       img.onload = () => {
         loadedRef.current[i] = true;
         loadedCount++;
@@ -177,10 +177,11 @@ export default function HeroCanvas() {
               {cases.map((_, i) => (
                 <span
                   key={i}
-                  className="block w-6 h-px transition-all"
+                  className="block w-6 h-px"
                   style={{
                     background: i === caseIdx ? "#FF5A00" : "rgba(255,255,255,0.3)",
                     height: i === caseIdx ? "2px" : "1px",
+                    transition: "background-color 0.3s ease, height 0.3s ease",
                   }}
                 />
               ))}

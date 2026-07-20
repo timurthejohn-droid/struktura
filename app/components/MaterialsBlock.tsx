@@ -270,7 +270,7 @@ export default function MaterialsBlock() {
               <article className="relative min-h-[620px] overflow-hidden bg-ink md:min-h-[720px]">
                 {material.image ? (
                   <img
-                    src={material.image}
+                    src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${material.image}`}
                     alt=""
                     className="absolute inset-0 h-full w-full object-cover"
                   />
