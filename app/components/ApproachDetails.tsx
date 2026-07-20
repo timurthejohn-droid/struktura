@@ -58,13 +58,18 @@ export default function ApproachDetails() {
   return (
     <div ref={wrapRef}>
       {/* Принципы */}
-      <section className="py-24 md:py-36" style={{ background: "var(--paper)" }}>
+      <section
+        className="relative z-0 -mt-[92vh] pt-[58vh] pb-24 md:pb-36"
+        style={{ background: "var(--paper)" }}
+      >
         <div className="container-x">
-          <SectionHead index="02" kicker="Четыре принципа" theme="light" />
+          <div className="algo-step">
+            <SectionHead index="02" kicker="Четыре принципа" theme="light" />
+          </div>
           {principles.map((p) => (
             <div
               key={p.n}
-              className="algo-step grid grid-cols-[auto_1fr] lg:grid-cols-[auto_1.1fr_1.6fr_auto] gap-x-5 gap-y-3 lg:gap-x-12 items-start py-8 md:py-12"
+              className="algo-step grid grid-cols-[auto_1fr] lg:grid-cols-[48px_minmax(0,520px)_minmax(360px,1fr)_48px] gap-x-5 gap-y-3 lg:gap-x-12 items-start py-8 md:py-12"
               style={{ borderTop: "1px solid var(--line-light)" }}
             >
               <span className="font-mono text-ink/40 row-span-2 lg:row-span-1" style={{ fontSize: "clamp(16px, 1.6vw, 24px)" }}>
