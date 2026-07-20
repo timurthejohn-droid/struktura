@@ -1,35 +1,81 @@
-import Nav from "../components/Nav";
-import ContactForm from "../components/ContactForm";
 import Footer from "../components/Footer";
+import Nav from "../components/Nav";
+import ProjectsCatalog, { type Project } from "../components/ProjectsCatalog";
+import ContactForm from "../components/ContactForm";
 
-const categories = [
-  { name: "Архитектурные фасады", count: "5 кейсов" },
-  { name: "Культурные и спортивные сооружения с уникальной геометрией", count: "5 кейсов" },
-  { name: "Промышленные комплексы с особыми требованиями", count: "5 кейсов" },
-  { name: "Инфраструктурные и городские пространства", count: "5 кейсов" },
-  { name: "Объекты госконтрактов и международные экспортные проекты", count: "5 кейсов" },
-];
-
-const projects = [
+const projects: Project[] = [
   {
-    n: "01",
+    number: "01",
     name: "Сбербанк-Сити",
-    text: "Мы создали уникальную силовую подконструкцию и систему утепления и гидроизоляции, обеспечив надежность и долговечность архитектурного решения.",
+    year: "2022",
+    work: "Межбашенное пространство",
+    category: "Фасады",
+    image: "/projects/37785448.jpg",
+    featured: true,
   },
   {
-    n: "02",
-    name: "Лахта Центр",
-    text: "Инженерная адаптация входной группы со сложной геометрией, производственной логикой и точной последовательностью монтажа.",
+    number: "02",
+    name: "Moscow Towers",
+    year: "2024",
+    work: "Монументальное художественное панно из металлических пластин",
+    category: "Интерьеры",
+    image: "/projects/68362468.jpg",
   },
   {
-    n: "03",
-    name: "Музей Кремля",
-    text: "Стеклянные и металлические решения для общественного пространства, где визуальная легкость требует высокой инженерной точности.",
+    number: "03",
+    name: "Штаб-квартира крупного банка",
+    year: "2020",
+    work: "Арт потолок",
+    category: "Интерьеры",
+    image: "/projects/14200012.jpg",
   },
   {
-    n: "04",
-    name: "Москва-Сити",
-    text: "Фасадные и интерьерные элементы с нестандартной геометрией, подготовленные к производству и монтажу без потери архитектурной идеи.",
+    number: "04",
+    name: "Сбербанк-Сити",
+    year: "2019",
+    work: "Подвесная переговорная и лестницы",
+    category: "Общественные пространства",
+    image: "/projects/50306000.jpg",
+  },
+  {
+    number: "05",
+    name: "Большая спортивная арена Лужники",
+    year: "2016",
+    work: "Подвесная вантовая лестница",
+    category: "Общественные пространства",
+    image: "/projects/95621109.jpg",
+  },
+  {
+    number: "06",
+    name: "Технопарк ИЦ Сколково",
+    year: "2016",
+    work: "Стеклянные павильоны",
+    category: "Общественные пространства",
+    image: "/projects/89633412.jpg",
+  },
+  {
+    number: "07",
+    name: "Парк Зарядье",
+    year: "2018",
+    work: "Флорариум",
+    category: "Общественные пространства",
+    image: "/projects/54631509.jpg",
+  },
+  {
+    number: "08",
+    name: "COMCITY",
+    year: "2016",
+    work: "Проектный менеджмент",
+    category: "Фасады",
+    image: "/projects/54298739.jpg",
+  },
+  {
+    number: "09",
+    name: "БЦ Оружейный",
+    year: "2020",
+    work: "Стеклянная скала",
+    category: "Фасады",
+    image: "/projects/60699651.jpg",
   },
 ];
 
@@ -38,77 +84,7 @@ export default function ProjectsPage() {
     <>
       <Nav />
       <main className="bg-paper">
-        <section className="pt-28 md:pt-32">
-          <div className="container-x">
-            <div className="min-h-[360px] bg-[#cdcdcd] px-6 py-10 md:min-h-[520px] md:px-12 md:py-16">
-              <h1
-                className="max-w-[980px] text-ink"
-                style={{ fontSize: "clamp(38px, 5vw, 58px)", lineHeight: 1.12, letterSpacing: "-0.03em" }}
-              >
-                Мы можем всё. И даже больше
-              </h1>
-              <p
-                className="mt-12 max-w-[430px] text-ink"
-                style={{ fontSize: "clamp(24px, 3vw, 36px)", lineHeight: 1.16, letterSpacing: "-0.02em" }}
-              >
-                Превращаем сложные архитектурные идеи в реализованные объекты
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 md:py-20">
-          <div className="container-x">
-            <h2
-              className="text-center text-ink"
-              style={{ fontSize: "clamp(28px, 3vw, 42px)", lineHeight: 1.05, letterSpacing: "-0.02em" }}
-            >
-              Наши объекты включают
-            </h2>
-            <div className="mt-10 grid gap-3 md:grid-cols-5">
-              {categories.map((category) => (
-                <div key={category.name} className="min-h-[190px] border border-black/10 p-5">
-                  <p className="font-body text-[14px] leading-[1.45] text-ink">{category.name}</p>
-                  <p className="mt-2 font-body text-[14px] leading-[1.45] text-ink/30">{category.count}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section>
-          {projects.map((project) => (
-            <article key={project.n} className="border-t border-black/10">
-              <div className="container-x grid gap-8 py-12 md:grid-cols-2 md:gap-12 md:py-14">
-                <div className="min-h-[280px] bg-[#d9d9d9] md:min-h-[420px]" />
-                <div className="flex flex-col justify-between border-l border-black/10 pl-0 md:pl-12">
-                  <div>
-                    <div className="flex items-start justify-between gap-8">
-                      <h2
-                        className="text-ink"
-                        style={{ fontSize: "clamp(28px, 3vw, 42px)", lineHeight: 1.05, letterSpacing: "-0.02em" }}
-                      >
-                        {project.name}
-                      </h2>
-                      <span className="font-mono text-[12px] uppercase text-ink/30">{project.n}</span>
-                    </div>
-                    <p className="mt-8 max-w-[460px] font-body text-[14px] leading-[1.45] text-ink/60">
-                      {project.text}
-                    </p>
-                  </div>
-                  <a
-                    href={`/projects/${project.n}`}
-                    className="mt-16 flex h-[90px] w-[90px] items-center justify-center rounded-full border border-black/10 font-mono text-[18px] text-ink transition-colors hover:border-orange hover:text-orange"
-                    aria-label={`Открыть проект ${project.name}`}
-                  >
-                    →
-                  </a>
-                </div>
-              </div>
-            </article>
-          ))}
-        </section>
-
+        <ProjectsCatalog projects={projects} />
         <ContactForm />
       </main>
       <Footer />
