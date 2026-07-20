@@ -43,9 +43,9 @@ export default function Nav() {
     <header
       className="fixed top-0 left-0 right-0 z-50 fade-in"
       style={{
-        background: scrolled ? "rgba(241,239,233,0.85)" : "transparent",
-        backdropFilter: scrolled ? "blur(14px)" : "none",
-        borderBottom: scrolled ? "1px solid var(--line-light)" : "1px solid transparent",
+        background: scrolled ? "rgba(241,239,233,0.9)" : "rgba(241,239,233,0.82)",
+        backdropFilter: scrolled ? "blur(14px)" : "blur(10px)",
+        borderBottom: scrolled ? "1px solid var(--line-light)" : "1px solid rgba(0, 0, 0, 0.06)",
         transition: "background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease",
       }}
     >
