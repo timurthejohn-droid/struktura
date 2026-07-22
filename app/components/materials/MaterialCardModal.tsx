@@ -1,14 +1,23 @@
 "use client";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { CAPABILITIES, CaseItem, FAMILIES, MATERIALS, Material } from "./materialsData";
-import { DOT, LEVEL_LABEL, Level, allContent, capsOf, proofFor } from "./capabilityMatrix";
+import { DOT, LEVEL_LABEL, allContent, capsOf, proofFor } from "./capabilityMatrix";
 import { CASE_IMAGE, MATERIAL_IMAGE, withBase } from "./materialMedia";
 
 // Карточка материала на весь экран. Одна и та же во всех вариантах каталога:
 // куда бы человек ни зашёл — по возможности, по материалу или из сетки —
-// он приходит в это окно. Чипы возможностей сверху фильтруют доказательства.
+// он приходит в это окно.
+//
+// Рендерится порталом в body. Это обязательно: каталог лежит внутри блока
+// с .reveal, у которого есть transform, а transform у предка делает
+// position: fixed относительным ему, а не экрану — модалка переставала
+// прокручиваться и закрываться.
+//
+// Порядок чтения — как в чертёжном штампе: что может → техника →
+// возможности → доказательства.
 
 /**
  * Визуал материала: съёмка → видео → фирменный градиент.
@@ -31,6 +40,38 @@ function MaterialVisual({ m, className = "" }: { m: Material; className?: string
         </>
       )}
     </div>
+  );
+}
+
+/** Нумерованный раздел карточки — читается как пункт спецификации. */
+function Block({
+  n,
+  title,
+  hint,
+  children,
+}: {
+  n: string;
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="px-5 md:px-9 py-8" style={{ borderTop: "1px solid var(--line-dark)" }}>
+      <div className="flex items-baseline gap-4 mb-1">
+        <span className="font-mono text-orange" style={{ fontSize: 12 }}>
+          {n}
+        </span>
+        <h4 className="font-mono uppercase text-white" style={{ fontSize: 14, letterSpacing: "0.12em" }}>
+          {title}
+        </h4>
+      </div>
+      {hint && (
+        <p className="font-body text-white/45 mb-6 ml-[30px]" style={{ fontSize: 13.5, lineHeight: 1.5 }}>
+          {hint}
+        </p>
+      )}
+      <div className={hint ? "" : "mt-6"}>{children}</div>
+    </section>
   );
 }
 
@@ -112,7 +153,9 @@ export default function MaterialCardModal({
   onClose: () => void;
 }) {
   const [cap, setCap] = useState<string | null>(initialCap);
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => setMounted(true), []);
   useEffect(() => setCap(initialCap), [initialCap, material]);
 
   // Esc + блокировка прокрутки фона
@@ -128,6 +171,8 @@ export default function MaterialCardModal({
     };
   }, [material, onClose]);
 
+  if (!mounted) return null;
+
   const family = material ? FAMILIES.find((f) => f.id === material.family) : null;
   const idx = material
     ? MATERIALS.filter((m) => m.family === material.family).findIndex((m) => m.name === material.name) + 1
@@ -139,12 +184,51 @@ export default function MaterialCardModal({
   const capObj = CAPABILITIES.find((c) => c.slug === cap) ?? null;
   const capLevel = cap ? caps.find((x) => x.cap.slug === cap)?.level ?? null : null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      {material && (
+      {material && [
+        /* Затемнение вынесено отдельным слоем: backdrop-filter, как и transform,
+           делает position: fixed относительным себе — крестик внутри такого
+           слоя уезжал вместе с прокруткой карточки. */
         <motion.div
-          className="fixed inset-0 z-[200] flex items-start justify-center overflow-y-auto no-scrollbar"
-          style={{ background: "rgba(0,0,0,0.72)", backdropFilter: "blur(6px)" }}
+          key="backdrop"
+          className="fixed inset-0 z-[200]"
+          style={{ background: "rgba(0,0,0,0.78)", backdropFilter: "blur(6px)" }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          aria-hidden
+        />,
+
+        /* крестик — сосед затемнения, поэтому честно прибит к экрану */
+        <motion.button
+          key="close"
+          onClick={onClose}
+          aria-label="Закрыть карточку"
+          className="fixed z-[210] flex items-center justify-center"
+          style={{
+            top: 20,
+            right: 20,
+            width: 46,
+            height: 46,
+            background: "var(--orange)",
+            color: "#fff",
+            fontSize: 20,
+            lineHeight: 1,
+            fontFamily: '"CoFo Sans Mono", monospace',
+          }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+        >
+          ✕
+        </motion.button>,
+
+        <motion.div
+          key="scroll"
+          className="fixed inset-0 z-[201] flex items-start justify-center overflow-y-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -165,8 +249,8 @@ export default function MaterialCardModal({
           >
             {/* шапка */}
             <div
-              className="sticky top-0 z-10 flex items-center justify-between gap-4 px-5 md:px-9 py-4"
-              style={{ background: "var(--coal-deep)", borderBottom: "1px solid var(--line-dark)" }}
+              className="flex items-center justify-between gap-4 px-5 md:px-9 py-4"
+              style={{ borderBottom: "1px solid var(--line-dark)" }}
             >
               <span className="font-mono text-white/50 uppercase" style={{ fontSize: 10.5, letterSpacing: "0.16em" }}>
                 {code} · Материал / {family?.name}
@@ -175,40 +259,81 @@ export default function MaterialCardModal({
                 onClick={onClose}
                 className="font-mono uppercase text-white/60 hover:text-orange transition-colors"
                 style={{ fontSize: 11, letterSpacing: "0.12em" }}
-                aria-label="Закрыть карточку"
               >
-                Закрыть ✕
+                Закрыть
               </button>
             </div>
 
             {/* визуал + имя */}
-            <div className="relative">
-              <div style={{ aspectRatio: "16 / 7" }} className="w-full relative">
-                <MaterialVisual m={material} className="absolute inset-0" />
-                <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(16,16,16,0.1) 30%, rgba(16,16,16,0.92) 100%)" }} />
-                <div className="absolute bottom-0 left-0 right-0 px-5 md:px-9 pb-6">
-                  <h3 className="font-mono text-white uppercase" style={{ fontSize: "clamp(28px, 4vw, 56px)", lineHeight: 1 }}>
-                    {material.name}
-                  </h3>
-                  <p className="font-mono text-orange uppercase mt-2" style={{ fontSize: 11, letterSpacing: "0.12em" }}>
-                    {material.sub}
-                  </p>
-                </div>
+            <div style={{ aspectRatio: "16 / 7" }} className="w-full relative">
+              <MaterialVisual m={material} className="absolute inset-0" />
+              <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(16,16,16,0.1) 30%, rgba(16,16,16,0.92) 100%)" }} />
+              <div className="absolute bottom-0 left-0 right-0 px-5 md:px-9 pb-6">
+                <h3 className="font-mono text-white uppercase" style={{ fontSize: "clamp(26px, 3.6vw, 52px)", lineHeight: 1 }}>
+                  {material.name}
+                </h3>
+                <p className="font-mono text-orange uppercase mt-2" style={{ fontSize: 11, letterSpacing: "0.12em" }}>
+                  {material.sub}
+                </p>
               </div>
             </div>
 
             {/* тезис */}
-            <div className="px-5 md:px-9 py-7" style={{ borderBottom: "1px solid var(--line-dark)" }}>
-              <p className="font-body text-white/80 max-w-3xl" style={{ fontSize: "clamp(16px, 1.5vw, 21px)", lineHeight: 1.5 }}>
+            <div className="px-5 md:px-9 py-7">
+              <p className="font-body text-white/85 max-w-3xl" style={{ fontSize: "clamp(17px, 1.6vw, 23px)", lineHeight: 1.45 }}>
                 {material.edge}
               </p>
             </div>
 
-            {/* чипы возможностей = фильтр доказательств */}
-            <div className="px-5 md:px-9 py-7" style={{ borderBottom: "1px solid var(--line-dark)" }}>
-              <p className="font-mono text-white/40 uppercase mb-4" style={{ fontSize: 10, letterSpacing: "0.16em" }}>
-                Что этот материал умеет — {caps.length} из 9
-              </p>
+            {/* [01] что может */}
+            <Block n="01" title="Что может">
+              <div className="grid md:grid-cols-2 gap-x-10 gap-y-6">
+                <div>
+                  {material.can.map((c) => (
+                    <p key={c} className="font-body text-white/80 mb-2.5 flex gap-3" style={{ fontSize: 15, lineHeight: 1.5 }}>
+                      <span className="text-orange shrink-0">—</span>
+                      <span>{c}</span>
+                    </p>
+                  ))}
+                </div>
+                <div style={{ borderLeft: "1px solid var(--line-dark)" }} className="md:pl-8">
+                  <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
+                    Что важно учесть
+                  </p>
+                  <p className="font-body text-white/60" style={{ fontSize: 14.5, lineHeight: 1.55 }}>
+                    {material.watch}
+                  </p>
+                </div>
+              </div>
+            </Block>
+
+            {/* [02] техника */}
+            <Block n="02" title="Технический минимум">
+              <div className="grid grid-cols-2 lg:grid-cols-4" style={{ gap: 1, background: "var(--line-dark)" }}>
+                {[
+                  { l: "Формат", v: material.fmt },
+                  { l: "Вес", v: material.weight },
+                  { l: "Зона", v: material.zone },
+                  { l: "Пожарный статус", v: material.fire },
+                ].map((s) => (
+                  <div key={s.l} className="p-4" style={{ background: "var(--coal-deep)" }}>
+                    <div className="font-mono uppercase text-white/40" style={{ fontSize: 9.5, letterSpacing: "0.12em" }}>
+                      {s.l}
+                    </div>
+                    <div className="font-body text-white mt-1.5" style={{ fontSize: 13.5, lineHeight: 1.4 }}>
+                      {s.v}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Block>
+
+            {/* [03] возможности = переключатель доказательств */}
+            <Block
+              n="03"
+              title={`Возможности — ${caps.length} из 9`}
+              hint="Нажмите возможность: ниже останутся только проекты и кейсы, которые её доказывают."
+            >
               <div className="flex flex-wrap gap-2">
                 <button
                   onClick={() => setCap(null)}
@@ -223,7 +348,7 @@ export default function MaterialCardModal({
                     transition: "background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease",
                   }}
                 >
-                  Всё сразу
+                  Показать всё
                 </button>
                 {caps.map(({ cap: c, level }) => {
                   const on = cap === c.slug;
@@ -251,124 +376,77 @@ export default function MaterialCardModal({
                   );
                 })}
               </div>
-              <p className="font-mono text-white/30 uppercase mt-4" style={{ fontSize: 9.5, letterSpacing: "0.1em" }}>
+              <p className="font-mono text-white/35 uppercase mt-4" style={{ fontSize: 9.5, letterSpacing: "0.1em" }}>
                 ● доказано проектом · ◐ стандартно · ○ можно разработать
               </p>
-            </div>
+            </Block>
 
-            {/* доказательства */}
+            {/* [04] доказательства */}
             {content && (
-              <div key={cap ?? "all"} className="px-5 md:px-9 py-8 env-slide" style={{ borderBottom: "1px solid var(--line-dark)" }}>
-                {capObj && capLevel && (
-                  <div className="mb-7">
-                    <h4 className="font-mono text-white uppercase" style={{ fontSize: "clamp(17px, 1.8vw, 24px)", letterSpacing: "0.02em" }}>
-                      <span className="text-orange mr-3">{capObj.n}</span>
-                      {material.name} <span className="text-orange">×</span> {capObj.title}
-                    </h4>
-                    <p className="font-body text-white/55 mt-2 max-w-2xl" style={{ fontSize: 14, lineHeight: 1.55 }}>
-                      {capObj.desc}
-                    </p>
-                  </div>
-                )}
+              <Block
+                n="04"
+                title="Доказательства"
+                hint={
+                  capObj
+                    ? `${material.name} × ${capObj.title}: ${capObj.desc}`
+                    : "Всё, что показываем по этому материалу: наши проекты, мировые кейсы и разборы технологий."
+                }
+              >
+                <div key={cap ?? "all"} className="env-slide">
+                  {content.total === 0 ? (
+                    <div className="p-5" style={{ border: "1px solid var(--line-dark)" }}>
+                      <p className="font-mono text-white/70 uppercase" style={{ fontSize: 11.5, letterSpacing: "0.1em", lineHeight: 1.7 }}>
+                        {capLevel === "standard"
+                          ? "Штатная для нас работа — публичного кейса именно на эту пару пока нет."
+                          : "Пара не из каталога: считаем, прототипируем и подтверждаем образцом."}
+                      </p>
+                      <p className="font-body text-white/45 mt-2" style={{ fontSize: 13.5, lineHeight: 1.55 }}>
+                        Закрытые проекты и образцы покажем на встрече.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      {content.projects.length > 0 && (
+                        <>
+                          <p className="font-mono text-orange uppercase mb-5" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
+                            Наши проекты · {content.projects.length}
+                          </p>
+                          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9">
+                            {content.projects.map((it, i) => (
+                              <CaseCard key={it.title} item={it} index={i} grad={material.grad} />
+                            ))}
+                          </div>
+                        </>
+                      )}
 
-                {content.total === 0 ? (
-                  <div className="p-5" style={{ border: "1px solid var(--line-dark)" }}>
-                    <p className="font-mono text-white/70 uppercase" style={{ fontSize: 11.5, letterSpacing: "0.1em", lineHeight: 1.7 }}>
-                      {capLevel === "standard"
-                        ? "Штатная для нас работа — публичного кейса именно на эту пару пока нет."
-                        : "Пара не из каталога: считаем, прототипируем и подтверждаем образцом."}
-                    </p>
-                    <p className="font-body text-white/45 mt-2" style={{ fontSize: 13.5, lineHeight: 1.55 }}>
-                      Закрытые проекты и образцы покажем на встрече.
-                    </p>
-                  </div>
-                ) : (
-                  <>
-                    {content.projects.length > 0 && (
-                      <>
-                        <p className="font-mono text-orange uppercase mb-5" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
-                          Наши проекты
-                        </p>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9">
-                          {content.projects.map((it, i) => (
-                            <CaseCard key={it.title} item={it} index={i} grad={material.grad} />
+                      {content.world.length > 0 && (
+                        <>
+                          <p className="font-mono text-orange uppercase mt-12 mb-5" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
+                            Мировые кейсы · {content.world.length}
+                          </p>
+                          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9">
+                            {content.world.map((it, i) => (
+                              <CaseCard key={it.title} item={it} index={i} grad={material.grad} />
+                            ))}
+                          </div>
+                        </>
+                      )}
+
+                      {content.articles.length > 0 && (
+                        <>
+                          <p className="font-mono text-orange uppercase mt-12 mb-1" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
+                            Статьи · {content.articles.length}
+                          </p>
+                          {content.articles.map((it, i) => (
+                            <ArticleRow key={it.title} item={it} index={i} />
                           ))}
-                        </div>
-                      </>
-                    )}
-
-                    {content.world.length > 0 && (
-                      <>
-                        <p className="font-mono text-orange uppercase mt-12 mb-5" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
-                          Мировые кейсы
-                        </p>
-                        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-9">
-                          {content.world.map((it, i) => (
-                            <CaseCard key={it.title} item={it} index={i} grad={material.grad} />
-                          ))}
-                        </div>
-                      </>
-                    )}
-
-                    {content.articles.length > 0 && (
-                      <>
-                        <p className="font-mono text-orange uppercase mt-12 mb-1" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
-                          Статьи
-                        </p>
-                        {content.articles.map((it, i) => (
-                          <ArticleRow key={it.title} item={it} index={i} />
-                        ))}
-                      </>
-                    )}
-                  </>
-                )}
-              </div>
+                        </>
+                      )}
+                    </>
+                  )}
+                </div>
+              </Block>
             )}
-
-            {/* характеристики */}
-            <div className="px-5 md:px-9 py-8">
-              <p className="font-mono text-orange uppercase mb-6" style={{ fontSize: 11, letterSpacing: "0.2em" }}>
-                Характеристики
-              </p>
-              <div className="grid grid-cols-2 lg:grid-cols-4" style={{ gap: 1, background: "var(--line-dark)" }}>
-                {[
-                  { l: "Формат", v: material.fmt },
-                  { l: "Вес", v: material.weight },
-                  { l: "Зона", v: material.zone },
-                  { l: "Пожарный статус", v: material.fire },
-                ].map((s) => (
-                  <div key={s.l} className="p-4" style={{ background: "var(--coal-deep)" }}>
-                    <div className="font-mono uppercase text-white/40" style={{ fontSize: 9.5, letterSpacing: "0.12em" }}>
-                      {s.l}
-                    </div>
-                    <div className="font-body text-white mt-1.5" style={{ fontSize: 13.5, lineHeight: 1.4 }}>
-                      {s.v}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-6 mt-7">
-                <div>
-                  <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                    Что может
-                  </p>
-                  {material.can.map((c) => (
-                    <p key={c} className="font-body text-white/75 mb-1.5" style={{ fontSize: 14, lineHeight: 1.5 }}>
-                      <span className="text-orange">—</span> {c}
-                    </p>
-                  ))}
-                </div>
-                <div>
-                  <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                    Что важно учесть
-                  </p>
-                  <p className="font-body text-white/60" style={{ fontSize: 14, lineHeight: 1.55 }}>
-                    {material.watch}
-                  </p>
-                </div>
-              </div>
-            </div>
 
             {/* CTA */}
             <div
@@ -383,9 +461,10 @@ export default function MaterialCardModal({
               </Link>
             </div>
           </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </motion.div>,
+      ]}
+    </AnimatePresence>,
+    document.body
   );
 }
 
