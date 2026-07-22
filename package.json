@@ -6,13 +6,17 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "model:explode": "node scripts/build-subsystem-explode.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "^9.120.5",
+    "@react-three/fiber": "^8.17.10",
     "framer-motion": "^12.42.0",
     "next": "14.2.35",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@types/node": "^20",
