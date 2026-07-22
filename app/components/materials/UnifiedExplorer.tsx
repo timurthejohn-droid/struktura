@@ -71,12 +71,30 @@ function ProofBlock({ label, items }: { label: string; items: CaseItem[] }) {
   );
 }
 
+const ENTRIES: { id: Entry; n: string; title: string; who: string }[] = [
+  {
+    id: "capability",
+    n: "01",
+    title: "По возможности",
+    who: "Знаю задачу — покажите, чем её решить",
+  },
+  {
+    id: "material",
+    n: "02",
+    title: "По материалу",
+    who: "Знаю материал — хочу понять, что он умеет",
+  },
+];
+
 export default function UnifiedExplorer({
   entry: initialEntry = "capability",
   toggle = true,
+  tabs = false,
 }: {
   entry?: Entry;
   toggle?: boolean;
+  /** Крупные вкладки вместо тонкой полоски с чипами (вариант D). */
+  tabs?: boolean;
 }) {
   const [entry, setEntry] = useState<Entry>(initialEntry);
   const [capSlug, setCapSlug] = useState<string | null>(null); // раскрытая возможность (вход 1)
@@ -172,8 +190,80 @@ export default function UnifiedExplorer({
       <span className="hidden lg:block absolute -bottom-5 -left-5" style={{ width: 22, height: 22, borderLeft: "1px solid var(--orange)", borderBottom: "1px solid var(--orange)" }} aria-hidden />
       <span className="hidden lg:block absolute -bottom-5 -right-5" style={{ width: 22, height: 22, borderRight: "1px solid var(--orange)", borderBottom: "1px solid var(--orange)" }} aria-hidden />
 
+      {/* ————— Вход крупными вкладками (вариант D) ————— */}
+      {toggle && tabs && (
+        <div>
+          <p className="font-mono uppercase text-ink/45 mb-3" style={{ fontSize: 11, letterSpacing: "0.16em" }}>
+            С чего начнём — выберите вход
+          </p>
+          <div className="grid md:grid-cols-2" style={{ gap: 1, background: "var(--line-light)" }}>
+            {ENTRIES.map((e) => {
+              const on = entry === e.id;
+              const count = e.id === "capability" ? "9 возможностей" : `${MATERIALS.length} материалов`;
+              return (
+                <button
+                  key={e.id}
+                  onClick={() => switchEntry(e.id)}
+                  aria-pressed={on}
+                  className="relative text-left px-6 md:px-8 pt-6 pb-7"
+                  style={{
+                    background: on ? "var(--orange)" : "var(--paper)",
+                    transition: "background-color 0.25s var(--ease-out)",
+                  }}
+                  onMouseEnter={(ev) => {
+                    if (!on) ev.currentTarget.style.background = "var(--paper-card)";
+                  }}
+                  onMouseLeave={(ev) => {
+                    if (!on) ev.currentTarget.style.background = "var(--paper)";
+                  }}
+                >
+                  <div className="flex items-baseline gap-3">
+                    <span
+                      className="font-mono"
+                      style={{ fontSize: 12, color: on ? "rgba(255,255,255,0.7)" : "var(--orange)" }}
+                    >
+                      {e.n}
+                    </span>
+                    <h3
+                      className="font-mono uppercase"
+                      style={{
+                        fontSize: "clamp(18px, 2vw, 27px)",
+                        letterSpacing: "0.02em",
+                        lineHeight: 1.05,
+                        color: on ? "#fff" : "var(--ink)",
+                      }}
+                    >
+                      {e.title}
+                    </h3>
+                  </div>
+                  <p
+                    className="font-body mt-2"
+                    style={{ fontSize: 14.5, lineHeight: 1.45, color: on ? "rgba(255,255,255,0.85)" : "var(--ink-soft)" }}
+                  >
+                    {e.who}
+                  </p>
+                  <span
+                    className="font-mono uppercase mt-3 inline-block"
+                    style={{
+                      fontSize: 10,
+                      letterSpacing: "0.14em",
+                      color: on ? "rgba(255,255,255,0.75)" : "var(--ink)",
+                      opacity: on ? 1 : 0.4,
+                    }}
+                  >
+                    {on ? `Открыто · ${count}` : `${count} →`}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {/* оранжевая линия во всю ширину: активная вкладка открыла каталог ниже */}
+          <div style={{ height: 4, background: "var(--orange)" }} aria-hidden />
+        </div>
+      )}
+
       {/* ————— Тумблер входа ————— */}
-      {toggle && (
+      {toggle && !tabs && (
         <div
           className="flex flex-wrap items-center gap-x-6 gap-y-3 px-5 md:px-6 py-4"
           style={{ border: "1px solid var(--line-light)", borderBottom: "none", background: "var(--paper-card)" }}

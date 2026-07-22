@@ -22,8 +22,9 @@ export default function LabMaterialsB() {
         title="Два каталога подряд"
         desc="Текущий каталог возможностей остаётся без изменений. Ниже — второй каталог: сначала материал, затем радар его возможностей с проектами, статьями и мировыми кейсами."
         others={[
-          { href: "/lab/materials-a", label: "Вариант A →" },
+          { href: "/lab/materials-d", label: "Вариант D →" },
           { href: "/lab/materials-c", label: "Вариант C →" },
+          { href: "/lab/materials-a", label: "Вариант A →" },
         ]}
       />
       <main>
