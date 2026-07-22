@@ -1,18 +1,18 @@
 import Link from "next/link";
 
 // Служебная шапка тестовых страниц: сразу видно, какой вариант открыт
-// и как перейти ко второму. На боевых страницах не используется.
+// и как перейти к остальным. На боевых страницах не используется.
 
 export default function LabBar({
   variant,
   title,
   desc,
-  other,
+  others,
 }: {
   variant: string;
   title: string;
   desc: string;
-  other: { href: string; label: string };
+  others: { href: string; label: string }[];
 }) {
   return (
     <div style={{ background: "var(--coal)", paddingTop: 72 }}>
@@ -40,13 +40,18 @@ export default function LabBar({
             </p>
           </div>
 
-          <Link
-            href={other.href}
-            className="font-mono uppercase text-orange shrink-0 self-center"
-            style={{ fontSize: 11, letterSpacing: "0.1em" }}
-          >
-            {other.label}
-          </Link>
+          <div className="flex flex-col gap-1.5 shrink-0 self-center">
+            {others.map((o) => (
+              <Link
+                key={o.href}
+                href={o.href}
+                className="font-mono uppercase text-orange"
+                style={{ fontSize: 11, letterSpacing: "0.1em" }}
+              >
+                {o.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
     </div>

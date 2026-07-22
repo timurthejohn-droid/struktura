@@ -20,7 +20,10 @@ export default function LabMaterialsA() {
         variant="A"
         title="Единый каталог, два входа"
         desc="Один каталог с тумблером «по возможности ↔ по материалу». Оба входа сходятся в одну и ту же карточку — человек не теряет ориентацию и всегда видит полную картину."
-        other={{ href: "/lab/materials-b", label: "Смотреть вариант B →" }}
+        others={[
+          { href: "/lab/materials-b", label: "Вариант B →" },
+          { href: "/lab/materials-c", label: "Вариант C →" },
+        ]}
       />
       <main>
         <MaterialsHero />

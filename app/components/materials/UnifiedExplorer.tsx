@@ -4,6 +4,7 @@ import Link from "next/link";
 import { CAPABILITIES, CaseItem, FAMILIES, MATERIALS, Material } from "./materialsData";
 import {
   CAP_SHORT,
+  DOT,
   LEVEL_LABEL,
   Level,
   capsOf,
@@ -13,6 +14,7 @@ import {
   proofFor,
 } from "./capabilityMatrix";
 import MaterialRadar from "./MaterialRadar";
+import MaterialCardModal, { MaterialVisual } from "./MaterialCardModal";
 
 // Каталог с двумя входами. Оба входа сходятся в ОДНУ карточку материала —
 // это принципиально: иначе человек не понимает, всё ли он увидел.
@@ -21,8 +23,6 @@ import MaterialRadar from "./MaterialRadar";
 // entry задаёт стартовый вход, toggle показывает переключатель.
 
 type Entry = "capability" | "material";
-
-const DOT: Record<Level, string> = { proven: "●", standard: "◐", possible: "○" };
 
 function LevelChip({ level, compact = false }: { level: Level; compact?: boolean }) {
   const color =
@@ -83,6 +83,7 @@ export default function UnifiedExplorer({
   const [openFamily, setOpenFamily] = useState<string>(FAMILIES[0].id);
   const [material, setMaterial] = useState<Material | null>(null);
   const [selCap, setSelCap] = useState<string | null>(null); // возможность в карточке
+  const [cardFor, setCardFor] = useState<Material | null>(null); // полноэкранная карточка
   const panelRef = useRef<HTMLDivElement>(null);
 
   const cap = CAPABILITIES.find((c) => c.slug === capSlug) ?? null;
@@ -470,6 +471,29 @@ export default function UnifiedExplorer({
                 </p>
               </div>
 
+              {/* визуал материала — вход в полную карточку */}
+              <div className="px-6 md:px-9 mt-5">
+                <button
+                  onClick={() => setCardFor(material)}
+                  className="group block w-full text-left"
+                  aria-label={`Открыть карточку материала: ${material.name}`}
+                >
+                  <div className="relative w-full" style={{ aspectRatio: "16 / 6" }}>
+                    <MaterialVisual m={material} className="absolute inset-0" />
+                    <span
+                      className="absolute inset-0"
+                      style={{ background: "linear-gradient(180deg, transparent 40%, rgba(16,16,16,0.8) 100%)" }}
+                    />
+                    <span
+                      className="absolute bottom-3 right-4 font-mono uppercase text-white/80 group-hover:text-orange"
+                      style={{ fontSize: 10, letterSpacing: "0.14em", transition: "color 0.2s ease" }}
+                    >
+                      Открыть карточку →
+                    </span>
+                  </div>
+                </button>
+              </div>
+
               {/* радар + карта возможностей */}
               <div className="px-6 md:px-9 mt-6 grid lg:grid-cols-[1fr_0.85fr] gap-6 items-center">
                 <div style={{ border: "1px solid var(--line-dark)", background: "var(--coal)" }} className="p-2">
@@ -610,6 +634,8 @@ export default function UnifiedExplorer({
           )}
         </div>
       </div>
+
+      <MaterialCardModal material={cardFor} initialCap={selCap} onClose={() => setCardFor(null)} />
     </div>
   );
 }

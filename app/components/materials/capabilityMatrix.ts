@@ -31,6 +31,9 @@ export const LEVEL_R: Record<Level, number> = {
 
 export const LEVEL_RANK: Record<Level, number> = { proven: 3, standard: 2, possible: 1 };
 
+// Значок уровня — один на весь раздел, чтобы легенда читалась одинаково везде
+export const DOT: Record<Level, string> = { proven: "●", standard: "◐", possible: "○" };
+
 // Короткие подписи для осей радара и заголовков матрицы
 export const CAP_SHORT: Record<string, string> = {
   forma: "Форма",
