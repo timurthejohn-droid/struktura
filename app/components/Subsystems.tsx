@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import SectionHead from "./SectionHead";
 import CursorGuides from "./CursorGuides";
+import SubsystemModel from "./SubsystemModel";
 import { useReveal } from "./useReveal";
 
 const steps = [
@@ -34,109 +35,7 @@ const steps = [
 const drawings = ["07.01.00", "07.02.00", "07.03.00", "07.04.00"];
 const titles = ["ГЕОМЕТРИЯ ФОРМЫ", "ТОЧНОСТЬ — ДОПУСК 0.1 ММ", "УЗЛОВЫЕ СОЕДИНЕНИЯ", "ОБЛАСТИ ПРИМЕНЕНИЯ"];
 
-/* ---- isometric projection ---- */
-const S = 34, COS = 0.8660254, SIN = 0.5, OX = 200, OY = 250, NX = 3, NY = 2, H = 3;
-const P = (x: number, y: number, z: number): [number, number] => [
-  OX + (x - y) * COS * S,
-  OY + (x + y) * SIN * S - z * S,
-];
-const L = (a: number[], b: number[], stroke: string, w = 1, dash?: string) => (
-  <line x1={a[0]} y1={a[1]} x2={b[0]} y2={b[1]} stroke={stroke} strokeWidth={w} strokeDasharray={dash} />
-);
-
 function SubsystemViz({ progress, active }: { progress: number; active: number }) {
-  const base = "rgba(255,90,0,0.4)";
-  const dimC = "rgba(255,255,255,0.65)";
-  const bright = "rgba(255,135,60,0.98)";
-
-  const liftTop = progress * 58; // top slab rises
-  const liftRoof = progress * 138; // roof panels fly off further
-  const ease = Math.min(1, progress * 1.4);
-
-  let k = 0;
-  const g = (node: React.ReactNode) => <g key={k++}>{node}</g>;
-
-  // bottom slab
-  const bottom: React.ReactNode[] = [];
-  for (let j = 0; j <= NY; j++) bottom.push(g(L(P(0, j, 0), P(NX, j, 0), base)));
-  for (let i = 0; i <= NX; i++) bottom.push(g(L(P(i, 0, 0), P(i, NY, 0), base)));
-
-  // top slab (drawn at z=H, group translated up by liftTop)
-  const top: React.ReactNode[] = [];
-  for (let j = 0; j <= NY; j++) top.push(g(L(P(0, j, H), P(NX, j, H), base)));
-  for (let i = 0; i <= NX; i++) top.push(g(L(P(i, 0, H), P(i, NY, H), base)));
-
-  // columns: bottom node -> lifted top node (stay attached)
-  const columns: React.ReactNode[] = [];
-  for (let i = 0; i <= NX; i++)
-    for (let j = 0; j <= NY; j++) {
-      const t = P(i, j, H);
-      columns.push(g(L(P(i, j, 0), [t[0], t[1] - liftTop], "rgba(255,90,0,0.3)")));
-    }
-
-  // dashed connectors top-slab -> roof (explosion lines)
-  const connectors: React.ReactNode[] = [];
-  if (progress > 0.04)
-    for (let i = 0; i <= NX; i++)
-      for (let j = 0; j <= NY; j++) {
-        const t = P(i, j, H);
-        connectors.push(g(L([t[0], t[1] - liftTop], [t[0], t[1] - liftRoof], "rgba(255,90,0,0.35)", 1, "3 4")));
-      }
-
-  // roof panels (group translated by liftRoof)
-  const panels: React.ReactNode[] = [];
-  for (let i = 0; i < NX; i++)
-    for (let j = 0; j < NY; j++) {
-      const a = P(i, j, H), b = P(i + 1, j, H), c = P(i + 1, j + 1, H), d = P(i, j + 1, H);
-      panels.push(
-        <polygon
-          key={`p${i}-${j}`}
-          points={`${a} ${b} ${c} ${d}`}
-          fill="rgba(255,90,0,0.16)"
-          stroke={active === 3 ? bright : "rgba(255,90,0,0.45)"}
-          strokeWidth={active === 3 ? 1.6 : 1}
-        />
-      );
-    }
-
-  // ---- per-step accents ----
-  const perimeter = (z: number, lift: number, color: string, w: number) => {
-    const c: [number, number][] = [P(0, 0, z), P(NX, 0, z), P(NX, NY, z), P(0, NY, z)];
-    return (
-      <polygon
-        points={c.map((p) => `${p[0]},${p[1] - lift}`).join(" ")}
-        fill="none"
-        stroke={color}
-        strokeWidth={w}
-      />
-    );
-  };
-
-  const accents: React.ReactNode[] = [];
-  if (active === 0) {
-    accents.push(g(perimeter(0, 0, bright, 2)));
-    accents.push(g(perimeter(H, liftTop, bright, 2)));
-  }
-  if (active === 1) {
-    const a = P(0, NY, 0), b = P(NX, NY, 0), oy = 26;
-    accents.push(g(L([a[0], a[1] + oy], [b[0], b[1] + oy], dimC)));
-    accents.push(g(L([a[0], a[1] + oy - 6], [a[0], a[1] + oy + 6], dimC)));
-    accents.push(g(L([b[0], b[1] + oy - 6], [b[0], b[1] + oy + 6], dimC)));
-    accents.push(
-      <text key={k++} x={(a[0] + b[0]) / 2} y={(a[1] + b[1]) / 2 + oy + 16} textAnchor="middle" fill="rgba(255,255,255,0.9)" fontSize="11" fontFamily="monospace" letterSpacing="2">
-        Ø 0.1 ММ
-      </text>
-    );
-  }
-  if (active === 2) {
-    for (let i = 0; i <= NX; i++)
-      for (let j = 0; j <= NY; j++) {
-        const bp = P(i, j, 0), tp = P(i, j, H);
-        accents.push(<circle key={k++} cx={bp[0]} cy={bp[1]} r={4.5} fill="var(--coal)" stroke={bright} strokeWidth={1.6} />);
-        accents.push(<circle key={k++} cx={tp[0]} cy={tp[1] - liftTop} r={4.5} fill="var(--coal)" stroke={bright} strokeWidth={1.6} />);
-      }
-  }
-
   return (
     <div className="relative w-full" style={{ aspectRatio: "4 / 5", background: "var(--coal)" }}>
       {/* corner ticks */}
@@ -150,36 +49,22 @@ function SubsystemViz({ progress, active }: { progress: number; active: number }
       ).map((c, i) => {
         const e = "1px solid rgba(255,90,0,0.6)";
         return (
-          <span key={i} className="absolute" style={{ top: c.top, bottom: c.bottom, left: c.left, right: c.right, width: 12, height: 12, borderTop: c.bt ? e : undefined, borderBottom: c.bb ? e : undefined, borderLeft: c.bl ? e : undefined, borderRight: c.br ? e : undefined }} />
+          <span key={i} className="absolute z-10" style={{ top: c.top, bottom: c.bottom, left: c.left, right: c.right, width: 12, height: 12, borderTop: c.bt ? e : undefined, borderBottom: c.bb ? e : undefined, borderLeft: c.bl ? e : undefined, borderRight: c.br ? e : undefined }} />
         );
       })}
 
-      <span className="absolute top-4 right-5 font-mono text-orange/70" style={{ fontSize: 10, letterSpacing: "0.2em" }}>
+      <span className="absolute right-5 top-4 z-10 font-mono text-orange/70" style={{ fontSize: 10, letterSpacing: "0.2em" }}>
         АКСОНОМЕТРИЯ
       </span>
       {/* scroll progress bar */}
-      <div className="absolute top-4 left-5 h-[2px] w-24" style={{ background: "rgba(255,90,0,0.2)" }}>
+      <div className="absolute left-5 top-4 z-10 h-[2px] w-24" style={{ background: "rgba(255,90,0,0.2)" }}>
         <div className="h-full" style={{ width: `${progress * 100}%`, background: "var(--orange)" }} />
       </div>
 
-      <svg viewBox="0 0 400 500" className="absolute inset-0 w-full h-full" preserveAspectRatio="xMidYMid meet">
-        {Array.from({ length: 9 }, (_, xi) =>
-          Array.from({ length: 7 }, (_, yi) => (
-            <circle key={`gd${xi}-${yi}`} cx={20 + xi * 45} cy={40 + yi * 40} r={1} fill="rgba(255,255,255,0.07)" />
-          ))
-        )}
-        <g transform={`rotate(${(progress - 0.5) * 4} 200 250)`}>
-          {bottom}
-          {columns}
-          {connectors}
-          <g transform={`translate(0 ${-liftTop})`}>{top}</g>
-          <g transform={`translate(0 ${-liftRoof})`} opacity={ease}>{panels}</g>
-          {accents}
-        </g>
-      </svg>
+      <SubsystemModel progress={progress} />
 
       {/* drawing stamp */}
-      <div className="absolute left-5 right-5 bottom-5">
+      <div className="absolute bottom-5 left-5 right-5 z-10">
         <div className="flex" style={{ border: "1px solid rgba(255,90,0,0.55)" }}>
           <div className="flex items-center justify-center px-5" style={{ borderRight: "1px solid rgba(255,90,0,0.55)" }}>
             <span className="font-mono text-orange" style={{ fontSize: 26, letterSpacing: "0.04em" }}>
