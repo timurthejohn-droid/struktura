@@ -53,8 +53,7 @@ export default function MaterialsCatalogHead() {
             className="font-body text-white/60 rise-in lg:pb-3"
             style={{ fontSize: "clamp(15px, 1.25vw, 19px)", lineHeight: 1.55, animationDelay: "0.16s" }}
           >
-            Не&nbsp;каталог поставщика, а&nbsp;карта инженерных возможностей: что материал
-            умеет, где это штатная работа, а&nbsp;где доказано проектом.
+            Динамический каталог материалов и&nbsp;их&nbsp;инженерных возможностей.
           </p>
         </div>
 
