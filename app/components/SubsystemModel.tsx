@@ -15,8 +15,9 @@ import {
   type Object3D,
 } from "three";
 
-const MODEL_PATH = "/models/Untitled.glb";
-const EXPLODE_PATH = "/models/Untitled.explode.bin";
+const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const MODEL_PATH = `${BASE_PATH}/models/Untitled.glb`;
+const EXPLODE_PATH = `${BASE_PATH}/models/Untitled.explode.bin`;
 const EXPLODE_MAGIC = 0x50584553;
 const MODEL_ROTATION_Y = Math.PI - 0.28;
 const NODE_FOCUS = new Vector3(0, 7.25, 0.25);
