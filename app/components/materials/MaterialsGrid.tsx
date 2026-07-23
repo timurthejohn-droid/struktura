@@ -198,7 +198,8 @@ export default function MaterialsGrid() {
         </div>
       )}
 
-      <MaterialCardModal material={cardFor} initialCap={cap} onClose={() => setCardFor(null)} />
+      {/* карточка открывается на «Показать всё»: наши проекты первыми, затем кейсы и статьи */}
+      <MaterialCardModal material={cardFor} initialCap={null} onClose={() => setCardFor(null)} />
     </div>
   );
 }

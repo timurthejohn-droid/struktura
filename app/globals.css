@@ -236,6 +236,16 @@ h1, h2, h3, h4, h5, h6 {
   .kit-shimmer { animation: none; -webkit-text-fill-color: #fff; color: #fff; }
 }
 
+/* ---- Подсказка «нажмите ниже»: лёгкое подпрыгивание стрелки ---- */
+@keyframes skNudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(4px); }
+}
+.sk-nudge { display: inline-block; color: var(--orange); animation: skNudge 1.4s var(--ease-in-out) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .sk-nudge { animation: none; }
+}
+
 /* ---- Digital environment: tech-stack slide-out ---- */
 @keyframes envSlide {
   from { opacity: 0; transform: translateY(14px); }

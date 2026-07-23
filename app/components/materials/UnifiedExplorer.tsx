@@ -193,9 +193,19 @@ export default function UnifiedExplorer({
       {/* ————— Вход крупными вкладками (вариант D) ————— */}
       {toggle && tabs && (
         <div>
-          <p className="font-mono uppercase text-ink/45 mb-3" style={{ fontSize: 11, letterSpacing: "0.16em" }}>
-            С чего начнём — выберите вход
-          </p>
+          <div className="flex items-end justify-between gap-4 mb-4">
+            <div>
+              <span className="font-mono uppercase text-orange block" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
+                Шаг 1 — выберите вход
+              </span>
+              <p className="font-mono uppercase text-ink mt-2" style={{ fontSize: "clamp(16px, 1.7vw, 22px)", letterSpacing: "0.03em" }}>
+                С чего начнём?
+              </p>
+            </div>
+            <span className="font-mono uppercase text-ink-soft hidden sm:inline-flex items-center gap-2" style={{ fontSize: 11, letterSpacing: "0.12em" }}>
+              Нажмите одну из&nbsp;карточек <span className="sk-nudge" aria-hidden>↓</span>
+            </span>
+          </div>
           <div className="grid md:grid-cols-2" style={{ gap: 1, background: "var(--line-light)" }}>
             {ENTRIES.map((e) => {
               const on = entry === e.id;
@@ -205,16 +215,18 @@ export default function UnifiedExplorer({
                   key={e.id}
                   onClick={() => switchEntry(e.id)}
                   aria-pressed={on}
-                  className="relative text-left px-6 md:px-8 pt-6 pb-7"
+                  className="relative text-left px-6 md:px-8 pt-6 pb-7 cursor-pointer"
                   style={{
                     background: on ? "var(--orange)" : "var(--paper)",
-                    transition: "background-color 0.25s var(--ease-out)",
+                    transition: "background-color 0.25s var(--ease-out), transform 0.25s var(--ease-out)",
                   }}
                   onMouseEnter={(ev) => {
                     if (!on) ev.currentTarget.style.background = "var(--paper-card)";
+                    ev.currentTarget.style.transform = "translateY(-3px)";
                   }}
                   onMouseLeave={(ev) => {
                     if (!on) ev.currentTarget.style.background = "var(--paper)";
+                    ev.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
                   <div className="flex items-baseline gap-3">
@@ -242,17 +254,35 @@ export default function UnifiedExplorer({
                   >
                     {e.who}
                   </p>
-                  <span
-                    className="font-mono uppercase mt-3 inline-block"
-                    style={{
-                      fontSize: 10,
-                      letterSpacing: "0.14em",
-                      color: on ? "rgba(255,255,255,0.75)" : "var(--ink)",
-                      opacity: on ? 1 : 0.4,
-                    }}
-                  >
-                    {on ? `Открыто · ${count}` : `${count} →`}
-                  </span>
+                  <div className="mt-4 flex items-center gap-3 flex-wrap">
+                    {on ? (
+                      <span
+                        className="font-mono uppercase inline-flex items-center gap-2"
+                        style={{ fontSize: 10.5, letterSpacing: "0.14em", color: "#fff" }}
+                      >
+                        <span style={{ fontSize: 8 }}>●</span> Открыто
+                      </span>
+                    ) : (
+                      <span
+                        className="font-mono uppercase inline-flex items-center gap-2"
+                        style={{
+                          fontSize: 10.5,
+                          letterSpacing: "0.12em",
+                          color: "var(--orange)",
+                          border: "1px solid var(--orange)",
+                          padding: "7px 13px",
+                        }}
+                      >
+                        Выбрать этот вход →
+                      </span>
+                    )}
+                    <span
+                      className="font-mono uppercase"
+                      style={{ fontSize: 10, letterSpacing: "0.12em", color: on ? "rgba(255,255,255,0.65)" : "var(--ink-soft)" }}
+                    >
+                      {count}
+                    </span>
+                  </div>
                 </button>
               );
             })}
@@ -572,15 +602,17 @@ export default function UnifiedExplorer({
                     <MaterialVisual m={material} className="absolute inset-0" />
                     <span
                       className="absolute inset-0"
-                      style={{ background: "linear-gradient(180deg, transparent 40%, rgba(16,16,16,0.8) 100%)" }}
+                      style={{ background: "linear-gradient(180deg, transparent 45%, rgba(16,16,16,0.55) 100%)" }}
                     />
-                    <span
-                      className="absolute bottom-3 right-4 font-mono uppercase text-white/80 group-hover:text-orange"
-                      style={{ fontSize: 10, letterSpacing: "0.14em", transition: "color 0.2s ease" }}
-                    >
-                      Открыть карточку →
-                    </span>
                   </div>
+                </button>
+                {/* явная оранжевая кнопка входа в карточку */}
+                <button
+                  onClick={() => setCardFor(material)}
+                  className="btn btn-orange w-full justify-center mt-3"
+                  aria-label={`Открыть карточку материала: ${material.name}`}
+                >
+                  Открыть карточку материала →
                 </button>
               </div>
 
@@ -725,7 +757,8 @@ export default function UnifiedExplorer({
         </div>
       </div>
 
-      <MaterialCardModal material={cardFor} initialCap={selCap} onClose={() => setCardFor(null)} />
+      {/* открываем карточку на «Показать всё»: наши проекты первыми, затем мировые кейсы и статьи */}
+      <MaterialCardModal material={cardFor} initialCap={null} onClose={() => setCardFor(null)} />
     </div>
   );
 }
