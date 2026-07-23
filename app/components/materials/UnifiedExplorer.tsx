@@ -217,22 +217,26 @@ export default function UnifiedExplorer({
                   aria-pressed={on}
                   className="relative text-left px-7 md:px-10 pt-8 pb-9 cursor-pointer"
                   style={{
-                    background: on ? "var(--orange)" : "var(--paper)",
+                    // активная вкладка — оранжевая; неактивная — приглушённо-серая
+                    // и «выключенная». Контраст цвета сам показывает, что выбрано,
+                    // поэтому яркая кнопка на неактивной карточке не нужна.
+                    background: on ? "var(--orange)" : "#e6e3dc",
                     transition: "background-color 0.25s var(--ease-out), transform 0.25s var(--ease-out)",
                   }}
                   onMouseEnter={(ev) => {
+                    // серая карточка на наведении светлеет к белому — сигнал «можно нажать»
                     if (!on) ev.currentTarget.style.background = "var(--paper-card)";
                     ev.currentTarget.style.transform = "translateY(-3px)";
                   }}
                   onMouseLeave={(ev) => {
-                    if (!on) ev.currentTarget.style.background = "var(--paper)";
+                    if (!on) ev.currentTarget.style.background = "#e6e3dc";
                     ev.currentTarget.style.transform = "translateY(0)";
                   }}
                 >
                   <div className="flex items-baseline gap-3">
                     <span
                       className="font-mono"
-                      style={{ fontSize: 14, color: on ? "rgba(255,255,255,0.7)" : "var(--orange)" }}
+                      style={{ fontSize: 14, color: on ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.3)" }}
                     >
                       {e.n}
                     </span>
@@ -263,13 +267,15 @@ export default function UnifiedExplorer({
                         <span style={{ fontSize: 10 }}>●</span> Вы здесь
                       </span>
                     ) : (
+                      /* тихий ghost вместо яркой кнопки: карточка серая и
+                         «выключенная», нажатие переведёт её в оранжевое активное */
                       <span
                         className="font-mono uppercase inline-flex items-center gap-2"
                         style={{
                           fontSize: 13,
                           letterSpacing: "0.1em",
-                          color: "#fff",
-                          background: "var(--orange)",
+                          color: "var(--ink-soft)",
+                          border: "1px solid rgba(0,0,0,0.2)",
                           padding: "12px 20px",
                         }}
                       >
