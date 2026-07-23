@@ -5,6 +5,7 @@ import MaterialsCatalogHead from "../../components/materials/MaterialsCatalogHea
 import Reveal from "../../components/materials/Reveal";
 import UnifiedExplorer from "../../components/materials/UnifiedExplorer";
 import LabBar from "../../components/materials/LabBar";
+import ScrollProgress from "../../components/kit/ScrollProgress";
 
 export const metadata: Metadata = {
   title: "ЛАБ · Вариант D — вход крупными вкладками | STRUKTURA",
@@ -14,6 +15,7 @@ export const metadata: Metadata = {
 export default function LabMaterialsD() {
   return (
     <>
+      <ScrollProgress />
       <Nav />
       <LabBar
         variant="D"

@@ -168,6 +168,74 @@ h1, h2, h3, h4, h5, h6 {
   animation-play-state: paused;
 }
 
+/* ---- Kit: бесконечная бегущая строка (технический тикер) ---- */
+@keyframes kitMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.kit-marquee {
+  animation: kitMarquee 32s linear infinite;
+  width: max-content;
+}
+@media (hover: hover) and (pointer: fine) {
+  .kit-marquee:hover { animation-play-state: paused; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .kit-marquee { animation: none; }
+}
+
+/* ---- Kit: вращающийся луч по рамке (border beam) ---- */
+@keyframes beamSpin { to { transform: rotate(1turn); } }
+.beam-wrap { position: relative; padding: 1px; overflow: hidden; }
+.beam-wrap::before {
+  content: "";
+  position: absolute;
+  inset: -60%;
+  background: conic-gradient(from 0deg, transparent 0 72%, var(--orange) 87%, transparent 100%);
+  animation: beamSpin 4.5s linear infinite;
+}
+.beam-inner { position: relative; background: var(--coal-deep); }
+
+/* ---- Kit: сияющая развёртка по тексту (text shimmer) ---- */
+@keyframes kitShimmer { to { background-position: -200% 0; } }
+.kit-shimmer {
+  background: linear-gradient(90deg, #ffffff 0%, var(--orange) 28%, #ffffff 55%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: kitShimmer 4s linear infinite;
+}
+
+/* ---- Kit: перелистывание слова (word rotator) ---- */
+@keyframes wordRoll {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+.word-roll { display: inline-block; animation: wordRoll 0.5s var(--ease-out); }
+
+/* ---- Kit: пульс по линии процесса (animated beam) ---- */
+@keyframes beamRun { from { left: -90px; } to { left: 100%; } }
+.beam-track { position: relative; height: 1px; background: var(--line-dark); }
+.beam-track::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -90px;
+  height: 7px;
+  width: 90px;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  animation: beamRun 3.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .beam-wrap::before,
+  .beam-track::after,
+  .word-roll { animation: none; }
+  .kit-shimmer { animation: none; -webkit-text-fill-color: #fff; color: #fff; }
+}
+
 /* ---- Digital environment: tech-stack slide-out ---- */
 @keyframes envSlide {
   from { opacity: 0; transform: translateY(14px); }
