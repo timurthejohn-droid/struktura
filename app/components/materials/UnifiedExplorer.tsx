@@ -193,17 +193,17 @@ export default function UnifiedExplorer({
       {/* ————— Вход крупными вкладками (вариант D) ————— */}
       {toggle && tabs && (
         <div>
-          <div className="flex items-end justify-between gap-4 mb-4">
+          <div className="flex items-end justify-between gap-4 mb-6">
             <div>
-              <span className="font-mono uppercase text-orange block" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
+              <span className="font-mono uppercase text-orange block" style={{ fontSize: 13, letterSpacing: "0.18em" }}>
                 Шаг 1 — выберите вход
               </span>
-              <p className="font-mono uppercase text-ink mt-2" style={{ fontSize: "clamp(16px, 1.7vw, 22px)", letterSpacing: "0.03em" }}>
+              <p className="font-mono uppercase text-ink mt-3" style={{ fontSize: "clamp(24px, 3vw, 42px)", letterSpacing: "0.02em", lineHeight: 1 }}>
                 С чего начнём?
               </p>
             </div>
-            <span className="font-mono uppercase text-ink-soft hidden sm:inline-flex items-center gap-2" style={{ fontSize: 11, letterSpacing: "0.12em" }}>
-              Нажмите одну из&nbsp;карточек <span className="sk-nudge" aria-hidden>↓</span>
+            <span className="font-mono uppercase text-ink-soft hidden sm:inline-flex items-center gap-2.5" style={{ fontSize: 13, letterSpacing: "0.1em" }}>
+              Нажмите одну из&nbsp;карточек <span className="sk-nudge" aria-hidden style={{ fontSize: 18 }}>↓</span>
             </span>
           </div>
           <div className="grid md:grid-cols-2" style={{ gap: 1, background: "var(--line-light)" }}>
@@ -215,7 +215,7 @@ export default function UnifiedExplorer({
                   key={e.id}
                   onClick={() => switchEntry(e.id)}
                   aria-pressed={on}
-                  className="relative text-left px-6 md:px-8 pt-6 pb-7 cursor-pointer"
+                  className="relative text-left px-7 md:px-10 pt-8 pb-9 cursor-pointer"
                   style={{
                     background: on ? "var(--orange)" : "var(--paper)",
                     transition: "background-color 0.25s var(--ease-out), transform 0.25s var(--ease-out)",
@@ -232,16 +232,16 @@ export default function UnifiedExplorer({
                   <div className="flex items-baseline gap-3">
                     <span
                       className="font-mono"
-                      style={{ fontSize: 12, color: on ? "rgba(255,255,255,0.7)" : "var(--orange)" }}
+                      style={{ fontSize: 14, color: on ? "rgba(255,255,255,0.7)" : "var(--orange)" }}
                     >
                       {e.n}
                     </span>
                     <h3
                       className="font-mono uppercase"
                       style={{
-                        fontSize: "clamp(18px, 2vw, 27px)",
+                        fontSize: "clamp(22px, 2.6vw, 36px)",
                         letterSpacing: "0.02em",
-                        lineHeight: 1.05,
+                        lineHeight: 1.02,
                         color: on ? "#fff" : "var(--ink)",
                       }}
                     >
@@ -249,28 +249,28 @@ export default function UnifiedExplorer({
                     </h3>
                   </div>
                   <p
-                    className="font-body mt-2"
-                    style={{ fontSize: 14.5, lineHeight: 1.45, color: on ? "rgba(255,255,255,0.85)" : "var(--ink-soft)" }}
+                    className="font-body mt-3"
+                    style={{ fontSize: 16.5, lineHeight: 1.45, color: on ? "rgba(255,255,255,0.9)" : "var(--ink-soft)" }}
                   >
                     {e.who}
                   </p>
-                  <div className="mt-4 flex items-center gap-3 flex-wrap">
+                  <div className="mt-6 flex items-center gap-4 flex-wrap">
                     {on ? (
                       <span
                         className="font-mono uppercase inline-flex items-center gap-2"
-                        style={{ fontSize: 10.5, letterSpacing: "0.14em", color: "#fff" }}
+                        style={{ fontSize: 13, letterSpacing: "0.14em", color: "#fff" }}
                       >
-                        <span style={{ fontSize: 8 }}>●</span> Открыто
+                        <span style={{ fontSize: 10 }}>●</span> Вы здесь
                       </span>
                     ) : (
                       <span
                         className="font-mono uppercase inline-flex items-center gap-2"
                         style={{
-                          fontSize: 10.5,
-                          letterSpacing: "0.12em",
-                          color: "var(--orange)",
-                          border: "1px solid var(--orange)",
-                          padding: "7px 13px",
+                          fontSize: 13,
+                          letterSpacing: "0.1em",
+                          color: "#fff",
+                          background: "var(--orange)",
+                          padding: "12px 20px",
                         }}
                       >
                         Выбрать этот вход →
@@ -278,7 +278,7 @@ export default function UnifiedExplorer({
                     )}
                     <span
                       className="font-mono uppercase"
-                      style={{ fontSize: 10, letterSpacing: "0.12em", color: on ? "rgba(255,255,255,0.65)" : "var(--ink-soft)" }}
+                      style={{ fontSize: 11, letterSpacing: "0.12em", color: on ? "rgba(255,255,255,0.7)" : "var(--ink-soft)" }}
                     >
                       {count}
                     </span>
@@ -609,7 +609,8 @@ export default function UnifiedExplorer({
                 {/* явная оранжевая кнопка входа в карточку */}
                 <button
                   onClick={() => setCardFor(material)}
-                  className="btn btn-orange w-full justify-center mt-3"
+                  className="btn btn-orange w-full justify-center mt-4"
+                  style={{ padding: "22px 30px", fontSize: 14, letterSpacing: "0.12em" }}
                   aria-label={`Открыть карточку материала: ${material.name}`}
                 >
                   Открыть карточку материала →
