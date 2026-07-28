@@ -253,6 +253,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 .env-slide { animation: envSlide 0.42s var(--ease-out); }
 
+/* ---- Digital environment: ambient dot-matrix hero backdrop ---- */
+@keyframes dotPulse {
+  0%, 100% { opacity: var(--dot-min, 0.12); }
+  50% { opacity: var(--dot-max, 0.65); }
+}
+.dot-grid span { animation: dotPulse var(--dot-dur, 4s) ease-in-out infinite; animation-delay: var(--dot-delay, 0s); }
+@media (prefers-reduced-motion: reduce) {
+  .dot-grid span { animation: none; opacity: 0.22; }
+}
+
 /* ---- Buttons ---- */
 .btn {
   display: inline-flex;
