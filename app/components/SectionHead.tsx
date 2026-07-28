@@ -42,7 +42,6 @@ export default function SectionHead({
     <div className={`mb-10 md:mb-14 ${className}`}>
       <div
         className="flex items-center justify-between gap-4 pb-3"
-        style={{ borderBottom: `1px solid ${c.line}` }}
       >
         <span
           className="font-mono font-medium"
