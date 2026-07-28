@@ -12,6 +12,7 @@ const projects: Project[] = [
     category: "Фасады",
     image: "/projects/37785448.jpg",
     featured: true,
+    href: "/projects/mezhbashennoye-prostranstvo",
   },
   {
     number: "02",

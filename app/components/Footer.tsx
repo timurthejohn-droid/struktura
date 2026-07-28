@@ -4,7 +4,7 @@ const nav = [
   { href: "/about", label: "О компании" },
   { href: "/projects", label: "Проекты" },
   { href: "/approach", label: "Алгоритмический подход" },
-  { href: "/#contact", label: "Контакты" },
+  { href: "/contacts", label: "Контакты" },
   { href: "/#team", label: "Соискателям" },
 ];
 

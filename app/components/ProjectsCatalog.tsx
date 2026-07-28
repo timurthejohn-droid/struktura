@@ -12,6 +12,7 @@ export type Project = {
   category: ProjectCategory;
   image: string;
   featured?: boolean;
+  href?: string;
 };
 
 const filters: Array<ProjectCategory | "Все"> = ["Все", "Фасады", "Интерьеры", "Общественные пространства"];
@@ -56,9 +57,11 @@ export default function ProjectsCatalog({ projects }: { projects: Project[] }) {
         </div>
 
         <div className="mt-8 grid gap-x-7 gap-y-14 md:grid-cols-2 md:gap-y-20">
-          {visibleProjects.map((project) => (
+          {visibleProjects.map((project) => {
+            const Wrapper = project.href ? "a" : "div";
+            return (
             <article key={project.number}>
-              <div className="group relative aspect-[4/3] overflow-hidden bg-ink">
+              <Wrapper {...(project.href ? { href: project.href } : {})} className="group relative block aspect-[4/3] overflow-hidden bg-ink">
                 <img
                   src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${project.image}`}
                   alt={`${project.name}: ${project.work}`}
@@ -75,7 +78,7 @@ export default function ProjectsCatalog({ projects }: { projects: Project[] }) {
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center border border-black/25 font-body text-[17px] leading-none transition-transform duration-300 group-hover:rotate-45 group-hover:border-white">+</span>
                   </div>
                 </div>
-              </div>
+              </Wrapper>
 
               <div className="mt-4 flex min-h-[72px] items-start justify-between gap-6 border-t border-black/15 pt-3">
                 <div className="flex min-w-0 gap-4">
@@ -85,7 +88,8 @@ export default function ProjectsCatalog({ projects }: { projects: Project[] }) {
                 <span className="shrink-0 pt-1 font-mono text-[11px] tracking-[0.14em] text-ink/45">{project.year}</span>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
