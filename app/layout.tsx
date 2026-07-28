@@ -6,6 +6,16 @@ export const metadata: Metadata = {
   title: "STRUKTURA — Разработчик и интегратор уникальных архитектурных решений",
   description:
     "Превращаем сложные архитектурные идеи в реализованные объекты. Объединяем проектирование, производство и монтаж в единую систему.",
+  robots: {
+    index: false,
+    follow: false,
+    nocache: true,
+    googleBot: {
+      index: false,
+      follow: false,
+      noimageindex: true,
+    },
+  },
 };
 
 export default function RootLayout({
