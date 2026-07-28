@@ -9,7 +9,7 @@ const links = [
   { href: "/digital", label: "Цифровая среда" },
   { href: "/materials", label: "Материалы" },
   { href: "/approach", label: "Алгоритмический подход" },
-  { href: "/#contact", label: "Контакты" },
+  { href: "/contacts", label: "Контакты" },
   { href: "/#team", label: "Соискателям" },
 ];
 
@@ -66,7 +66,7 @@ export default function Nav() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/#contact" className="hidden md:inline-flex btn btn-orange" style={{ padding: "12px 22px" }}>
+          <Link href="/contacts" className="hidden md:inline-flex btn btn-orange" style={{ padding: "12px 22px" }}>
             Обсудить проект
           </Link>
 
@@ -104,7 +104,7 @@ export default function Nav() {
                 {l.label}
               </Link>
             ))}
-            <Link href="/#contact" onClick={() => setOpen(false)} className="btn btn-orange mt-4 justify-center">
+            <Link href="/contacts" onClick={() => setOpen(false)} className="btn btn-orange mt-4 justify-center">
               Обсудить проект
             </Link>
           </div>
