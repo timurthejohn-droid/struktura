@@ -9,13 +9,13 @@ const roles = [
   { title: "Производство", count: "26+" },
 ];
 
-export default function TeamTeaser() {
+export default function TeamTeaser({ index = "09" }: { index?: string }) {
   const ref = useReveal();
 
   return (
     <section id="team" className="py-24 md:py-36" style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}>
       <div className="container-x">
-        <SectionHead index="09" kicker="Команда" theme="light" />
+        <SectionHead index={index} kicker="Команда" theme="light" />
         <div ref={ref} className="reveal grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
           <div>
             <h2 className="text-ink mb-6" style={{ fontSize: "clamp(30px, 3.8vw, 64px)", lineHeight: 1.02 }}>

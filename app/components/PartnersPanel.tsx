@@ -19,7 +19,13 @@ function PartnerLogoPlaceholder() {
   );
 }
 
-export default function PartnersPanel({ partners }: { partners: Partner[] }) {
+export default function PartnersPanel({
+  partners,
+  index = "04",
+}: {
+  partners: Partner[];
+  index?: string;
+}) {
   const [active, setActive] = useState(0);
   const reducedMotion = useReducedMotion();
   const partner = partners[active];
@@ -31,7 +37,9 @@ export default function PartnersPanel({ partners }: { partners: Partner[] }) {
           <aside className="lg:border-r lg:border-black/10 lg:pr-16">
             <div className="relative aspect-square overflow-hidden border border-black/10 p-7 md:p-9">
               <div className="flex h-full flex-col justify-between">
-                <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-ink/45">04 / Партнёры</span>
+                <span className="font-mono text-[12px] uppercase tracking-[0.16em] text-ink/45">
+                  {index} / Партнёры
+                </span>
                 <AnimatePresence mode="wait" initial={false}>
                   <motion.div
                     key={partner.name}

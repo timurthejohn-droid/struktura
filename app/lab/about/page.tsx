@@ -4,6 +4,7 @@ import Footer from "../../components/Footer";
 import SectionHead from "../../components/SectionHead";
 import Reveal from "../../components/materials/Reveal";
 import ContactForm from "../../components/ContactForm";
+import AboutProof from "../../components/about/AboutProof";
 
 export const metadata: Metadata = {
   title: "О компании — Миссия и ценности · ТЕСТ — STRUKTURA+",
@@ -97,7 +98,7 @@ const responsibility = [
   },
 ];
 
-export default function AboutLabPage() {
+export function AboutEditorialPage({ showProof = false }: { showProof?: boolean }) {
   return (
     <>
       <Nav />
@@ -436,10 +437,16 @@ export default function AboutLabPage() {
           </div>
         </section>
 
+        {showProof && <AboutProof />}
+
         {/* ───────────── [09] CTA ───────────── */}
         <ContactForm />
       </main>
       <Footer />
     </>
   );
+}
+
+export default function AboutLabPage() {
+  return <AboutEditorialPage />;
 }
