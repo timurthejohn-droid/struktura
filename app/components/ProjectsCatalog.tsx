@@ -19,6 +19,7 @@ const filters: Array<ProjectCategory | "Все"> = ["Все", "Фасады", "�
 
 export default function ProjectsCatalog({ projects }: { projects: Project[] }) {
   const [activeFilter, setActiveFilter] = useState<ProjectCategory | "Все">("Все");
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
   const visibleProjects = useMemo(
     () => (activeFilter === "Все" ? projects : projects.filter((project) => project.category === activeFilter)),
     [activeFilter, projects],
@@ -61,7 +62,7 @@ export default function ProjectsCatalog({ projects }: { projects: Project[] }) {
             const Wrapper = project.href ? "a" : "div";
             return (
             <article key={project.number}>
-              <Wrapper {...(project.href ? { href: project.href } : {})} className="group relative block aspect-[4/3] overflow-hidden bg-ink">
+              <Wrapper {...(project.href ? { href: `${basePath}${project.href}` } : {})} className="group relative block aspect-[4/3] overflow-hidden bg-ink">
                 <img
                   src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}${project.image}`}
                   alt={`${project.name}: ${project.work}`}
