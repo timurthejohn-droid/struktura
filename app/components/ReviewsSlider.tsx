@@ -21,7 +21,7 @@ const reviews = [
   },
 ];
 
-export default function ReviewsSlider() {
+export default function ReviewsSlider({ index = "05" }: { index?: string }) {
   const [active, setActive] = useState(0);
   const reducedMotion = useReducedMotion();
   const go = (direction: number) => setActive((current) => (current + direction + reviews.length) % reviews.length);
@@ -31,7 +31,7 @@ export default function ReviewsSlider() {
       <div className="container-x">
         <div className="flex items-end justify-between gap-8 border-b border-black/10 pb-5">
           <div>
-            <span className="font-mono text-[12px] text-orange">05</span>
+            <span className="font-mono text-[12px] text-orange">{index}</span>
             <h2 className="mt-5 text-[clamp(32px,4vw,58px)] text-ink">Отзывы клиентов</h2>
           </div>
           <div className="flex gap-2">
