@@ -14,8 +14,57 @@ export type DigitalStage = {
   solution: string[];
 };
 
+type ListKey = "problems" | "solution";
+
+function AccordionRow({
+  label,
+  items,
+  open,
+  accent,
+  onToggle,
+}: {
+  label: string;
+  items: string[];
+  open: boolean;
+  accent?: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <div className={`stage-acc ${accent ? "is-accent" : ""}`}>
+      <button type="button" onClick={onToggle} aria-expanded={open}>
+        <span className="stage-acc-label">{label}</span>
+        <span className="stage-acc-count">{String(items.length).padStart(2, "0")}</span>
+        <motion.i animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.25 }} aria-hidden>
+          +
+        </motion.i>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            className="stage-acc-body"
+          >
+            <ul>
+              {items.map((item) => (
+                <li key={item}>
+                  <b>{accent ? "+" : "—"}</b>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
   const [active, setActive] = useState(0);
+  const [openList, setOpenList] = useState<ListKey | null>(null);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const count = stages.length;
@@ -46,8 +95,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         <Reveal>
           <SectionHead index="02" kicker="Этапы цифровой среды" theme="dark" />
           <p className="stages-intro">
-            Шесть этапов связаны в один цифровой поток. Нажмите на любой — покажем, что
-            происходит, какие риски он несёт и что на нём делает STRUKTURA+.
+            Шесть этапов — один цифровой поток. Нажмите на этап, чтобы раскрыть детали.
           </p>
         </Reveal>
 
@@ -124,40 +172,20 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
               <h3>{selected.title}</h3>
               <p className="stage-panel-process">{selected.process}</p>
 
-              <div className="stage-cols">
-                <div className="stage-col">
-                  <h4>
-                    <span className="stage-col-label">Риски этапа</span>
-                    <span className="stage-col-count">
-                      {String(selected.problems.length).padStart(2, "0")}
-                    </span>
-                  </h4>
-                  <ul>
-                    {selected.problems.map((item) => (
-                      <li key={item}>
-                        <b>—</b>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="stage-col is-accent">
-                  <h4>
-                    <span className="stage-col-label">Что делает STRUKTURA+</span>
-                    <span className="stage-col-count">
-                      {String(selected.solution.length).padStart(2, "0")}
-                    </span>
-                  </h4>
-                  <ul>
-                    {selected.solution.map((item) => (
-                      <li key={item}>
-                        <b>+</b>
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+              <div className="stage-accordions">
+                <AccordionRow
+                  label="Риски этапа"
+                  items={selected.problems}
+                  open={openList === "problems"}
+                  onToggle={() => setOpenList((v) => (v === "problems" ? null : "problems"))}
+                />
+                <AccordionRow
+                  label="Что делает STRUKTURA+"
+                  items={selected.solution}
+                  accent
+                  open={openList === "solution"}
+                  onToggle={() => setOpenList((v) => (v === "solution" ? null : "solution"))}
+                />
               </div>
             </motion.div>
           </AnimatePresence>
@@ -354,20 +382,20 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         }
         .stage-panel-watermark {
           position: absolute;
-          right: clamp(16px, 3vw, 44px);
-          top: clamp(4px, 1vw, 14px);
+          right: clamp(14px, 2.5vw, 36px);
+          top: clamp(2px, 0.8vw, 10px);
           z-index: 0;
           font-family: "CoFo Sans Mono", monospace;
-          font-size: clamp(120px, 20vw, 300px);
+          font-size: clamp(110px, 17vw, 240px);
           line-height: 0.8;
-          color: rgba(255, 255, 255, 0.03);
+          color: rgba(255, 255, 255, 0.028);
           pointer-events: none;
           user-select: none;
         }
         .stage-panel-inner {
           position: relative;
           z-index: 1;
-          padding: clamp(24px, 3.5vw, 52px);
+          padding: clamp(22px, 3vw, 42px);
         }
         .stage-panel-head {
           display: flex;
@@ -386,74 +414,92 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           color: #ff5a00;
         }
         .stage-panel h3 {
-          margin-top: 26px;
+          margin-top: 22px;
           font-family: "CoFo Sans Mono", monospace;
-          font-size: clamp(30px, 3.6vw, 56px);
+          font-size: clamp(28px, 3.2vw, 48px);
           font-weight: 400;
           line-height: 0.98;
           letter-spacing: -0.01em;
           text-transform: uppercase;
         }
         .stage-panel-process {
-          max-width: 760px;
-          margin-top: 22px;
+          max-width: 640px;
+          margin-top: 18px;
           font-family: "Onest", sans-serif;
-          font-size: clamp(15px, 1.15vw, 17px);
+          font-size: clamp(14px, 1.05vw, 16px);
           line-height: 1.6;
           color: rgba(255, 255, 255, 0.6);
         }
-        .stage-cols {
+        .stage-accordions {
+          margin-top: clamp(26px, 3vw, 34px);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        :global(.stage-acc) {
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        :global(.stage-acc > button) {
           display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: clamp(20px, 3vw, 48px);
-          margin-top: clamp(30px, 4vw, 48px);
-        }
-        .stage-col {
-          padding-top: 18px;
-          border-top: 1px solid rgba(255, 255, 255, 0.14);
-        }
-        .stage-col h4 {
-          display: flex;
+          width: 100%;
+          grid-template-columns: 1fr auto 20px;
           align-items: center;
-          justify-content: space-between;
-          gap: 12px;
+          gap: 14px;
+          padding: 15px 0;
+          background: transparent;
+          border: 0;
+          cursor: pointer;
+          text-align: left;
           font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          font-weight: 400;
+          font-size: 10px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.5);
+          color: rgba(255, 255, 255, 0.55);
+          transition: color 0.2s ease;
         }
-        .stage-col.is-accent h4 .stage-col-label {
+        :global(.stage-acc > button:hover),
+        :global(.stage-acc > button[aria-expanded="true"]) {
+          color: #ffffff;
+        }
+        :global(.stage-acc.is-accent > button) {
           color: rgba(255, 90, 0, 0.85);
         }
-        .stage-col-count {
-          color: rgba(255, 255, 255, 0.24);
+        :global(.stage-acc-count) {
+          font-size: 9px;
+          color: rgba(255, 255, 255, 0.28);
         }
-        .stage-col ul {
-          margin-top: 16px;
+        :global(.stage-acc > button i) {
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 400;
+          color: #ff5a00;
+          text-align: center;
+        }
+        :global(.stage-acc-body) {
+          overflow: hidden;
+        }
+        :global(.stage-acc-body ul) {
           display: grid;
           gap: 2px;
+          padding: 2px 0 18px;
         }
-        .stage-col li {
+        :global(.stage-acc-body li) {
           display: grid;
           grid-template-columns: 20px 1fr;
           gap: 4px;
-          padding: 6px 0;
+          padding: 5px 0;
           font-family: "Onest", sans-serif;
-          font-size: 13px;
+          font-size: 14px;
           line-height: 1.5;
-          color: rgba(255, 255, 255, 0.58);
+          color: rgba(255, 255, 255, 0.6);
         }
-        .stage-col li b {
+        :global(.stage-acc-body li b) {
           font-family: "CoFo Sans Mono", monospace;
           font-weight: 400;
           color: rgba(255, 255, 255, 0.26);
         }
-        .stage-col.is-accent li {
+        :global(.stage-acc.is-accent .stage-acc-body li) {
           color: rgba(255, 255, 255, 0.82);
         }
-        .stage-col.is-accent li b {
+        :global(.stage-acc.is-accent .stage-acc-body li b) {
           color: #ff5a00;
         }
 
@@ -548,9 +594,6 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
             left: 50%;
             top: 0;
             animation: flowY 3.6s linear infinite;
-          }
-          .stage-cols {
-            grid-template-columns: 1fr;
           }
         }
         @keyframes flowY {
