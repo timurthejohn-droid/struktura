@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useMemo, useRef } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, type ErrorInfo, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Bounds, Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Box3, Material, Mesh, MeshStandardMaterial, Vector3, type Group, type Object3D } from "three";
@@ -51,6 +51,22 @@ function isInsideRoot(object: Object3D, root: Object3D | undefined) {
 
 function LoadingState() {
   return null;
+}
+
+class ModelErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("Subsystem model failed to load", error, info);
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children;
+  }
 }
 
 function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, showTopPanels }: { assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; showTopPanels: boolean }) {
@@ -222,29 +238,29 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
 export default function SubsystemModel({ assemblyProgress, zoomProgress, spinProgress, panelProgress, showTopPanels }: { assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; showTopPanels: boolean }) {
   return (
     <div className="absolute inset-x-0 bottom-[118px] top-8 z-0 md:bottom-[124px]">
-      <Suspense fallback={<LoadingState />}>
-        <Canvas
-          camera={{ position: [5, 3.5, 7], fov: 34 }}
-          dpr={[1, 1.5]}
-          gl={{ alpha: true, antialias: true }}
-          style={{ pointerEvents: "none", touchAction: "pan-y" }}
-        >
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[5, 7, 6]} intensity={2.4} color="#fff4eb" />
-          <directionalLight position={[-5, 2, -4]} intensity={1.1} color="#ff5a00" />
+      <ModelErrorBoundary>
+        <Suspense fallback={<LoadingState />}>
+          <Canvas
+            camera={{ position: [5, 3.5, 7], fov: 34 }}
+            dpr={[1, 1.5]}
+            gl={{ alpha: true, antialias: true }}
+            style={{ pointerEvents: "none", touchAction: "pan-y" }}
+          >
+            <ambientLight intensity={0.7} />
+            <directionalLight position={[5, 7, 6]} intensity={2.4} color="#fff4eb" />
+            <directionalLight position={[-5, 2, -4]} intensity={1.1} color="#ff5a00" />
 
-          <Environment resolution={128}>
-            <Lightformer position={[0, 5, -5]} scale={[10, 6, 1]} intensity={2.5} />
-            <Lightformer position={[5, 1, 2]} scale={[4, 8, 1]} intensity={1.5} color="#ff7a33" />
-          </Environment>
+            <Environment resolution={128}>
+              <Lightformer position={[0, 5, -5]} scale={[10, 6, 1]} intensity={2.5} />
+              <Lightformer position={[5, 1, 2]} scale={[4, 8, 1]} intensity={1.5} color="#ff7a33" />
+            </Environment>
 
-          <Bounds fit clip margin={0.78}>
-            <Model assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} showTopPanels={showTopPanels} />
-          </Bounds>
-        </Canvas>
-      </Suspense>
+            <Bounds fit clip margin={0.78}>
+              <Model assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} showTopPanels={showTopPanels} />
+            </Bounds>
+          </Canvas>
+        </Suspense>
+      </ModelErrorBoundary>
     </div>
   );
 }
-
-useGLTF.preload(MODEL_PATH);
