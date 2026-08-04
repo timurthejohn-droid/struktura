@@ -36,7 +36,7 @@ const drawings = ["07.01.00", "07.02.00", "07.03.00", "07.04.00"];
 const titles = ["АДАПТИВНОСТЬ", "ПРОИЗВОДСТВО", "СБОРКА", "НАДЁЖНОСТЬ"];
 const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
 
-function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, panelProgress, active }: { progress: number; assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; active: number }) {
+function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, panelProgress, active, modelEnabled }: { progress: number; assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; active: number; modelEnabled: boolean }) {
   return (
     <div className="relative w-full" style={{ aspectRatio: "4 / 5", background: "var(--coal)" }}>
       {/* corner ticks */}
@@ -62,7 +62,7 @@ function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, 
         <div className="h-full" style={{ width: `${progress * 100}%`, background: "var(--orange)" }} />
       </div>
 
-      <SubsystemModel assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} showTopPanels={active === steps.length - 1} />
+      {modelEnabled && <SubsystemModel assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} showTopPanels={active === steps.length - 1} />}
 
       {/* drawing stamp */}
       <div className="absolute bottom-5 left-5 right-5 z-10">
@@ -94,6 +94,26 @@ export default function Subsystems() {
   const headRevealRef = useReveal();
   const [progress, setProgress] = useState(0);
   const [assemblyProgress, setAssemblyProgress] = useState(0);
+  const [modelEnabled, setModelEnabled] = useState(false);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setModelEnabled(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setModelEnabled(true);
+        observer.disconnect();
+      },
+      { rootMargin: "600px 0px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -166,7 +186,7 @@ export default function Subsystems() {
           {/* visual — first on mobile, sticky on the right on desktop */}
           <div className="order-1 lg:order-2 w-full">
             <div className="lg:sticky" style={{ top: "12vh" }}>
-              <SubsystemViz progress={progress} assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} active={active} />
+              <SubsystemViz progress={progress} assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} active={active} modelEnabled={modelEnabled} />
             </div>
           </div>
 

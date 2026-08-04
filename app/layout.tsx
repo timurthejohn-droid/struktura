@@ -25,7 +25,6 @@ export default function RootLayout({
     // .preloading держит rise-in элементов на паузе, пока играет прелоадер
     <html lang="ru" className="preloading" suppressHydrationWarning>
       <head>
-        <link rel="preload" href="/models/Untitled1234.web.glb" as="fetch" type="model/gltf-binary" crossOrigin="anonymous" />
         <script
           // Автолечение устаревшего кэша GitHub Pages: если JS-чанк не загрузился
           // (старый HTML ссылается на удалённые файлы) — одна перезагрузка за свежей
