@@ -5,7 +5,6 @@ import Footer from "../components/Footer";
 import Nav from "../components/Nav";
 import SectionHead from "../components/SectionHead";
 import Reveal from "../components/materials/Reveal";
-import DigitalPipeline from "../components/DigitalPipeline";
 import DigitalStages from "../components/DigitalStages";
 import DigitalHeroGrid from "../components/DigitalHeroGrid";
 
@@ -136,8 +135,6 @@ const stages = [
   },
 ];
 
-const pipelineStages = stages.map((s) => ({ n: s.n, slug: s.slug, title: s.title }));
-
 const benefits = [
   "Снижение количества ошибок между этапами",
   "Решения проверяются до выхода на стройку",
@@ -217,42 +214,43 @@ export default function DigitalPage() {
           </div>
         </section>
 
-        {/* ───────────── 02 Процесс как единая система (scroll pipeline) ───────────── */}
-        <section className="border-b border-black/10 bg-paper py-24 md:py-32">
-          <div className="container-x">
-            <Reveal>
-              <SectionHead index="02" kicker="Процесс как единая система" theme="light" />
-              <p className="max-w-[720px] font-body text-ink/65" style={{ fontSize: "clamp(15px, 1.2vw, 18px)", lineHeight: 1.55 }}>
-                Шесть этапов работают как один связанный процесс: данные не теряются при переходе между
-                стадиями. Прокрутите — и посмотрите, как выстраивается связь.
-              </p>
-            </Reveal>
-          </div>
-          <DigitalPipeline stages={pipelineStages} />
-        </section>
-
-        {/* ───────────── 03 Этапы подробно ───────────── */}
+        {/* ───────────── 02 Этапы подробно ───────────── */}
         <DigitalStages stages={stages} />
 
-        {/* ───────────── 04 Итог ───────────── */}
-        <section className="border-t border-white/15 py-24 md:py-40" style={{ background: "var(--coal-deep)" }}>
+        {/* ───────────── 03 Итог ───────────── */}
+        <section className="border-t border-white/15 py-20 md:py-28" style={{ background: "var(--coal-deep)" }}>
           <div className="container-x">
-            <Reveal>
-              <SectionHead index="04" kicker="Итог" theme="dark" />
-              <p
-                className="max-w-[1000px] font-mono uppercase text-white"
-                style={{ fontSize: "clamp(24px, 3vw, 48px)", lineHeight: 1.1, letterSpacing: "-0.005em" }}
-              >
-                Одна модель. Один источник данных.{" "}
-                <span className="text-orange">Предсказуемый результат</span> на каждом этапе — от эскиза
-                до смонтированного объекта.
-              </p>
+            <Reveal className="reveal-stagger">
+              <div className="flex items-center justify-between border-b border-white/15 pb-5">
+                <div className="flex items-center gap-5">
+                  <span className="font-mono text-[12px] text-orange">03</span>
+                  <h2 className="font-mono text-[13px] uppercase text-white/55 md:text-[15px]">Итог</h2>
+                </div>
+                <span className="h-2 w-2 rotate-45 border border-orange" aria-hidden />
+              </div>
+
+              <div className="grid gap-10 py-12 md:py-16 lg:grid-cols-[0.42fr_1fr] lg:gap-20">
+                <p className="max-w-[300px] font-body text-[15px] leading-[1.6] text-white/45 md:text-[16px]">
+                  Единая цифровая среда сопровождает проект от первого расчёта до монтажа.
+                </p>
+
+                <p
+                  className="max-w-[860px] font-mono uppercase text-white"
+                  style={{ fontSize: "clamp(25px, 2.7vw, 42px)", lineHeight: 1.16 }}
+                >
+                  Одна модель связывает все этапы и даёт{" "}
+                  <span className="text-orange">предсказуемый результат.</span>
+                </p>
+              </div>
             </Reveal>
 
-            <Reveal className="mt-14">
+            <Reveal className="flex items-center justify-between gap-8 border-t border-white/15 pt-8">
               <Link href="/#contact" className="btn btn-orange">
                 Обсудить проект
               </Link>
+              <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-white/25 md:block">
+                STRUKTURA+ DIGITAL
+              </span>
             </Reveal>
           </div>
         </section>

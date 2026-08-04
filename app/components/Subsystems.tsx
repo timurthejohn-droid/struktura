@@ -8,34 +8,35 @@ import { useReveal } from "./useReveal";
 const steps = [
   {
     n: "01",
-    label: "Геометрия",
-    value: "Любая форма, вплоть до двойной кривизны",
-    desc: "Реализуем любую форму — от плоских панелей до поверхностей двойной кривизны. Геометрия не ограничивает архитектурную идею.",
+    label: "Адаптивность",
+    value: "Система рассчитывается под конкретный проект",
+    desc: "Геометрия, материал, нагрузки, требуемая точность, способ крепления и монтажный сценарий становятся параметрами единой цифровой модели.",
   },
   {
     n: "02",
-    label: "Точность",
-    value: "Допуск ЧПУ — до 0.1 мм",
-    desc: "Цифровая модель напрямую управляет станками с ЧПУ. Каждый элемент изготавливается с допуском до 0.1 мм — без подгонки на объекте.",
+    label: "Производство",
+    value: "Индивидуально для проекта. Серийно по качеству",
+    desc: "Экструзионные профили, ЧПУ, роботизированные комплексы и аддитивные технологии позволяют выпускать уникальные решения по принципам промышленного производства.",
   },
   {
     n: "03",
-    label: "Узлы",
-    value: "Собственная R&D-разработка соединений",
-    desc: "Узлы и крепёж — наша R&D-разработка: скрытые соединения, сборка без видимого крепежа, ремонтопригодность.",
+    label: "Сборка",
+    value: "Конструкция помогает собрать себя правильно",
+    desc: "Цифровая маркировка и позиционирующие соединения определяют место каждого элемента, задают последовательность сборки, сокращают время монтажа и снижают вероятность ошибок.",
   },
   {
     n: "04",
-    label: "Применение",
-    value: "Фасады · интерьеры · арт · несущие",
-    desc: "Одна подсистема адаптируется под задачу: фасады, интерьеры, арт-объекты и несущие конструкции в любом проекте.",
+    label: "Надёжность",
+    value: "Расчёты, прототипирование и испытания",
+    desc: "Разработанные системы и узлы проходят расчётную проверку и натурные испытания. Решение для каждого объекта проверяется с учётом нагрузок, условий эксплуатации, требований проекта, действующего законодательства, технических регламентов и применимых строительных норм.",
   },
 ];
 
 const drawings = ["07.01.00", "07.02.00", "07.03.00", "07.04.00"];
-const titles = ["ГЕОМЕТРИЯ ФОРМЫ", "ТОЧНОСТЬ — ДОПУСК 0.1 ММ", "УЗЛОВЫЕ СОЕДИНЕНИЯ", "ОБЛАСТИ ПРИМЕНЕНИЯ"];
+const titles = ["АДАПТИВНОСТЬ", "ПРОИЗВОДСТВО", "СБОРКА", "НАДЁЖНОСТЬ"];
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
 
-function SubsystemViz({ progress, active }: { progress: number; active: number }) {
+function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, panelProgress, active }: { progress: number; assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; active: number }) {
   return (
     <div className="relative w-full" style={{ aspectRatio: "4 / 5", background: "var(--coal)" }}>
       {/* corner ticks */}
@@ -61,7 +62,7 @@ function SubsystemViz({ progress, active }: { progress: number; active: number }
         <div className="h-full" style={{ width: `${progress * 100}%`, background: "var(--orange)" }} />
       </div>
 
-      <SubsystemModel progress={progress} />
+      <SubsystemModel assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} showTopPanels={active === steps.length - 1} />
 
       {/* drawing stamp */}
       <div className="absolute bottom-5 left-5 right-5 z-10">
@@ -92,6 +93,7 @@ export default function Subsystems() {
   const wrapRef = useRef<HTMLDivElement>(null);
   const headRevealRef = useReveal();
   const [progress, setProgress] = useState(0);
+  const [assemblyProgress, setAssemblyProgress] = useState(0);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -104,7 +106,11 @@ export default function Subsystems() {
       const start = vh * 0.12;
       const denom = r.height - vh;
       const p = denom > 0 ? (start - r.top) / denom : 0;
-      setProgress(Math.max(0, Math.min(1, p)));
+      const assemblyStartTop = vh * 0.78;
+      const assemblyEndTop = denom > 0 ? start - denom / steps.length : start;
+      const assembly = (assemblyStartTop - r.top) / (assemblyStartTop - assemblyEndTop);
+      setProgress(clamp01(p));
+      setAssemblyProgress(clamp01(assembly));
     };
     const onScroll = () => {
       if (!raf) raf = requestAnimationFrame(calc);
@@ -120,6 +126,9 @@ export default function Subsystems() {
   }, []);
 
   const active = Math.max(0, Math.min(steps.length - 1, Math.floor(progress * steps.length - 1e-6)));
+  const zoomProgress = clamp01((progress - 0.2) / 0.3) * clamp01((assemblyProgress - 0.82) / 0.18);
+  const spinProgress = clamp01((progress - 0.5) / 0.25);
+  const panelProgress = clamp01((progress - 0.55) / 0.45);
 
   return (
     <section id="subsystems" className="relative py-24 md:py-36" style={{ background: "var(--coal)" }}>
@@ -131,17 +140,22 @@ export default function Subsystems() {
 
         <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-20 mb-14 lg:mb-24">
           <h2 className="text-white" style={{ fontSize: "clamp(28px, 3.4vw, 54px)", lineHeight: 1.05 }}>
-            Физическое воплощение опыта
+            Физическое воплощение цифровой платформы
           </h2>
           <div>
             <p className="font-body text-white/65" style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.6 }}>
-              Мы выстроили систему реализации сложных архитектурных проектов, результатом которой
-              стали <span className="text-white">подсистемы STRUKTURA</span> — индивидуальные
-              инженерные решения под ваши задачи. Прокрутите — чертёж справа собирается на ваших
-              глазах.
+              С первых проектов STRUKTURA разрабатывает и производит собственные подсистемы для
+              сложных архитектурных решений. Более десяти лет мы последовательно развиваем их вместе
+              с алгоритмическим проектированием, автоматизацией производства, маркировки, логистики
+              и монтажа.
+            </p>
+            <p className="font-body text-white/65 mt-5" style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.6 }}>
+              Сегодня это единая платформа адаптивных систем. Каждое решение конфигурируется под
+              геометрию, материал, нагрузки, основание, способ монтажа и эксплуатационные требования
+              проекта, а затем выпускается как малая промышленная серия.
             </p>
             <a href="/subsystems" className="btn btn-ghost-dark mt-8">
-              Подробнее →
+              Подробнее о платформе систем →
             </a>
           </div>
         </div>
@@ -152,7 +166,7 @@ export default function Subsystems() {
           {/* visual — first on mobile, sticky on the right on desktop */}
           <div className="order-1 lg:order-2 w-full">
             <div className="lg:sticky" style={{ top: "12vh" }}>
-              <SubsystemViz progress={progress} active={active} />
+              <SubsystemViz progress={progress} assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} active={active} />
             </div>
           </div>
 
@@ -174,6 +188,11 @@ export default function Subsystems() {
                 <p className="font-body text-white/55 max-w-md" style={{ fontSize: 15, lineHeight: 1.6, opacity: active === i ? 1 : 0.25, transition: "opacity 0.4s ease" }}>
                   {s.desc}
                 </p>
+                {i === steps.length - 1 && (
+                  <p className="font-mono text-orange mt-8 max-w-lg uppercase" style={{ fontSize: 13, lineHeight: 1.7, letterSpacing: "0.08em", opacity: active === i ? 0.95 : 0.25, transition: "opacity 0.4s ease" }}>
+                    Фасады · интерьеры · потолки · арт-объекты · кинетические и специальные конструкции
+                  </p>
+                )}
               </div>
             ))}
           </div>
