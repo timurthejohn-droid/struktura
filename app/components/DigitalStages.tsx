@@ -1,15 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import {
-  AnimatePresence,
-  motion,
-  type MotionValue,
-  useMotionValueEvent,
-  useScroll,
-  useSpring,
-  useTransform,
-} from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
+import SectionHead from "./SectionHead";
+import Reveal from "./materials/Reveal";
 
 export type DigitalStage = {
   slug: string;
@@ -20,545 +14,561 @@ export type DigitalStage = {
   solution: string[];
 };
 
-type AccordionKey = "problems" | "solution";
-
-function ReadoutAccordion({
-  label,
-  items,
-  open,
-  accent,
-  onToggle,
-}: {
-  label: string;
-  items: string[];
-  open: boolean;
-  accent?: boolean;
-  onToggle: () => void;
-}) {
-  return (
-    <div className={`readout-accordion ${accent ? "is-accent" : ""}`}>
-      <button type="button" onClick={onToggle} aria-expanded={open}>
-        <span>{label}</span>
-        <span className="readout-accordion-count">{String(items.length).padStart(2, "0")}</span>
-        <motion.i animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.25 }} aria-hidden>+</motion.i>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
-            className="readout-accordion-body"
-          >
-            <ul>
-              {items.map((item) => (
-                <li key={item}><b>{accent ? "+" : "—"}</b><span>{item}</span></li>
-              ))}
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function ConveyorStage({
-  stage,
-  index,
-  count,
-  progress,
-  active,
-}: {
-  stage: DigitalStage;
-  index: number;
-  count: number;
-  progress: MotionValue<number>;
-  active: boolean;
-}) {
-  const y = useTransform(progress, (value) => `${(index - value * (count - 1)) * 12}vh`);
-  const opacity = useTransform(progress, (value) => {
-    const distance = Math.abs(index - value * (count - 1));
-    return Math.max(0.12, 1 - distance * 0.3);
-  });
-  const scale = useTransform(progress, (value) => {
-    const distance = Math.abs(index - value * (count - 1));
-    return Math.max(0.88, 1 - distance * 0.045);
-  });
-
-  return (
-    <motion.div
-      className={`conveyor-stage ${active ? "is-active" : ""}`}
-      style={{ y, opacity, scale }}
-      aria-hidden={!active}
-    >
-      <span className="conveyor-stage-index">{stage.n}</span>
-      <span className="conveyor-stage-node" aria-hidden>
-        <span />
-      </span>
-      <span className="conveyor-stage-title">{stage.title}</span>
-      <span className="conveyor-stage-line" aria-hidden />
-    </motion.div>
-  );
-}
-
 export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
-  const sectionRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
-  const [openAccordion, setOpenAccordion] = useState<AccordionKey | null>(null);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const smoothProgress = useSpring(scrollYProgress, { stiffness: 160, damping: 32, mass: 0.3 });
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  useMotionValueEvent(scrollYProgress, "change", (value) => {
-    setActive(Math.min(stages.length - 1, Math.max(0, Math.round(value * (stages.length - 1)))));
-  });
-
+  const count = stages.length;
   const selected = stages[active] ?? stages[0];
+  const total = String(count).padStart(2, "0");
+  const fill = count > 1 ? active / (count - 1) : 0;
+
+  function focusTab(i: number) {
+    setActive(i);
+    tabRefs.current[i]?.focus();
+  }
+
+  function onKeyNav(e: React.KeyboardEvent) {
+    let next: number | null = null;
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(count - 1, active + 1);
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(0, active - 1);
+    else if (e.key === "Home") next = 0;
+    else if (e.key === "End") next = count - 1;
+    if (next !== null) {
+      e.preventDefault();
+      focusTab(next);
+    }
+  }
 
   return (
-    <section
-      ref={sectionRef}
-      className="relative bg-coal-deep text-white"
-      style={{ height: `${Math.max(210, stages.length * 35)}svh` }}
-      aria-label="Этапы цифровой среды"
-    >
-      <div className="scanner-viewport sticky top-[72px] overflow-hidden bg-coal-deep">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-[0.11]"
-          style={{
-            backgroundImage:
-              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
-            backgroundSize: "48px 48px",
-          }}
-        />
+    <section id="stages" className="stages-section bg-coal-deep text-white" aria-label="Этапы цифровой среды">
+      <div className="container-x">
+        <Reveal>
+          <SectionHead index="02" kicker="Этапы цифровой среды" theme="dark" />
+          <p className="stages-intro">
+            Шесть этапов связаны в один цифровой поток. Нажмите на любой — покажем, что
+            происходит, какие риски он несёт и что на нём делает STRUKTURA+.
+          </p>
+        </Reveal>
 
-        <div className="scanner-meta">
-          <span>02 · Этапы цифровой среды</span>
-          <span>{selected.n} / {String(stages.length).padStart(2, "0")}</span>
+        {/* ─── СХЕМА-ЦЕПОЧКА: все этапы сразу ─── */}
+        <div
+          className="stages-rail"
+          role="tablist"
+          aria-label="Этапы цифровой среды"
+          aria-orientation="horizontal"
+          onKeyDown={onKeyNav}
+          style={{ ["--n"]: count, ["--fill"]: fill } as React.CSSProperties}
+        >
+          <span className="stage-line" aria-hidden />
+          <span className="stage-fill" aria-hidden />
+          <span className="stage-flowtrack" aria-hidden>
+            <span className="stage-flow" />
+          </span>
+
+          {stages.map((stage, i) => {
+            const state = i === active ? "active" : i < active ? "done" : "todo";
+            return (
+              <button
+                key={stage.slug}
+                ref={(el) => {
+                  tabRefs.current[i] = el;
+                }}
+                type="button"
+                role="tab"
+                id={`stage-tab-${stage.slug}`}
+                aria-selected={i === active}
+                aria-controls="stage-panel"
+                tabIndex={i === active ? 0 : -1}
+                data-state={state}
+                className="stage-node"
+                onClick={() => setActive(i)}
+              >
+                <span className="stage-head" aria-hidden>
+                  <span className="stage-marker" />
+                </span>
+                <span className="stage-num">{stage.n}</span>
+                <span className="stage-title">{stage.title}</span>
+              </button>
+            );
+          })}
         </div>
 
-        <div className="scanner-layout">
-          <div className="scanner-scheme">
-            <div className="scanner-brand">
-              <span className="scanner-brand-mark" aria-hidden />
-              <div>
-                <span>Единая платформа</span>
-                <strong>STRUKTURA+ DIGITAL</strong>
+        {/* ─── ПАНЕЛЬ ДЕТАЛЕЙ АКТИВНОГО ЭТАПА ─── */}
+        <div
+          className="stage-panel"
+          id="stage-panel"
+          role="tabpanel"
+          aria-labelledby={`stage-tab-${selected.slug}`}
+          tabIndex={0}
+        >
+          <span className="stage-panel-watermark" aria-hidden>
+            {selected.n}
+          </span>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selected.slug}
+              initial={{ opacity: 0, y: 18 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+              className="stage-panel-inner"
+            >
+              <div className="stage-panel-head">
+                <span>Активный этап</span>
+                <b>
+                  {selected.n} / {total}
+                </b>
               </div>
-            </div>
 
-            <div className="scanner-track" aria-hidden>
-              <span className="scanner-track-base" />
-              <motion.span className="scanner-track-progress" style={{ scaleY: smoothProgress }} />
-            </div>
+              <h3>{selected.title}</h3>
+              <p className="stage-panel-process">{selected.process}</p>
 
-            <div className="scanner-focus" aria-hidden />
+              <div className="stage-cols">
+                <div className="stage-col">
+                  <h4>
+                    <span className="stage-col-label">Риски этапа</span>
+                    <span className="stage-col-count">
+                      {String(selected.problems.length).padStart(2, "0")}
+                    </span>
+                  </h4>
+                  <ul>
+                    {selected.problems.map((item) => (
+                      <li key={item}>
+                        <b>—</b>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-            <div className="scanner-conveyor">
-              {stages.map((stage, index) => (
-                <ConveyorStage
-                  key={stage.slug}
-                  stage={stage}
-                  index={index}
-                  count={stages.length}
-                  progress={smoothProgress}
-                  active={active === index}
-                />
+                <div className="stage-col is-accent">
+                  <h4>
+                    <span className="stage-col-label">Что делает STRUKTURA+</span>
+                    <span className="stage-col-count">
+                      {String(selected.solution.length).padStart(2, "0")}
+                    </span>
+                  </h4>
+                  <ul>
+                    {selected.solution.map((item) => (
+                      <li key={item}>
+                        <b>+</b>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+
+          <div className="stage-nav">
+            <button
+              type="button"
+              onClick={() => setActive((v) => Math.max(0, v - 1))}
+              disabled={active === 0}
+            >
+              ← Пред. этап
+            </button>
+            <div className="stage-dots" aria-hidden>
+              {stages.map((s, i) => (
+                <i key={s.slug} className={i === active ? "on" : ""} />
               ))}
             </div>
-
-          </div>
-
-          <div className="scanner-readout" aria-live="polite">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selected.slug}
-                initial={{ opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -18 }}
-                transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
-                className="scanner-readout-content"
-              >
-                <div className="scanner-readout-head">
-                  <span>Активный этап</span>
-                  <b>{selected.n} / {String(stages.length).padStart(2, "0")}</b>
-                </div>
-                <h3>{selected.title}</h3>
-                <p>{selected.process}</p>
-
-                <div className="scanner-accordions">
-                  <ReadoutAccordion
-                    label="Риски этапа"
-                    items={selected.problems}
-                    open={openAccordion === "problems"}
-                    onToggle={() => setOpenAccordion((value) => (value === "problems" ? null : "problems"))}
-                  />
-                  <ReadoutAccordion
-                    label="Что делает STRUKTURA+"
-                    items={selected.solution}
-                    open={openAccordion === "solution"}
-                    accent
-                    onToggle={() => setOpenAccordion((value) => (value === "solution" ? null : "solution"))}
-                  />
-                </div>
-              </motion.div>
-            </AnimatePresence>
+            <button
+              type="button"
+              onClick={() => setActive((v) => Math.min(count - 1, v + 1))}
+              disabled={active === count - 1}
+            >
+              След. этап →
+            </button>
           </div>
         </div>
-
-        <div className="scanner-hint">scroll · этапы цифрового цикла</div>
       </div>
 
       <style jsx>{`
-        .scanner-viewport {
-          height: calc(100svh - 72px);
-          min-height: 620px;
+        .stages-section {
+          padding: clamp(72px, 10vh, 128px) 0;
+          scroll-margin-top: 80px;
         }
-        .scanner-meta {
+        .stages-intro {
+          max-width: 720px;
+          margin-top: -6px;
+          font-family: "Onest", sans-serif;
+          font-size: clamp(15px, 1.3vw, 18px);
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.55);
+        }
+
+        /* ─── RAIL ─── */
+        .stages-rail {
+          position: relative;
+          display: grid;
+          grid-template-columns: repeat(var(--n), 1fr);
+          margin-top: clamp(44px, 6vh, 72px);
+        }
+        .stage-line,
+        .stage-fill {
           position: absolute;
-          z-index: 10;
-          left: 50%;
-          top: 24px;
-          display: flex;
-          width: min(100%, 1440px);
-          padding: 0 64px;
-          transform: translateX(-50%);
-          justify-content: space-between;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          letter-spacing: 0.17em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.32);
+          top: 22px;
+          left: calc(50% / var(--n));
+          height: 1px;
         }
-        .scanner-layout {
+        .stage-line {
+          width: calc(100% - 100% / var(--n));
+          background: rgba(255, 255, 255, 0.14);
+        }
+        .stage-fill {
+          width: calc(var(--fill) * (100% - 100% / var(--n)));
+          background: #ff5a00;
+          box-shadow: 0 0 12px rgba(255, 90, 0, 0.5);
+          transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .stage-flowtrack {
+          position: absolute;
+          top: 22px;
+          left: calc(50% / var(--n));
+          width: calc(100% - 100% / var(--n));
+          height: 1px;
+        }
+        .stage-flow {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          width: 5px;
+          height: 5px;
+          border-radius: 50%;
+          background: #ff5a00;
+          box-shadow: 0 0 10px 2px rgba(255, 90, 0, 0.55);
+          transform: translate(-50%, -50%);
+          animation: flowX 3.6s linear infinite;
+        }
+        @keyframes flowX {
+          0% { left: 0; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { left: 100%; opacity: 0; }
+        }
+
+        /* ─── NODE ─── */
+        .stage-node {
           position: relative;
           z-index: 2;
           display: grid;
-          width: 100%;
-          max-width: 1440px;
-          height: 100%;
-          margin: 0 auto;
-          padding: 0 64px;
-          grid-template-columns: 53% 47%;
+          justify-items: center;
+          gap: 14px;
+          padding: 0 6px 10px;
+          background: transparent;
+          border: 0;
+          cursor: pointer;
+          text-align: center;
         }
-        .scanner-scheme {
-          position: relative;
-          min-width: 0;
-          overflow: hidden;
-          border-right: 1px solid rgba(255, 255, 255, 0.09);
-        }
-        .scanner-brand {
-          position: absolute;
-          z-index: 8;
-          left: 0;
-          top: 9vh;
+        .stage-head {
           display: grid;
-          grid-template-columns: 38px 1fr;
-          align-items: center;
+          place-items: center;
+          height: 44px;
         }
-        .scanner-brand-mark {
-          width: 13px;
-          height: 13px;
-          margin-left: 4px;
-          border: 1px solid #ff5a00;
-          transform: rotate(45deg);
-        }
-        .scanner-brand span {
-          display: block;
-          margin-bottom: 5px;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 8px;
-          letter-spacing: 0.16em;
-          text-transform: uppercase;
-          color: rgba(255, 90, 0, 0.72);
-        }
-        .scanner-brand strong {
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 15px;
-          font-weight: 400;
-          letter-spacing: 0.03em;
-        }
-        .scanner-track {
-          position: absolute;
-          z-index: 1;
-          left: 0;
-          top: 20vh;
-          bottom: 10vh;
-          width: 1px;
-        }
-        .scanner-track-base,
-        .scanner-track-progress {
-          position: absolute;
-          inset: 0;
-          transform-origin: top;
-        }
-        .scanner-track-base { background: rgba(255, 255, 255, 0.14); }
-        .scanner-track-progress {
-          background: #ff5a00;
-          box-shadow: 0 0 18px rgba(255, 90, 0, 0.42);
-        }
-        .scanner-conveyor {
-          position: absolute;
-          z-index: 4;
-          left: 0;
-          right: 0;
-          top: 50%;
-          height: 1px;
-        }
-        :global(.conveyor-stage) {
-          position: absolute;
-          left: 0;
-          top: -42px;
-          display: grid;
-          width: 100%;
-          height: 84px;
-          grid-template-columns: 52px 44px minmax(120px, 1fr);
-          align-items: center;
-          transform-origin: left center;
-          text-align: left;
-          color: white;
-        }
-        :global(.conveyor-stage-index) {
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          color: rgba(255, 255, 255, 0.34);
-          text-align: right;
-          transform: translateX(-15px);
-          transition: color 220ms ease;
-        }
-        :global(.conveyor-stage-node) {
+        .stage-marker {
           position: relative;
-          z-index: 3;
           width: 16px;
           height: 16px;
-          border: 1px solid rgba(255, 255, 255, 0.36);
-          background: #171717;
+          background: #141414;
+          border: 1px solid rgba(255, 255, 255, 0.34);
           transform: rotate(45deg);
-          transition: width 300ms ease, height 300ms ease, border-color 300ms ease, box-shadow 300ms ease, background 300ms ease;
+          transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+            height 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease,
+            background 0.3s ease, box-shadow 0.3s ease;
         }
-        :global(.conveyor-stage-node > span) {
+        .stage-marker::after {
+          content: "";
           position: absolute;
           inset: 4px;
-          background: rgba(255, 255, 255, 0.22);
-          transition: background 220ms ease;
+          background: rgba(255, 255, 255, 0.2);
+          transition: background 0.3s ease, inset 0.3s ease;
         }
-        :global(.conveyor-stage-title) {
-          position: relative;
-          z-index: 2;
+        .stage-num {
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: 9px;
+          letter-spacing: 0.14em;
+          color: rgba(255, 255, 255, 0.32);
+          transition: color 0.25s ease;
+        }
+        .stage-title {
           font-family: "CoFo Sans Mono", monospace;
           font-size: clamp(11px, 1.05vw, 15px);
+          line-height: 1.12;
+          letter-spacing: 0.01em;
           text-transform: uppercase;
           color: rgba(255, 255, 255, 0.46);
-          transition: color 240ms ease, font-size 300ms ease, transform 300ms ease;
+          transition: color 0.25s ease;
         }
-        :global(.conveyor-stage-line) {
-          position: absolute;
-          z-index: 0;
-          left: 68px;
-          width: 28px;
-          top: 50%;
-          height: 1px;
-          background: linear-gradient(90deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.03));
-          transition: background 260ms ease, right 320ms ease;
+        .stage-node:hover .stage-title {
+          color: rgba(255, 255, 255, 0.82);
         }
+        .stage-node:hover .stage-marker {
+          border-color: rgba(255, 90, 0, 0.6);
         }
-        :global(.conveyor-stage.is-active .conveyor-stage-index) { color: #ff5a00; }
-        :global(.conveyor-stage.is-active .conveyor-stage-node) {
-          width: 27px;
-          height: 27px;
+        .stage-node:focus-visible {
+          outline: none;
+        }
+        .stage-node:focus-visible .stage-marker {
+          box-shadow: 0 0 0 3px rgba(255, 90, 0, 0.5);
+        }
+
+        .stage-node[data-state="done"] .stage-marker {
+          border-color: rgba(255, 90, 0, 0.7);
+          background: rgba(255, 90, 0, 0.14);
+        }
+        .stage-node[data-state="done"] .stage-marker::after {
+          background: #ff5a00;
+        }
+        .stage-node[data-state="done"] .stage-num {
+          color: rgba(255, 90, 0, 0.7);
+        }
+
+        .stage-node[data-state="active"] .stage-marker {
+          width: 24px;
+          height: 24px;
           border-color: #ff5a00;
-          background: rgba(255, 90, 0, 0.09);
-          box-shadow: 0 0 0 9px rgba(255, 90, 0, 0.06), 0 0 34px rgba(255, 90, 0, 0.3);
+          background: rgba(255, 90, 0, 0.12);
+          box-shadow: 0 0 0 7px rgba(255, 90, 0, 0.06), 0 0 26px rgba(255, 90, 0, 0.4);
         }
-        :global(.conveyor-stage.is-active .conveyor-stage-node > span) { background: #ff5a00; }
-        :global(.conveyor-stage.is-active .conveyor-stage-title) {
-          color: white;
-          font-size: clamp(16px, 1.7vw, 25px);
-          transform: translateX(10px);
+        .stage-node[data-state="active"] .stage-marker::after {
+          inset: 5px;
+          background: #ff5a00;
         }
-        :global(.conveyor-stage.is-active .conveyor-stage-line) {
-          background: linear-gradient(90deg, #ff5a00, rgba(255, 90, 0, 0.12));
+        .stage-node[data-state="active"] .stage-num {
+          color: #ff5a00;
         }
-        .scanner-focus {
-          position: absolute;
-          z-index: 3;
-          left: 0;
-          right: 0;
-          top: 50%;
-          height: 104px;
-          transform: translateY(-50%);
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-          border-left: 2px solid rgba(255, 90, 0, 0.72);
-          background: linear-gradient(90deg, rgba(255, 90, 0, 0.045), rgba(255, 90, 0, 0.008) 58%, transparent);
+        .stage-node[data-state="active"] .stage-title {
+          color: #ffffff;
         }
-        .scanner-readout {
+
+        /* ─── PANEL ─── */
+        .stage-panel {
           position: relative;
-          align-self: stretch;
-          width: min(640px, calc(100% - 40px));
-          height: 100%;
-          margin: 0 0 0 auto;
-          padding-top: 26vh;
-          overflow: visible;
+          margin-top: clamp(44px, 6vh, 76px);
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: rgba(255, 255, 255, 0.02);
+          overflow: hidden;
         }
-        .scanner-readout-content {
-          width: 100%;
-          max-height: calc(100svh - 72px - 26vh - 34px);
-          padding-right: 14px;
-          overflow-y: auto;
-          scrollbar-width: thin;
-          scrollbar-color: rgba(255, 90, 0, 0.42) rgba(255, 255, 255, 0.06);
+        .stage-panel-watermark {
+          position: absolute;
+          right: clamp(16px, 3vw, 44px);
+          top: clamp(4px, 1vw, 14px);
+          z-index: 0;
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: clamp(120px, 20vw, 300px);
+          line-height: 0.8;
+          color: rgba(255, 255, 255, 0.03);
+          pointer-events: none;
+          user-select: none;
         }
-        .scanner-readout-head {
+        .stage-panel-inner {
+          position: relative;
+          z-index: 1;
+          padding: clamp(24px, 3.5vw, 52px);
+        }
+        .stage-panel-head {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding-bottom: 17px;
+          padding-bottom: 20px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.12);
           font-family: "CoFo Sans Mono", monospace;
           font-size: 9px;
-          font-weight: 400;
           letter-spacing: 0.15em;
           text-transform: uppercase;
           color: rgba(255, 255, 255, 0.34);
         }
-        .scanner-readout-head b { color: #ff5a00; font-weight: 400; }
-        .scanner-readout h3 {
-          margin-top: 31px;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: clamp(34px, 3.7vw, 58px);
-          font-weight: 400;
-          line-height: 0.98;
-          text-transform: uppercase;
-        }
-        .scanner-readout p {
-          margin-top: 26px;
-          font-family: "Onest", sans-serif;
-          font-size: 15px;
-          line-height: 1.62;
-          color: rgba(255, 255, 255, 0.56);
-        }
-        .scanner-accordions {
-          margin-top: 34px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        :global(.readout-accordion) {
-          border-top: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        :global(.readout-accordion > button) {
-          display: grid;
-          width: 100%;
-          grid-template-columns: 1fr auto 20px;
-          align-items: center;
-          gap: 15px;
-          padding: 16px 0;
-          text-align: left;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.48);
-          transition: color 200ms ease;
-        }
-        :global(.readout-accordion > button:hover),
-        :global(.readout-accordion > button[aria-expanded="true"]) { color: white; }
-        :global(.readout-accordion.is-accent > button) { color: rgba(255, 90, 0, 0.82); }
-        :global(.readout-accordion-count) {
-          font-size: 8px;
-          color: rgba(255, 255, 255, 0.24);
-        }
-        :global(.readout-accordion > button i) {
-          font-size: 16px;
-          font-style: normal;
+        .stage-panel-head b {
           font-weight: 400;
           color: #ff5a00;
-          text-align: center;
         }
-        :global(.readout-accordion-body) { overflow: hidden; }
-        :global(.readout-accordion-body ul) { padding: 2px 0 20px; }
-        :global(.readout-accordion-body li) {
-          display: grid;
-          grid-template-columns: 18px 1fr;
-          gap: 4px;
-          padding: 5px 18px 5px 0;
-          font-family: "Onest", sans-serif;
-          font-size: 12px;
-          line-height: 1.45;
-          color: rgba(255, 255, 255, 0.56);
-        }
-        :global(.readout-accordion-body li b) {
+        .stage-panel h3 {
+          margin-top: 26px;
           font-family: "CoFo Sans Mono", monospace;
+          font-size: clamp(30px, 3.6vw, 56px);
           font-weight: 400;
-          color: rgba(255, 255, 255, 0.25);
+          line-height: 0.98;
+          letter-spacing: -0.01em;
+          text-transform: uppercase;
         }
-        :global(.readout-accordion.is-accent .readout-accordion-body li) { color: rgba(255, 255, 255, 0.78); }
-        :global(.readout-accordion.is-accent .readout-accordion-body li b) { color: #ff5a00; }
-        .scanner-hint {
-          position: absolute;
-          z-index: 8;
-          right: max(64px, calc((100vw - 1440px) / 2 + 64px));
-          bottom: 22px;
+        .stage-panel-process {
+          max-width: 760px;
+          margin-top: 22px;
+          font-family: "Onest", sans-serif;
+          font-size: clamp(15px, 1.15vw, 17px);
+          line-height: 1.6;
+          color: rgba(255, 255, 255, 0.6);
+        }
+        .stage-cols {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: clamp(20px, 3vw, 48px);
+          margin-top: clamp(30px, 4vw, 48px);
+        }
+        .stage-col {
+          padding-top: 18px;
+          border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+        .stage-col h4 {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
           font-family: "CoFo Sans Mono", monospace;
-          font-size: 8px;
+          font-size: 9px;
+          font-weight: 400;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.5);
         }
-        @media (max-width: 1023px) {
-          .scanner-meta { padding: 0 32px; }
-          .scanner-layout { grid-template-columns: 48% 52%; padding: 0 32px; }
-          .scanner-brand { left: 0; }
-          .scanner-track,
-          .scanner-conveyor { left: 0; }
-          .scanner-focus { left: 0; }
-          :global(.conveyor-stage) { grid-template-columns: 42px 34px minmax(80px, 1fr); }
-          :global(.conveyor-stage-line) { left: 50px; width: 26px; }
-          .scanner-readout { width: calc(100% - 48px); }
-          :global(.readout-accordion-body li) { font-size: 11px; }
+        .stage-col.is-accent h4 .stage-col-label {
+          color: rgba(255, 90, 0, 0.85);
         }
-        @media (max-width: 767px) {
-          .scanner-viewport { min-height: 580px; }
-          .scanner-meta { left: 50%; top: 14px; width: 100%; padding: 0 16px; font-size: 7px; }
-          .scanner-meta span:last-child { display: none; }
-          .scanner-layout { grid-template-columns: 47% 53%; padding: 0 16px; }
-          .scanner-brand { left: 0; top: 8vh; grid-template-columns: 23px 1fr; }
-          .scanner-brand-mark { width: 9px; height: 9px; }
-          .scanner-brand span { font-size: 5px; }
-          .scanner-brand strong { font-size: 8px; }
-          .scanner-track,
-          .scanner-conveyor { left: 0; }
-          .scanner-track { top: 17vh; bottom: 8vh; }
-          .scanner-conveyor { right: 5px; }
-          .scanner-focus { left: 0; right: 5px; height: 92px; }
-          :global(.conveyor-stage) {
-            top: -34px;
-            height: 68px;
-            grid-template-columns: 23px 26px minmax(50px, 1fr);
+        .stage-col-count {
+          color: rgba(255, 255, 255, 0.24);
+        }
+        .stage-col ul {
+          margin-top: 16px;
+          display: grid;
+          gap: 2px;
+        }
+        .stage-col li {
+          display: grid;
+          grid-template-columns: 20px 1fr;
+          gap: 4px;
+          padding: 6px 0;
+          font-family: "Onest", sans-serif;
+          font-size: 13px;
+          line-height: 1.5;
+          color: rgba(255, 255, 255, 0.58);
+        }
+        .stage-col li b {
+          font-family: "CoFo Sans Mono", monospace;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.26);
+        }
+        .stage-col.is-accent li {
+          color: rgba(255, 255, 255, 0.82);
+        }
+        .stage-col.is-accent li b {
+          color: #ff5a00;
+        }
+
+        .stage-nav {
+          position: relative;
+          z-index: 1;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          margin: 0 clamp(24px, 3.5vw, 52px);
+          padding: 22px 0 clamp(24px, 3.5vw, 40px);
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .stage-nav button {
+          background: transparent;
+          border: 0;
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: 10px;
+          letter-spacing: 0.14em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.55);
+          cursor: pointer;
+          transition: color 0.2s ease;
+        }
+        .stage-nav button:hover:not(:disabled) {
+          color: #ffffff;
+        }
+        .stage-nav button:disabled {
+          opacity: 0.26;
+          cursor: default;
+        }
+        .stage-dots {
+          display: flex;
+          gap: 8px;
+        }
+        .stage-dots i {
+          width: 6px;
+          height: 6px;
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          transform: rotate(45deg);
+          transition: background 0.25s ease, border-color 0.25s ease;
+        }
+        .stage-dots i.on {
+          background: #ff5a00;
+          border-color: #ff5a00;
+        }
+
+        /* ─── MOBILE: вертикальный степпер ─── */
+        @media (max-width: 639px) {
+          .stages-rail {
+            grid-template-columns: 1fr;
+            margin-top: 30px;
           }
-          :global(.conveyor-stage-index) { font-size: 6px; }
-          :global(.conveyor-stage-index) { transform: translateX(-9px); }
-          :global(.conveyor-stage-node) { width: 11px; height: 11px; }
-          :global(.conveyor-stage-node > span) { inset: 3px; }
-          :global(.conveyor-stage-title) { font-size: 7px; overflow-wrap: anywhere; }
-          :global(.conveyor-stage-line) { left: 26px; width: 20px; }
-          :global(.conveyor-stage.is-active .conveyor-stage-node) { width: 19px; height: 19px; }
-          :global(.conveyor-stage.is-active .conveyor-stage-title) { font-size: 10px; transform: translateX(4px); }
-          .scanner-readout { width: calc(100% - 28px); }
-          .scanner-readout { padding-top: 23vh; }
-          .scanner-readout-content { max-height: calc(100svh - 72px - 23vh - 24px); padding-right: 6px; }
-          .scanner-readout-head { padding-bottom: 11px; font-size: 6px; }
-          .scanner-readout h3 { margin-top: 18px; font-size: clamp(22px, 7vw, 34px); overflow-wrap: anywhere; }
-          .scanner-readout p { margin-top: 17px; font-size: 10px; line-height: 1.52; }
-          .scanner-accordions { margin-top: 22px; }
-          :global(.readout-accordion > button) { padding: 13px 0; font-size: 7px; gap: 7px; }
-          :global(.readout-accordion-body li) { grid-template-columns: 13px 1fr; padding: 4px 0; font-size: 9px; }
-          .scanner-hint { display: none; }
+          .stage-node {
+            grid-template-columns: 48px 1fr auto;
+            align-items: center;
+            justify-items: start;
+            gap: 0 14px;
+            height: 64px;
+            padding: 0;
+            text-align: left;
+          }
+          .stage-head {
+            grid-column: 1;
+            height: 64px;
+          }
+          .stage-title {
+            grid-column: 2;
+            text-align: left;
+          }
+          .stage-num {
+            grid-column: 3;
+          }
+          .stage-line,
+          .stage-fill,
+          .stage-flowtrack {
+            top: 32px;
+            left: 24px;
+            width: 1px;
+          }
+          .stage-line,
+          .stage-flowtrack {
+            height: calc(100% - 100% / var(--n));
+          }
+          .stage-fill {
+            height: calc(var(--fill) * (100% - 100% / var(--n)));
+            width: 1px;
+            transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+          }
+          .stage-flow {
+            left: 50%;
+            top: 0;
+            animation: flowY 3.6s linear infinite;
+          }
+          .stage-cols {
+            grid-template-columns: 1fr;
+          }
         }
+        @keyframes flowY {
+          0% { top: 0; opacity: 0; }
+          10% { opacity: 1; }
+          90% { opacity: 1; }
+          100% { top: 100%; opacity: 0; }
+        }
+
         @media (prefers-reduced-motion: reduce) {
-          :global(.conveyor-stage-node),
-          :global(.conveyor-stage-title),
-          :global(.conveyor-stage-line) { transition-duration: 0ms; }
+          .stage-flow {
+            display: none;
+          }
+          .stage-fill,
+          .stage-marker,
+          .stage-marker::after {
+            transition-duration: 0ms;
+          }
         }
       `}</style>
     </section>
