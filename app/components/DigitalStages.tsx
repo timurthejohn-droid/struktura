@@ -18,6 +18,7 @@ export type DigitalStage = {
   process: string;
   problems: string[];
   solution: string[];
+  actions?: { do: string; value: string }[];
 };
 
 function StageCard({
