@@ -48,16 +48,19 @@ function StageCard({
           <span className="tl-card-num">{stage.n}</span>
           <h3 className="tl-card-title">{stage.title}</h3>
           <p className="tl-card-process">{stage.process}</p>
-          <span className="tl-card-cue" aria-hidden>
+          <span className="tl-card-cue tl-cue-hover" aria-hidden>
             наведите — риски и решение
+          </span>
+          <span className="tl-card-cue tl-cue-tap" aria-hidden>
+            нажмите — риски и решение
           </span>
         </div>
 
         {/* hover / tap reveal: risks → solutions with an orange scan-line */}
         <div className="tl-card-reveal">
           <div className="tl-reveal-cap" aria-hidden>
-            <span className="cap-risk">Риски рынка</span>
-            <span className="cap-sol">Решает STRUKTURA+</span>
+            <span className="tl-cap-risk">Риски рынка</span>
+            <span className="tl-cap-sol">Решает STRUKTURA+</span>
           </div>
           <div className="tl-reveal-layers">
             <ul className="tl-risks">
@@ -119,7 +122,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
       ref={sectionRef}
       className="tl-section bg-coal-deep text-white"
       aria-label="Этапы цифровой среды"
-      style={{ height: `${Math.max(260, count * 46 + 90)}svh` }}
+      style={{ height: `${Math.max(230, count * 34 + 80)}svh` }}
     >
       <div className="tl-sticky">
         <span
@@ -189,7 +192,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         </div>
       </div>
 
-      <style jsx>{`
+      <style jsx global>{`
         .tl-section {
           position: relative;
           scroll-margin-top: 80px;
@@ -448,6 +451,9 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         .tl-card.tap-open .tl-card-cue {
           color: rgba(255, 90, 0, 0.7);
         }
+        .tl-cue-tap {
+          display: none;
+        }
 
         /* ── hover / tap reveal panel ── */
         .tl-card-reveal {
@@ -492,20 +498,20 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           top: 0;
           transition: opacity 0.4s ease;
         }
-        .cap-risk {
+        .tl-cap-risk {
           color: rgba(255, 255, 255, 0.5);
           opacity: 1;
         }
-        .cap-sol {
+        .tl-cap-sol {
           color: #ff5a00;
           opacity: 0;
         }
-        .tl-card:hover .cap-risk,
-        .tl-card.tap-open .cap-risk {
+        .tl-card:hover .tl-cap-risk,
+        .tl-card.tap-open .tl-cap-risk {
           opacity: 0;
         }
-        .tl-card:hover .cap-sol,
-        .tl-card.tap-open .cap-sol {
+        .tl-card:hover .tl-cap-sol,
+        .tl-card.tap-open .tl-cap-sol {
           opacity: 1;
         }
         .tl-reveal-layers {
@@ -659,10 +665,13 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
             font-size: 13px;
             -webkit-line-clamp: unset;
           }
-          .tl-card-cue {
+          .tl-cue-hover {
             display: none;
           }
-          /* on mobile show risks + solutions inline (no hover) */
+          .tl-cue-tap {
+            display: block;
+          }
+          /* mobile: details collapsed, expand on tap (no wall of text) */
           .tl-card-reveal {
             position: relative;
             left: 0;
@@ -670,14 +679,21 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
             bottom: auto !important;
             transform: none;
             width: 100%;
-            margin-top: 12px;
+            margin-top: 0;
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
-            border-color: rgba(255, 255, 255, 0.12);
+            border: 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.12);
             background: transparent;
             box-shadow: none;
-            padding: 12px 0 0;
+            padding: 0;
+            display: none;
+          }
+          .tl-card.tap-open .tl-card-reveal {
+            display: block;
+            margin-top: 13px;
+            padding-top: 13px;
           }
           .tl-reveal-cap {
             display: none;
