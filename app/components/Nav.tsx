@@ -83,24 +83,29 @@ export default function Nav() {
           <Wordmark />
 
           <div className="flex items-stretch gap-3" style={{ height: 44 }}>
-            {/* Триггер меню: рамочный бокс «МЕНЮ | гамбургер» */}
+            {/* Триггер меню: чёрный бокс «МЕНЮ | гамбургер», полоски анимируются на hover */}
             <button
               type="button"
               onClick={() => setOpen(true)}
               aria-label="Открыть меню"
               aria-expanded={open}
-              className="group flex items-stretch"
-              style={{ border: "1px solid var(--ink)", height: "100%" }}
+              className="group flex items-stretch bg-ink"
+              style={{ height: "100%" }}
             >
-              <span className="hidden sm:flex items-center px-5 font-mono text-[12px] tracking-[0.14em] uppercase text-ink transition-colors group-hover:text-orange">
+              <span className="hidden sm:flex items-center px-5 font-mono text-[12px] tracking-[0.14em] uppercase text-white">
                 Меню
               </span>
-              <span
-                className="flex flex-col items-center justify-center gap-[5px] px-4 transition-colors group-hover:bg-ink"
-                style={{ borderLeft: "1px solid var(--ink)" }}
-              >
-                <span className="block w-[22px] h-[2px] bg-ink transition-colors group-hover:bg-paper" />
-                <span className="block w-[22px] h-[2px] bg-ink transition-colors group-hover:bg-paper" />
+              <span className="flex flex-col items-center justify-center gap-[6px] px-4 sm:border-l sm:border-white/20">
+                {/* полоска 1: белая уезжает вправо, оранжевая въезжает слева */}
+                <span className="relative block w-[22px] h-[2px] overflow-hidden">
+                  <span className="absolute inset-0 bg-white transition-transform duration-300 ease-out group-hover:translate-x-full" />
+                  <span className="absolute inset-0 -translate-x-full bg-orange transition-transform duration-300 ease-out group-hover:translate-x-0" />
+                </span>
+                {/* полоска 2: та же анимация со стаггером */}
+                <span className="relative block w-[22px] h-[2px] overflow-hidden">
+                  <span className="absolute inset-0 bg-white transition-transform duration-300 ease-out delay-75 group-hover:translate-x-full" />
+                  <span className="absolute inset-0 -translate-x-full bg-orange transition-transform duration-300 ease-out delay-75 group-hover:translate-x-0" />
+                </span>
               </span>
             </button>
 
