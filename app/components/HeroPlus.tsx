@@ -84,9 +84,9 @@ function Plus({ pointer, reduced }: { pointer: MutableRefObject<Pointer>; reduce
   });
 
   return (
-    <group ref={ref} scale={1.15}>
+    <group ref={ref} scale={1.45}>
       <mesh geometry={geometry}>
-        <meshStandardMaterial color={ORANGE} metalness={1} roughness={0.26} envMapIntensity={1.4} />
+        <meshStandardMaterial color={ORANGE} metalness={1} roughness={0.26} envMapIntensity={1.7} />
       </mesh>
     </group>
   );
