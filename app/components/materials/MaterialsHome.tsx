@@ -57,7 +57,8 @@ export default function MaterialsHome() {
           </motion.div>
         </div>
 
-        {/* ——— Видео: справа, вытекает к правому краю, растворяется в сером ——— */}
+        {/* ——— Видео: справа, чистое, без вуали. Фон блока совпадает с фоном ——— */}
+        {/* видео, поэтому стык колонок и так не выделяется. ——— */}
         <div className="relative min-h-[320px] lg:min-h-[600px]">
           <video
             className="absolute inset-0 h-full w-full object-cover"
@@ -67,18 +68,6 @@ export default function MaterialsHome() {
             loop
             playsInline
             preload="auto"
-            aria-hidden
-          />
-          {/* растворение левого края видео в фоне текста — стыка колонок не видно */}
-          <div
-            className="pointer-events-none absolute inset-y-0 left-0 w-2/3 lg:w-1/2"
-            style={{ background: `linear-gradient(90deg, ${VIDEO_BG} 0%, rgba(196,196,196,0) 100%)` }}
-            aria-hidden
-          />
-          {/* на мобиле видео уходит под текст сверху — мягкий переход верхней кромки */}
-          <div
-            className="pointer-events-none absolute inset-x-0 top-0 h-24 lg:hidden"
-            style={{ background: `linear-gradient(180deg, ${VIDEO_BG} 0%, rgba(196,196,196,0) 100%)` }}
             aria-hidden
           />
         </div>
