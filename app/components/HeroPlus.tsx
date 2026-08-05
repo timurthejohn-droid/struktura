@@ -12,7 +12,7 @@ import {
 } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Lightformer } from "@react-three/drei";
-import { ExtrudeGeometry, MathUtils, Shape, type Group } from "three";
+import { CanvasTexture, ExtrudeGeometry, MathUtils, RepeatWrapping, Shape, type Group, type Texture } from "three";
 
 const ORANGE = "#ff5a00";
 
@@ -57,9 +57,36 @@ function buildPlusGeometry() {
   return geo;
 }
 
+/** Fine grain used as roughness + micro-bump — gives the matte metal a real,
+ *  non-uniform "blasted / anodized" surface instead of a flat CG look. */
+function makeSurfaceTexture(): Texture | null {
+  if (typeof document === "undefined") return null;
+  const size = 512;
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = size;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  const img = ctx.createImageData(size, size);
+  for (let i = 0; i < size * size; i++) {
+    // Mostly bright with subtle darker specks → roughness varies ~0.72–1.0 of base.
+    const v = 184 + Math.floor(Math.random() * 71);
+    img.data[i * 4] = v;
+    img.data[i * 4 + 1] = v;
+    img.data[i * 4 + 2] = v;
+    img.data[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(img, 0, 0);
+  const tex = new CanvasTexture(canvas);
+  tex.wrapS = tex.wrapT = RepeatWrapping;
+  tex.repeat.set(3, 3);
+  tex.anisotropy = 4;
+  return tex;
+}
+
 function Plus({ pointer, reduced }: { pointer: MutableRefObject<Pointer>; reduced: boolean }) {
   const ref = useRef<Group>(null);
   const geometry = useMemo(buildPlusGeometry, []);
+  const surface = useMemo(makeSurfaceTexture, []);
 
   useFrame((state, delta) => {
     const g = ref.current;
@@ -86,7 +113,15 @@ function Plus({ pointer, reduced }: { pointer: MutableRefObject<Pointer>; reduce
   return (
     <group ref={ref} rotation={[BASE_ROT_X, BASE_ROT_Y, 0]} scale={1.45}>
       <mesh geometry={geometry}>
-        <meshStandardMaterial color={ORANGE} metalness={0.9} roughness={0.55} envMapIntensity={1.0} />
+        <meshStandardMaterial
+          color={ORANGE}
+          metalness={0.9}
+          roughness={0.5}
+          roughnessMap={surface ?? undefined}
+          bumpMap={surface ?? undefined}
+          bumpScale={0.004}
+          envMapIntensity={1.0}
+        />
       </mesh>
     </group>
   );
