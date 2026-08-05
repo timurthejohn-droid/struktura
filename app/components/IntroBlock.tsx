@@ -17,19 +17,11 @@ export default function IntroBlock() {
             <div className="eyebrow text-ink mb-7">О компании</div>
 
             <div
-              className="relative w-full max-w-[387px] aspect-square overflow-hidden border border-black/10"
-              style={{ background: "linear-gradient(160deg, #fbfaf8 0%, #eeece7 100%)" }}
+              className="relative w-full max-w-[387px] aspect-square overflow-hidden"
+              style={{ background: "var(--paper)" }}
               aria-hidden="true"
             >
-              {/* Soft warm glow behind the metal so it reads with depth on the light panel */}
-              <div
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background:
-                    "radial-gradient(52% 52% at 50% 48%, rgba(255,90,0,0.16) 0%, rgba(255,90,0,0.05) 44%, rgba(255,90,0,0) 72%)",
-                }}
-              />
-              <HeroPlus />
+              <HeroPlus color="#c2c6cc" scale={1.05} steel spin />
             </div>
           </div>
 
