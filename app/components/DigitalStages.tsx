@@ -31,8 +31,6 @@ function StageCard({
   leftPct: number;
   revealed: boolean;
 }) {
-  const [tapOpen, setTapOpen] = useState(false); // touch fallback for hover reveal
-
   return (
     <div className={`tl-card-pos ${side}`} style={{ left: `${leftPct}%` }}>
       <span className={`tl-stem ${revealed ? "on" : ""}`} aria-hidden />
@@ -40,46 +38,11 @@ function StageCard({
         <i />
       </span>
 
-      <div
-        className={`tl-card ${revealed ? "reveal-on" : ""} ${tapOpen ? "tap-open" : ""}`}
-        onClick={() => setTapOpen((v) => !v)}
-      >
+      <div className={`tl-card ${revealed ? "reveal-on" : ""}`}>
         <div className="tl-card-face">
           <span className="tl-card-num">{stage.n}</span>
           <h3 className="tl-card-title">{stage.title}</h3>
           <p className="tl-card-process">{stage.process}</p>
-          <span className="tl-card-cue tl-cue-hover" aria-hidden>
-            наведите — риски и решение
-          </span>
-          <span className="tl-card-cue tl-cue-tap" aria-hidden>
-            нажмите — риски и решение
-          </span>
-        </div>
-
-        {/* hover / tap reveal: risks → solutions with an orange scan-line */}
-        <div className="tl-card-reveal">
-          <div className="tl-reveal-cap" aria-hidden>
-            <span className="tl-cap-risk">Риски рынка</span>
-            <span className="tl-cap-sol">Решает STRUKTURA+</span>
-          </div>
-          <div className="tl-reveal-layers">
-            <ul className="tl-risks">
-              {stage.problems.map((p) => (
-                <li key={p}>
-                  <b>—</b>
-                  <span>{p}</span>
-                </li>
-              ))}
-            </ul>
-            <ul className="tl-sols" aria-label="Что делает STRUKTURA+">
-              {stage.solution.map((s) => (
-                <li key={s}>
-                  <b>+</b>
-                  <span>{s}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </div>
     </div>
@@ -147,8 +110,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
             Путь проекта <span className="text-orange">в цифровой среде</span>
           </h2>
           <p className="tl-intro">
-            Скролльте — этапы появляются вдоль линии. Наведите на этап, чтобы увидеть риски
-            рынка и как их снимает STRUKTURA+.
+            Скролльте — этапы появляются вдоль линии по ходу процесса: от первого расчёта до
+            монтажа.
           </p>
         </div>
 
@@ -329,8 +292,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           position: absolute;
           top: 0;
           bottom: 0;
-          width: clamp(146px, 15vw, 200px);
-          margin-left: calc(clamp(146px, 15vw, 200px) / -2);
+          width: clamp(150px, 15vw, 208px);
+          margin-left: calc(clamp(150px, 15vw, 208px) / -2);
         }
         .tl-marker {
           position: absolute;
@@ -377,7 +340,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           background: rgba(255, 90, 0, 0.4);
         }
 
-        /* ── card ── */
+        /* ── card (name + short process only) ── */
         .tl-card {
           position: absolute;
           left: 50%;
@@ -386,7 +349,6 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           transform: translateX(-50%) translateY(var(--rev-y, 0));
           transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
             transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-          cursor: default;
         }
         .tl-card-pos.top .tl-card {
           bottom: calc(50% + 30px);
@@ -401,16 +363,10 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           transform: translateX(-50%) translateY(0);
         }
         .tl-card-face {
-          position: relative;
-          z-index: 1;
           padding: 15px 15px 16px;
           border: 1px solid rgba(255, 255, 255, 0.12);
+          border-left: 2px solid rgba(255, 90, 0, 0.55);
           background: #131313;
-          transition: border-color 0.3s ease, background 0.3s ease;
-        }
-        .tl-card:hover .tl-card-face,
-        .tl-card.tap-open .tl-card-face {
-          border-color: rgba(255, 90, 0, 0.5);
         }
         .tl-card-num {
           font-family: "CoFo Sans Mono", monospace;
@@ -432,135 +388,6 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           font-size: 12px;
           line-height: 1.42;
           color: rgba(255, 255, 255, 0.56);
-          display: -webkit-box;
-          -webkit-line-clamp: 4;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .tl-card-cue {
-          display: block;
-          margin-top: 12px;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 8px;
-          letter-spacing: 0.12em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.28);
-          transition: color 0.25s ease;
-        }
-        .tl-card:hover .tl-card-cue,
-        .tl-card.tap-open .tl-card-cue {
-          color: rgba(255, 90, 0, 0.7);
-        }
-        .tl-cue-tap {
-          display: none;
-        }
-
-        /* ── hover / tap reveal panel ── */
-        .tl-card-reveal {
-          position: absolute;
-          left: 50%;
-          width: max(100%, 236px);
-          transform: translateX(-50%);
-          z-index: 6;
-          border: 1px solid rgba(255, 90, 0, 0.4);
-          background: #0c0c0c;
-          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
-          padding: 13px 14px 14px;
-          opacity: 0;
-          visibility: hidden;
-          transition: opacity 0.28s ease, visibility 0s linear 0.28s;
-          pointer-events: none;
-        }
-        .tl-card-pos.top .tl-card-reveal {
-          top: calc(100% + 8px);
-        }
-        .tl-card-pos.bottom .tl-card-reveal {
-          bottom: calc(100% + 8px);
-        }
-        .tl-card:hover .tl-card-reveal,
-        .tl-card.tap-open .tl-card-reveal {
-          opacity: 1;
-          visibility: visible;
-          transition: opacity 0.28s ease, visibility 0s;
-        }
-        .tl-reveal-cap {
-          position: relative;
-          height: 12px;
-          margin-bottom: 11px;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          letter-spacing: 0.13em;
-          text-transform: uppercase;
-        }
-        .tl-reveal-cap span {
-          position: absolute;
-          left: 0;
-          top: 0;
-          transition: opacity 0.4s ease;
-        }
-        .tl-cap-risk {
-          color: rgba(255, 255, 255, 0.5);
-          opacity: 1;
-        }
-        .tl-cap-sol {
-          color: #ff5a00;
-          opacity: 0;
-        }
-        .tl-card:hover .tl-cap-risk,
-        .tl-card.tap-open .tl-cap-risk {
-          opacity: 0;
-        }
-        .tl-card:hover .tl-cap-sol,
-        .tl-card.tap-open .tl-cap-sol {
-          opacity: 1;
-        }
-        .tl-reveal-layers {
-          position: relative;
-        }
-        .tl-risks,
-        .tl-sols {
-          display: grid;
-          gap: 4px;
-          list-style: none;
-        }
-        .tl-risks li,
-        .tl-sols li {
-          display: grid;
-          grid-template-columns: 13px 1fr;
-          gap: 3px;
-          font-family: "Onest", sans-serif;
-          font-size: 11.5px;
-          line-height: 1.35;
-        }
-        .tl-risks li {
-          color: rgba(255, 255, 255, 0.5);
-        }
-        .tl-risks li b {
-          font-family: "CoFo Sans Mono", monospace;
-          font-weight: 400;
-          color: rgba(255, 255, 255, 0.3);
-        }
-        .tl-sols {
-          position: absolute;
-          inset: 0;
-          background: #0c0c0c;
-          border-left: 2px solid #ff5a00;
-          padding-left: 9px;
-          margin-left: -9px;
-          clip-path: inset(0 0 0 100%);
-          transition: clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .tl-sols li {
-          color: rgba(255, 255, 255, 0.85);
-        }
-        .tl-sols li b {
-          font-family: "CoFo Sans Mono", monospace;
-          font-weight: 400;
-          color: #ff5a00;
-        }
-        .tl-card:hover .tl-sols,
-        .tl-card.tap-open .tl-sols {
-          clip-path: inset(0 0 0 0);
         }
 
         /* ── footer ── */
@@ -591,8 +418,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         /* ── tablet ── */
         @media (max-width: 1023px) {
           .tl-card-pos {
-            width: clamp(130px, 20vw, 176px);
-            margin-left: calc(clamp(130px, 20vw, 176px) / -2);
+            width: clamp(132px, 20vw, 180px);
+            margin-left: calc(clamp(132px, 20vw, 180px) / -2);
           }
         }
 
@@ -663,53 +490,6 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           }
           .tl-card-process {
             font-size: 13px;
-            -webkit-line-clamp: unset;
-          }
-          .tl-cue-hover {
-            display: none;
-          }
-          .tl-cue-tap {
-            display: block;
-          }
-          /* mobile: details collapsed, expand on tap (no wall of text) */
-          .tl-card-reveal {
-            position: relative;
-            left: 0;
-            top: auto !important;
-            bottom: auto !important;
-            transform: none;
-            width: 100%;
-            margin-top: 0;
-            opacity: 1;
-            visibility: visible;
-            pointer-events: auto;
-            border: 0;
-            border-top: 1px solid rgba(255, 255, 255, 0.12);
-            background: transparent;
-            box-shadow: none;
-            padding: 0;
-            display: none;
-          }
-          .tl-card.tap-open .tl-card-reveal {
-            display: block;
-            margin-top: 13px;
-            padding-top: 13px;
-          }
-          .tl-reveal-cap {
-            display: none;
-          }
-          .tl-reveal-layers {
-            display: grid;
-            gap: 12px;
-          }
-          .tl-sols {
-            position: relative;
-            inset: auto;
-            clip-path: none;
-            background: transparent;
-            border-left: 2px solid #ff5a00;
-            padding-left: 11px;
-            margin-left: 0;
           }
           .tl-foot {
             display: none;
