@@ -6,6 +6,7 @@ import Nav from "../components/Nav";
 import SectionHead from "../components/SectionHead";
 import Reveal from "../components/materials/Reveal";
 import DigitalStages from "../components/DigitalStages";
+import DigitalStageCards from "../components/DigitalStageCards";
 import DigitalHeroGrid from "../components/DigitalHeroGrid";
 
 export const metadata: Metadata = {
@@ -217,13 +218,16 @@ export default function DigitalPage() {
         {/* ───────────── 02 Этапы подробно ───────────── */}
         <DigitalStages stages={stages} />
 
-        {/* ───────────── 03 Итог ───────────── */}
+        {/* ───────────── 03 Решения по этапам (слайдер) ───────────── */}
+        <DigitalStageCards stages={stages} />
+
+        {/* ───────────── 04 Итог ───────────── */}
         <section className="border-t border-white/15 py-20 md:py-28" style={{ background: "var(--coal-deep)" }}>
           <div className="container-x">
             <Reveal className="reveal-stagger">
               <div className="flex items-center justify-between border-b border-white/15 pb-5">
                 <div className="flex items-center gap-5">
-                  <span className="font-mono text-[12px] text-orange">03</span>
+                  <span className="font-mono text-[12px] text-orange">04</span>
                   <h2 className="font-mono text-[13px] uppercase text-white/55 md:text-[15px]">Итог</h2>
                 </div>
                 <span className="h-2 w-2 rotate-45 border border-orange" aria-hidden />
