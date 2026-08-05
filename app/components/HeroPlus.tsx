@@ -86,7 +86,7 @@ function Plus({ pointer, reduced }: { pointer: MutableRefObject<Pointer>; reduce
   return (
     <group ref={ref} rotation={[BASE_ROT_X, BASE_ROT_Y, 0]} scale={1.45}>
       <mesh geometry={geometry}>
-        <meshStandardMaterial color={ORANGE} metalness={1} roughness={0.26} envMapIntensity={1.7} />
+        <meshStandardMaterial color={ORANGE} metalness={0.9} roughness={0.55} envMapIntensity={1.0} />
       </mesh>
     </group>
   );
@@ -160,15 +160,23 @@ export default function HeroPlus() {
           gl={{ alpha: true, antialias: true }}
           style={{ pointerEvents: "none", touchAction: "pan-y" }}
         >
-          <ambientLight intensity={0.55} />
-          <directionalLight position={[4, 6, 5]} intensity={2.2} color="#fff3e8" />
-          <directionalLight position={[-5, -2, -3]} intensity={1.0} color={ORANGE} />
+          <ambientLight intensity={0.35} />
+          <directionalLight position={[4, 6, 5]} intensity={1.6} color="#fff3e8" />
+          <directionalLight position={[-5, 1, -2]} intensity={0.5} color={ORANGE} />
 
-          <Environment resolution={256}>
-            <Lightformer position={[0, 3, 4]} scale={[7, 7, 1]} intensity={2.2} color="#ffffff" />
-            <Lightformer position={[-4, 1, 2]} scale={[3, 7, 1]} intensity={1.5} color="#ff8a3d" />
-            <Lightformer position={[4, -1, 2]} scale={[3, 7, 1]} intensity={1.0} color="#ffffff" />
-            <Lightformer position={[0, -4, 2]} scale={[7, 3, 1]} intensity={0.6} color="#2a1c12" />
+          {/* Studio environment — a self-contained "HDRI" built from soft area lights.
+              Warm wrap on the left, cool fill on the right, ring rim behind → realistic matte metal. */}
+          <Environment resolution={512}>
+            {/* Big soft key from the upper front */}
+            <Lightformer form="rect" position={[0, 4, 6]} scale={[10, 10, 1]} intensity={3} color="#fff2e6" />
+            {/* Warm wrap from the left */}
+            <Lightformer form="rect" position={[-6, 1, 2]} scale={[4, 10, 1]} intensity={1.4} color="#ff8a3d" />
+            {/* Cool fill from the right — adds contrast/realism */}
+            <Lightformer form="rect" position={[6, 0, 3]} scale={[4, 10, 1]} intensity={1.1} color="#dfe7ff" />
+            {/* Bright rim behind for crisp edges */}
+            <Lightformer form="ring" position={[2, 3, -6]} scale={[6, 6, 1]} intensity={2.2} color="#ffffff" />
+            {/* Subtle warm floor bounce */}
+            <Lightformer form="rect" position={[0, -5, 2]} scale={[10, 3, 1]} intensity={0.5} color="#3a2416" />
           </Environment>
 
           <Plus pointer={pointer} reduced={reduced} />
