@@ -1,9 +1,15 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import SectionHead from "./SectionHead";
-import Reveal from "./materials/Reveal";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useSpring,
+  useTransform,
+  useMotionValueEvent,
+  type MotionValue,
+} from "framer-motion";
 
 export type DigitalStage = {
   slug: string;
@@ -14,603 +20,689 @@ export type DigitalStage = {
   solution: string[];
 };
 
-type ListKey = "problems" | "solution";
-
-function AccordionRow({
-  label,
-  items,
-  open,
-  accent,
-  onToggle,
+function StageCard({
+  stage,
+  side,
+  leftPct,
+  revealed,
 }: {
-  label: string;
-  items: string[];
-  open: boolean;
-  accent?: boolean;
-  onToggle: () => void;
+  stage: DigitalStage;
+  side: "top" | "bottom";
+  leftPct: number;
+  revealed: boolean;
 }) {
+  const [tapOpen, setTapOpen] = useState(false); // touch fallback for hover reveal
+
   return (
-    <div className={`stage-acc ${accent ? "is-accent" : ""}`}>
-      <button type="button" onClick={onToggle} aria-expanded={open}>
-        <span className="stage-acc-label">{label}</span>
-        <span className="stage-acc-count">{String(items.length).padStart(2, "0")}</span>
-        <motion.i animate={{ rotate: open ? 45 : 0 }} transition={{ duration: 0.25 }} aria-hidden>
-          +
-        </motion.i>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-            className="stage-acc-body"
-          >
-            <ul>
-              {items.map((item) => (
-                <li key={item}>
-                  <b>{accent ? "+" : "—"}</b>
-                  <span>{item}</span>
+    <div className={`tl-card-pos ${side}`} style={{ left: `${leftPct}%` }}>
+      <span className={`tl-stem ${revealed ? "on" : ""}`} aria-hidden />
+      <span className={`tl-marker ${revealed ? "on" : ""}`} aria-hidden>
+        <i />
+      </span>
+
+      <div
+        className={`tl-card ${revealed ? "reveal-on" : ""} ${tapOpen ? "tap-open" : ""}`}
+        onClick={() => setTapOpen((v) => !v)}
+      >
+        <div className="tl-card-face">
+          <span className="tl-card-num">{stage.n}</span>
+          <h3 className="tl-card-title">{stage.title}</h3>
+          <p className="tl-card-process">{stage.process}</p>
+          <span className="tl-card-cue" aria-hidden>
+            наведите — риски и решение
+          </span>
+        </div>
+
+        {/* hover / tap reveal: risks → solutions with an orange scan-line */}
+        <div className="tl-card-reveal">
+          <div className="tl-reveal-cap" aria-hidden>
+            <span className="cap-risk">Риски рынка</span>
+            <span className="cap-sol">Решает STRUKTURA+</span>
+          </div>
+          <div className="tl-reveal-layers">
+            <ul className="tl-risks">
+              {stage.problems.map((p) => (
+                <li key={p}>
+                  <b>—</b>
+                  <span>{p}</span>
                 </li>
               ))}
             </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <ul className="tl-sols" aria-label="Что делает STRUKTURA+">
+              {stage.solution.map((s) => (
+                <li key={s}>
+                  <b>+</b>
+                  <span>{s}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
-  const [active, setActive] = useState(0);
-  const [openList, setOpenList] = useState<ListKey | null>(null);
-  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
-
+  const sectionRef = useRef<HTMLElement>(null);
+  const reduced = useReducedMotion() ?? false;
   const count = stages.length;
-  const selected = stages[active] ?? stages[0];
-  const total = String(count).padStart(2, "0");
-  const fill = count > 1 ? active / (count - 1) : 0;
 
-  function focusTab(i: number) {
-    setActive(i);
-    tabRefs.current[i]?.focus();
-  }
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end end"],
+  });
+  const progress: MotionValue<number> = useSpring(scrollYProgress, {
+    stiffness: 130,
+    damping: 28,
+    mass: 0.3,
+  });
 
-  function onKeyNav(e: React.KeyboardEvent) {
-    let next: number | null = null;
-    if (e.key === "ArrowRight" || e.key === "ArrowDown") next = Math.min(count - 1, active + 1);
-    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = Math.max(0, active - 1);
-    else if (e.key === "Home") next = 0;
-    else if (e.key === "End") next = count - 1;
-    if (next !== null) {
-      e.preventDefault();
-      focusTab(next);
+  // scroll 0→1 mapped onto the span between first and last marker (small tails)
+  const eased = useTransform(progress, (v) => Math.min(1, Math.max(0, (v - 0.04) / 0.9)));
+  const fillW = useTransform(eased, (v) => `${v * 100}%`);
+
+  const [revealed, setRevealed] = useState(0);
+  useMotionValueEvent(eased, "change", (v) => {
+    let c = 0;
+    for (let i = 0; i < count; i++) {
+      if (v >= (i + 0.5) / count - 0.06) c = i + 1;
     }
-  }
+    setRevealed(c);
+  });
+
+  const shownCount = reduced ? count : revealed;
 
   return (
-    <section id="stages" className="stages-section bg-coal-deep text-white" aria-label="Этапы цифровой среды">
-      <div className="container-x">
-        <Reveal>
-          <SectionHead index="02" kicker="Этапы цифровой среды" theme="dark" />
-          <p className="stages-intro">
-            Шесть этапов — один цифровой поток. Нажмите на этап, чтобы раскрыть детали.
+    <section
+      id="stages"
+      ref={sectionRef}
+      className="tl-section bg-coal-deep text-white"
+      aria-label="Этапы цифровой среды"
+      style={{ height: `${Math.max(260, count * 46 + 90)}svh` }}
+    >
+      <div className="tl-sticky">
+        <span
+          aria-hidden
+          className="tl-grid"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+
+        <div className="tl-header container-x">
+          <div className="tl-meta">
+            <span className="tl-meta-idx">02</span>
+            <span>Этапы цифровой среды</span>
+            <span className="tl-meta-mark" aria-hidden>
+              STRUKTURA<i>+</i>
+            </span>
+          </div>
+          <h2 className="tl-title">
+            Путь проекта <span className="text-orange">в цифровой среде</span>
+          </h2>
+          <p className="tl-intro">
+            Скролльте — этапы появляются вдоль линии. Наведите на этап, чтобы увидеть риски
+            рынка и как их снимает STRUKTURA+.
           </p>
-        </Reveal>
-
-        {/* ─── СХЕМА-ЦЕПОЧКА: все этапы сразу ─── */}
-        <div
-          className="stages-rail"
-          role="tablist"
-          aria-label="Этапы цифровой среды"
-          aria-orientation="horizontal"
-          onKeyDown={onKeyNav}
-          style={{ ["--n"]: count, ["--fill"]: fill } as React.CSSProperties}
-        >
-          <span className="stage-line" aria-hidden />
-          <span className="stage-fill" aria-hidden />
-          <span className="stage-flowtrack" aria-hidden>
-            <span className="stage-flow" />
-          </span>
-
-          {stages.map((stage, i) => {
-            const state = i === active ? "active" : i < active ? "done" : "todo";
-            return (
-              <button
-                key={stage.slug}
-                ref={(el) => {
-                  tabRefs.current[i] = el;
-                }}
-                type="button"
-                role="tab"
-                id={`stage-tab-${stage.slug}`}
-                aria-selected={i === active}
-                aria-controls="stage-panel"
-                tabIndex={i === active ? 0 : -1}
-                data-state={state}
-                className="stage-node"
-                onClick={() => setActive(i)}
-              >
-                <span className="stage-head" aria-hidden>
-                  <span className="stage-marker" />
-                </span>
-                <span className="stage-num">{stage.n}</span>
-                <span className="stage-title">{stage.title}</span>
-              </button>
-            );
-          })}
         </div>
 
-        {/* ─── ПАНЕЛЬ ДЕТАЛЕЙ АКТИВНОГО ЭТАПА ─── */}
-        <div
-          className="stage-panel"
-          id="stage-panel"
-          role="tabpanel"
-          aria-labelledby={`stage-tab-${selected.slug}`}
-          tabIndex={0}
-        >
-          <span className="stage-panel-watermark" aria-hidden>
-            {selected.n}
-          </span>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={selected.slug}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-              className="stage-panel-inner"
-            >
-              <div className="stage-panel-head">
-                <span>Активный этап</span>
-                <b>
-                  {selected.n} / {total}
-                </b>
-              </div>
+        <div className="tl-timeline">
+          <div className="tl-track container-x">
+            <div className="tl-lines-wrap">
+              <span className="tl-line-base" aria-hidden />
+              <motion.span
+                className="tl-line-fill"
+                aria-hidden
+                style={reduced ? { width: "100%" } : { width: fillW }}
+              />
+              {!reduced && (
+                <motion.span className="tl-line-head" aria-hidden style={{ left: fillW }}>
+                  <i />
+                </motion.span>
+              )}
+              <span className="tl-line-arrow" aria-hidden />
 
-              <h3>{selected.title}</h3>
-              <p className="stage-panel-process">{selected.process}</p>
-
-              <div className="stage-accordions">
-                <AccordionRow
-                  label="Риски этапа"
-                  items={selected.problems}
-                  open={openList === "problems"}
-                  onToggle={() => setOpenList((v) => (v === "problems" ? null : "problems"))}
+              {stages.map((stage, i) => (
+                <StageCard
+                  key={stage.slug}
+                  stage={stage}
+                  side={i % 2 === 0 ? "top" : "bottom"}
+                  leftPct={((i + 0.5) / count) * 100}
+                  revealed={i < shownCount}
                 />
-                <AccordionRow
-                  label="Что делает STRUKTURA+"
-                  items={selected.solution}
-                  accent
-                  open={openList === "solution"}
-                  onToggle={() => setOpenList((v) => (v === "solution" ? null : "solution"))}
-                />
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="stage-nav">
-            <button
-              type="button"
-              onClick={() => setActive((v) => Math.max(0, v - 1))}
-              disabled={active === 0}
-            >
-              ← Пред. этап
-            </button>
-            <div className="stage-dots" aria-hidden>
-              {stages.map((s, i) => (
-                <i key={s.slug} className={i === active ? "on" : ""} />
               ))}
             </div>
-            <button
-              type="button"
-              onClick={() => setActive((v) => Math.min(count - 1, v + 1))}
-              disabled={active === count - 1}
-            >
-              След. этап →
-            </button>
           </div>
+        </div>
+
+        <div className="tl-foot container-x">
+          <span className="tl-progress-read">
+            <b>{String(Math.min(count, Math.max(1, shownCount))).padStart(2, "0")}</b> /{" "}
+            {String(count).padStart(2, "0")}
+          </span>
+          <span className="tl-hint" aria-hidden>
+            scroll →
+          </span>
         </div>
       </div>
 
       <style jsx>{`
-        .stages-section {
-          padding: clamp(72px, 10vh, 128px) 0;
+        .tl-section {
+          position: relative;
           scroll-margin-top: 80px;
         }
-        .stages-intro {
-          max-width: 720px;
-          margin-top: -6px;
-          font-family: "Onest", sans-serif;
-          font-size: clamp(15px, 1.3vw, 18px);
-          line-height: 1.6;
-          color: rgba(255, 255, 255, 0.55);
-        }
-
-        /* ─── RAIL ─── */
-        .stages-rail {
-          position: relative;
-          display: grid;
-          grid-template-columns: repeat(var(--n), 1fr);
-          margin-top: clamp(44px, 6vh, 72px);
-        }
-        .stage-line,
-        .stage-fill {
-          position: absolute;
-          top: 22px;
-          left: calc(50% / var(--n));
-          height: 1px;
-        }
-        .stage-line {
-          width: calc(100% - 100% / var(--n));
-          background: rgba(255, 255, 255, 0.14);
-        }
-        .stage-fill {
-          width: calc(var(--fill) * (100% - 100% / var(--n)));
-          background: #ff5a00;
-          box-shadow: 0 0 12px rgba(255, 90, 0, 0.5);
-          transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .stage-flowtrack {
-          position: absolute;
-          top: 22px;
-          left: calc(50% / var(--n));
-          width: calc(100% - 100% / var(--n));
-          height: 1px;
-        }
-        .stage-flow {
-          position: absolute;
-          top: 50%;
-          left: 0;
-          width: 5px;
-          height: 5px;
-          border-radius: 50%;
-          background: #ff5a00;
-          box-shadow: 0 0 10px 2px rgba(255, 90, 0, 0.55);
-          transform: translate(-50%, -50%);
-          animation: flowX 3.6s linear infinite;
-        }
-        @keyframes flowX {
-          0% { left: 0; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { left: 100%; opacity: 0; }
-        }
-
-        /* ─── NODE ─── */
-        .stage-node {
-          position: relative;
-          z-index: 2;
-          display: grid;
-          justify-items: center;
-          gap: 14px;
-          padding: 0 6px 10px;
-          background: transparent;
-          border: 0;
-          cursor: pointer;
-          text-align: center;
-        }
-        .stage-head {
-          display: grid;
-          place-items: center;
-          height: 44px;
-        }
-        .stage-marker {
-          position: relative;
-          width: 16px;
-          height: 16px;
-          background: #141414;
-          border: 1px solid rgba(255, 255, 255, 0.34);
-          transform: rotate(45deg);
-          transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1),
-            height 0.3s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease,
-            background 0.3s ease, box-shadow 0.3s ease;
-        }
-        .stage-marker::after {
-          content: "";
-          position: absolute;
-          inset: 4px;
-          background: rgba(255, 255, 255, 0.2);
-          transition: background 0.3s ease, inset 0.3s ease;
-        }
-        .stage-num {
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          letter-spacing: 0.14em;
-          color: rgba(255, 255, 255, 0.32);
-          transition: color 0.25s ease;
-        }
-        .stage-title {
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: clamp(11px, 1.05vw, 15px);
-          line-height: 1.12;
-          letter-spacing: 0.01em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.46);
-          transition: color 0.25s ease;
-        }
-        .stage-node:hover .stage-title {
-          color: rgba(255, 255, 255, 0.82);
-        }
-        .stage-node:hover .stage-marker {
-          border-color: rgba(255, 90, 0, 0.6);
-        }
-        .stage-node:focus-visible {
-          outline: none;
-        }
-        .stage-node:focus-visible .stage-marker {
-          box-shadow: 0 0 0 3px rgba(255, 90, 0, 0.5);
-        }
-
-        .stage-node[data-state="done"] .stage-marker {
-          border-color: rgba(255, 90, 0, 0.7);
-          background: rgba(255, 90, 0, 0.14);
-        }
-        .stage-node[data-state="done"] .stage-marker::after {
-          background: #ff5a00;
-        }
-        .stage-node[data-state="done"] .stage-num {
-          color: rgba(255, 90, 0, 0.7);
-        }
-
-        .stage-node[data-state="active"] .stage-marker {
-          width: 24px;
-          height: 24px;
-          border-color: #ff5a00;
-          background: rgba(255, 90, 0, 0.12);
-          box-shadow: 0 0 0 7px rgba(255, 90, 0, 0.06), 0 0 26px rgba(255, 90, 0, 0.4);
-        }
-        .stage-node[data-state="active"] .stage-marker::after {
-          inset: 5px;
-          background: #ff5a00;
-        }
-        .stage-node[data-state="active"] .stage-num {
-          color: #ff5a00;
-        }
-        .stage-node[data-state="active"] .stage-title {
-          color: #ffffff;
-        }
-
-        /* ─── PANEL ─── */
-        .stage-panel {
-          position: relative;
-          margin-top: clamp(44px, 6vh, 76px);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          background: rgba(255, 255, 255, 0.02);
+        .tl-sticky {
+          position: sticky;
+          top: 72px;
+          display: flex;
+          flex-direction: column;
+          height: calc(100svh - 72px);
+          min-height: 600px;
           overflow: hidden;
         }
-        .stage-panel-watermark {
+        .tl-grid {
           position: absolute;
-          right: clamp(14px, 2.5vw, 36px);
-          top: clamp(2px, 0.8vw, 10px);
-          z-index: 0;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: clamp(110px, 17vw, 240px);
-          line-height: 0.8;
-          color: rgba(255, 255, 255, 0.028);
+          inset: 0;
+          opacity: 0.1;
           pointer-events: none;
-          user-select: none;
         }
-        .stage-panel-inner {
+
+        /* ── header ── */
+        .tl-header {
           position: relative;
-          z-index: 1;
-          padding: clamp(22px, 3vw, 42px);
+          z-index: 3;
+          width: 100%;
+          padding-top: clamp(26px, 4.5vh, 54px);
         }
-        .stage-panel-head {
+        .tl-meta {
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          padding-bottom: 20px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+          gap: 14px;
           font-family: "CoFo Sans Mono", monospace;
-          font-size: 9px;
-          letter-spacing: 0.15em;
+          font-size: 11px;
+          letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.34);
+          color: rgba(255, 255, 255, 0.4);
         }
-        .stage-panel-head b {
-          font-weight: 400;
+        .tl-meta-idx {
           color: #ff5a00;
         }
-        .stage-panel h3 {
-          margin-top: 22px;
+        .tl-meta-mark {
+          margin-left: auto;
+          letter-spacing: 0.3em;
+          color: rgba(255, 255, 255, 0.16);
+        }
+        .tl-meta-mark i {
+          font-size: 8px;
+          vertical-align: super;
+          font-style: normal;
+        }
+        .tl-title {
+          margin-top: 16px;
           font-family: "CoFo Sans Mono", monospace;
-          font-size: clamp(28px, 3.2vw, 48px);
-          font-weight: 400;
+          font-size: clamp(26px, 3.4vw, 50px);
           line-height: 0.98;
           letter-spacing: -0.01em;
           text-transform: uppercase;
         }
-        .stage-panel-process {
-          max-width: 640px;
-          margin-top: 18px;
+        .tl-intro {
+          max-width: 560px;
+          margin-top: 14px;
           font-family: "Onest", sans-serif;
-          font-size: clamp(14px, 1.05vw, 16px);
-          line-height: 1.6;
-          color: rgba(255, 255, 255, 0.6);
-        }
-        .stage-accordions {
-          margin-top: clamp(26px, 3vw, 34px);
-          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        :global(.stage-acc) {
-          border-top: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        :global(.stage-acc > button) {
-          display: grid;
-          width: 100%;
-          grid-template-columns: 1fr auto 20px;
-          align-items: center;
-          gap: 14px;
-          padding: 15px 0;
-          background: transparent;
-          border: 0;
-          cursor: pointer;
-          text-align: left;
-          font-family: "CoFo Sans Mono", monospace;
-          font-size: 10px;
-          letter-spacing: 0.14em;
-          text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.55);
-          transition: color 0.2s ease;
-        }
-        :global(.stage-acc > button:hover),
-        :global(.stage-acc > button[aria-expanded="true"]) {
-          color: #ffffff;
-        }
-        :global(.stage-acc.is-accent > button) {
-          color: rgba(255, 90, 0, 0.85);
-        }
-        :global(.stage-acc-count) {
-          font-size: 9px;
-          color: rgba(255, 255, 255, 0.28);
-        }
-        :global(.stage-acc > button i) {
-          font-size: 16px;
-          font-style: normal;
-          font-weight: 400;
-          color: #ff5a00;
-          text-align: center;
-        }
-        :global(.stage-acc-body) {
-          overflow: hidden;
-        }
-        :global(.stage-acc-body ul) {
-          display: grid;
-          gap: 2px;
-          padding: 2px 0 18px;
-        }
-        :global(.stage-acc-body li) {
-          display: grid;
-          grid-template-columns: 20px 1fr;
-          gap: 4px;
-          padding: 5px 0;
-          font-family: "Onest", sans-serif;
-          font-size: 14px;
-          line-height: 1.5;
-          color: rgba(255, 255, 255, 0.6);
-        }
-        :global(.stage-acc-body li b) {
-          font-family: "CoFo Sans Mono", monospace;
-          font-weight: 400;
-          color: rgba(255, 255, 255, 0.26);
-        }
-        :global(.stage-acc.is-accent .stage-acc-body li) {
-          color: rgba(255, 255, 255, 0.82);
-        }
-        :global(.stage-acc.is-accent .stage-acc-body li b) {
-          color: #ff5a00;
+          font-size: clamp(13px, 1vw, 15px);
+          line-height: 1.55;
+          color: rgba(255, 255, 255, 0.5);
         }
 
-        .stage-nav {
+        /* ── timeline ── */
+        .tl-timeline {
+          position: relative;
+          z-index: 2;
+          flex: 1;
+          display: flex;
+          align-items: center;
+          min-height: 0;
+        }
+        .tl-track {
+          width: 100%;
+        }
+        .tl-lines-wrap {
+          position: relative;
+          height: min(360px, 46vh);
+        }
+        .tl-line-base,
+        .tl-line-fill {
+          position: absolute;
+          top: 50%;
+          left: 0;
+          height: 1px;
+          transform: translateY(-50%);
+        }
+        .tl-line-base {
+          right: 0;
+          background: rgba(255, 255, 255, 0.16);
+        }
+        .tl-line-fill {
+          width: 0;
+          background: #ff5a00;
+          box-shadow: 0 0 14px rgba(255, 90, 0, 0.5);
+        }
+        .tl-line-head {
+          position: absolute;
+          top: 50%;
+          width: 0;
+          height: 0;
+          transform: translate(-50%, -50%);
+          z-index: 5;
+        }
+        .tl-line-head i {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+          background: #ff5a00;
+          transform: translate(-50%, -50%);
+          box-shadow: 0 0 0 5px rgba(255, 90, 0, 0.12), 0 0 20px 3px rgba(255, 90, 0, 0.7);
+        }
+        .tl-line-arrow {
+          position: absolute;
+          top: 50%;
+          right: -2px;
+          width: 0;
+          height: 0;
+          border-top: 5px solid transparent;
+          border-bottom: 5px solid transparent;
+          border-left: 9px solid rgba(255, 255, 255, 0.4);
+          transform: translateY(-50%);
+        }
+
+        /* ── stage marker + stem ── */
+        .tl-card-pos {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          width: clamp(146px, 15vw, 200px);
+          margin-left: calc(clamp(146px, 15vw, 200px) / -2);
+        }
+        .tl-marker {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          width: 15px;
+          height: 15px;
+          transform: translate(-50%, -50%) rotate(45deg);
+          border: 1px solid rgba(255, 255, 255, 0.34);
+          background: #121212;
+          z-index: 4;
+          transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+        }
+        .tl-marker i {
+          position: absolute;
+          inset: 3px;
+          background: rgba(255, 255, 255, 0.18);
+          transition: background 0.3s ease;
+        }
+        .tl-marker.on {
+          border-color: #ff5a00;
+          background: rgba(255, 90, 0, 0.12);
+          box-shadow: 0 0 0 6px rgba(255, 90, 0, 0.05), 0 0 20px rgba(255, 90, 0, 0.35);
+        }
+        .tl-marker.on i {
+          background: #ff5a00;
+        }
+        .tl-stem {
+          position: absolute;
+          left: 50%;
+          width: 1px;
+          height: calc(50% - 7px);
+          background: rgba(255, 255, 255, 0.12);
+          transform: translateX(-50%);
+          transition: background 0.35s ease;
+        }
+        .tl-card-pos.top .tl-stem {
+          top: 0;
+        }
+        .tl-card-pos.bottom .tl-stem {
+          bottom: 0;
+        }
+        .tl-stem.on {
+          background: rgba(255, 90, 0, 0.4);
+        }
+
+        /* ── card ── */
+        .tl-card {
+          position: absolute;
+          left: 50%;
+          width: 100%;
+          opacity: 0;
+          transform: translateX(-50%) translateY(var(--rev-y, 0));
+          transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+            transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+          cursor: default;
+        }
+        .tl-card-pos.top .tl-card {
+          bottom: calc(50% + 30px);
+          --rev-y: 14px;
+        }
+        .tl-card-pos.bottom .tl-card {
+          top: calc(50% + 30px);
+          --rev-y: -14px;
+        }
+        .tl-card.reveal-on {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+        .tl-card-face {
           position: relative;
           z-index: 1;
+          padding: 15px 15px 16px;
+          border: 1px solid rgba(255, 255, 255, 0.12);
+          background: #131313;
+          transition: border-color 0.3s ease, background 0.3s ease;
+        }
+        .tl-card:hover .tl-card-face,
+        .tl-card.tap-open .tl-card-face {
+          border-color: rgba(255, 90, 0, 0.5);
+        }
+        .tl-card-num {
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: 10px;
+          letter-spacing: 0.12em;
+          color: #ff5a00;
+        }
+        .tl-card-title {
+          margin-top: 8px;
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: clamp(15px, 1.3vw, 20px);
+          font-weight: 400;
+          line-height: 1.02;
+          text-transform: uppercase;
+        }
+        .tl-card-process {
+          margin-top: 9px;
+          font-family: "Onest", sans-serif;
+          font-size: 12px;
+          line-height: 1.42;
+          color: rgba(255, 255, 255, 0.56);
+          display: -webkit-box;
+          -webkit-line-clamp: 4;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .tl-card-cue {
+          display: block;
+          margin-top: 12px;
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: 8px;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.28);
+          transition: color 0.25s ease;
+        }
+        .tl-card:hover .tl-card-cue,
+        .tl-card.tap-open .tl-card-cue {
+          color: rgba(255, 90, 0, 0.7);
+        }
+
+        /* ── hover / tap reveal panel ── */
+        .tl-card-reveal {
+          position: absolute;
+          left: 50%;
+          width: max(100%, 236px);
+          transform: translateX(-50%);
+          z-index: 6;
+          border: 1px solid rgba(255, 90, 0, 0.4);
+          background: #0c0c0c;
+          box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+          padding: 13px 14px 14px;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.28s ease, visibility 0s linear 0.28s;
+          pointer-events: none;
+        }
+        .tl-card-pos.top .tl-card-reveal {
+          top: calc(100% + 8px);
+        }
+        .tl-card-pos.bottom .tl-card-reveal {
+          bottom: calc(100% + 8px);
+        }
+        .tl-card:hover .tl-card-reveal,
+        .tl-card.tap-open .tl-card-reveal {
+          opacity: 1;
+          visibility: visible;
+          transition: opacity 0.28s ease, visibility 0s;
+        }
+        .tl-reveal-cap {
+          position: relative;
+          height: 12px;
+          margin-bottom: 11px;
+          font-family: "CoFo Sans Mono", monospace;
+          font-size: 9px;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+        }
+        .tl-reveal-cap span {
+          position: absolute;
+          left: 0;
+          top: 0;
+          transition: opacity 0.4s ease;
+        }
+        .cap-risk {
+          color: rgba(255, 255, 255, 0.5);
+          opacity: 1;
+        }
+        .cap-sol {
+          color: #ff5a00;
+          opacity: 0;
+        }
+        .tl-card:hover .cap-risk,
+        .tl-card.tap-open .cap-risk {
+          opacity: 0;
+        }
+        .tl-card:hover .cap-sol,
+        .tl-card.tap-open .cap-sol {
+          opacity: 1;
+        }
+        .tl-reveal-layers {
+          position: relative;
+        }
+        .tl-risks,
+        .tl-sols {
+          display: grid;
+          gap: 4px;
+          list-style: none;
+        }
+        .tl-risks li,
+        .tl-sols li {
+          display: grid;
+          grid-template-columns: 13px 1fr;
+          gap: 3px;
+          font-family: "Onest", sans-serif;
+          font-size: 11.5px;
+          line-height: 1.35;
+        }
+        .tl-risks li {
+          color: rgba(255, 255, 255, 0.5);
+        }
+        .tl-risks li b {
+          font-family: "CoFo Sans Mono", monospace;
+          font-weight: 400;
+          color: rgba(255, 255, 255, 0.3);
+        }
+        .tl-sols {
+          position: absolute;
+          inset: 0;
+          background: #0c0c0c;
+          border-left: 2px solid #ff5a00;
+          padding-left: 9px;
+          margin-left: -9px;
+          clip-path: inset(0 0 0 100%);
+          transition: clip-path 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .tl-sols li {
+          color: rgba(255, 255, 255, 0.85);
+        }
+        .tl-sols li b {
+          font-family: "CoFo Sans Mono", monospace;
+          font-weight: 400;
+          color: #ff5a00;
+        }
+        .tl-card:hover .tl-sols,
+        .tl-card.tap-open .tl-sols {
+          clip-path: inset(0 0 0 0);
+        }
+
+        /* ── footer ── */
+        .tl-foot {
+          position: relative;
+          z-index: 3;
+          width: 100%;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
-          margin: 0 clamp(24px, 3.5vw, 52px);
-          padding: 22px 0 clamp(24px, 3.5vw, 40px);
-          border-top: 1px solid rgba(255, 255, 255, 0.12);
-        }
-        .stage-nav button {
-          background: transparent;
-          border: 0;
+          padding-bottom: clamp(20px, 3vh, 34px);
           font-family: "CoFo Sans Mono", monospace;
           font-size: 10px;
           letter-spacing: 0.14em;
           text-transform: uppercase;
-          color: rgba(255, 255, 255, 0.55);
-          cursor: pointer;
-          transition: color 0.2s ease;
         }
-        .stage-nav button:hover:not(:disabled) {
-          color: #ffffff;
+        .tl-progress-read {
+          color: rgba(255, 255, 255, 0.4);
         }
-        .stage-nav button:disabled {
-          opacity: 0.26;
-          cursor: default;
+        .tl-progress-read b {
+          font-weight: 400;
+          color: #ff5a00;
         }
-        .stage-dots {
-          display: flex;
-          gap: 8px;
-        }
-        .stage-dots i {
-          width: 6px;
-          height: 6px;
-          border: 1px solid rgba(255, 255, 255, 0.28);
-          transform: rotate(45deg);
-          transition: background 0.25s ease, border-color 0.25s ease;
-        }
-        .stage-dots i.on {
-          background: #ff5a00;
-          border-color: #ff5a00;
+        .tl-hint {
+          color: rgba(255, 255, 255, 0.3);
         }
 
-        /* ─── MOBILE: вертикальный степпер ─── */
-        @media (max-width: 639px) {
-          .stages-rail {
-            grid-template-columns: 1fr;
-            margin-top: 30px;
-          }
-          .stage-node {
-            grid-template-columns: 48px 1fr auto;
-            align-items: center;
-            justify-items: start;
-            gap: 0 14px;
-            height: 64px;
-            padding: 0;
-            text-align: left;
-          }
-          .stage-head {
-            grid-column: 1;
-            height: 64px;
-          }
-          .stage-title {
-            grid-column: 2;
-            text-align: left;
-          }
-          .stage-num {
-            grid-column: 3;
-          }
-          .stage-line,
-          .stage-fill,
-          .stage-flowtrack {
-            top: 32px;
-            left: 24px;
-            width: 1px;
-          }
-          .stage-line,
-          .stage-flowtrack {
-            height: calc(100% - 100% / var(--n));
-          }
-          .stage-fill {
-            height: calc(var(--fill) * (100% - 100% / var(--n)));
-            width: 1px;
-            transition: height 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-          }
-          .stage-flow {
-            left: 50%;
-            top: 0;
-            animation: flowY 3.6s linear infinite;
+        /* ── tablet ── */
+        @media (max-width: 1023px) {
+          .tl-card-pos {
+            width: clamp(130px, 20vw, 176px);
+            margin-left: calc(clamp(130px, 20vw, 176px) / -2);
           }
         }
-        @keyframes flowY {
-          0% { top: 0; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
-          100% { top: 100%; opacity: 0; }
+
+        /* ── mobile: vertical stacked reveal ── */
+        @media (max-width: 767px) {
+          .tl-section {
+            height: auto !important;
+          }
+          .tl-sticky {
+            position: static;
+            height: auto;
+            min-height: 0;
+            padding-bottom: 8px;
+          }
+          .tl-grid {
+            display: none;
+          }
+          .tl-title {
+            font-size: clamp(24px, 8vw, 34px);
+          }
+          .tl-timeline {
+            display: block;
+            padding-top: 34px;
+          }
+          .tl-lines-wrap {
+            height: auto;
+          }
+          .tl-line-base,
+          .tl-line-fill,
+          .tl-line-head,
+          .tl-line-arrow {
+            display: none;
+          }
+          .tl-card-pos {
+            position: relative;
+            left: 0 !important;
+            top: auto;
+            bottom: auto;
+            width: 100%;
+            margin: 0 0 14px;
+            padding-left: 30px;
+          }
+          .tl-marker {
+            left: 8px;
+            top: 22px;
+          }
+          .tl-stem {
+            left: 8px;
+            top: 22px !important;
+            bottom: auto !important;
+            width: 1px;
+            height: calc(100% + 14px);
+            background: rgba(255, 255, 255, 0.14);
+          }
+          .tl-card,
+          .tl-card-pos.top .tl-card,
+          .tl-card-pos.bottom .tl-card {
+            position: relative;
+            left: 0;
+            top: auto;
+            bottom: auto;
+            width: 100%;
+            opacity: 1 !important;
+            transform: none !important;
+          }
+          .tl-card-face {
+            padding: 14px 15px 15px;
+          }
+          .tl-card-process {
+            font-size: 13px;
+            -webkit-line-clamp: unset;
+          }
+          .tl-card-cue {
+            display: none;
+          }
+          /* on mobile show risks + solutions inline (no hover) */
+          .tl-card-reveal {
+            position: relative;
+            left: 0;
+            top: auto !important;
+            bottom: auto !important;
+            transform: none;
+            width: 100%;
+            margin-top: 12px;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            border-color: rgba(255, 255, 255, 0.12);
+            background: transparent;
+            box-shadow: none;
+            padding: 12px 0 0;
+          }
+          .tl-reveal-cap {
+            display: none;
+          }
+          .tl-reveal-layers {
+            display: grid;
+            gap: 12px;
+          }
+          .tl-sols {
+            position: relative;
+            inset: auto;
+            clip-path: none;
+            background: transparent;
+            border-left: 2px solid #ff5a00;
+            padding-left: 11px;
+            margin-left: 0;
+          }
+          .tl-foot {
+            display: none;
+          }
         }
 
         @media (prefers-reduced-motion: reduce) {
-          .stage-flow {
-            display: none;
-          }
-          .stage-fill,
-          .stage-marker,
-          .stage-marker::after {
-            transition-duration: 0ms;
+          .tl-card {
+            transition-duration: 0.001ms;
           }
         }
       `}</style>
