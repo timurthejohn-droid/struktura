@@ -1,8 +1,6 @@
 "use client";
 import { useReveal } from "./useReveal";
-
-const helmetImage =
-  "https://www.figma.com/api/mcp/asset/2d1ed6d7-9eb3-47d3-aa69-290c8b8562a5";
+import HeroPlus from "./HeroPlus";
 
 export default function IntroBlock() {
   const ref = useReveal();
@@ -19,22 +17,19 @@ export default function IntroBlock() {
             <div className="eyebrow text-ink mb-7">О компании</div>
 
             <div
-              className="relative w-full max-w-[387px] aspect-square overflow-hidden border border-black/10 bg-white/30"
+              className="relative w-full max-w-[387px] aspect-square overflow-hidden border border-black/10"
+              style={{ background: "linear-gradient(160deg, #fbfaf8 0%, #eeece7 100%)" }}
               aria-hidden="true"
             >
+              {/* Soft warm glow behind the metal so it reads with depth on the light panel */}
               <div
-                className="absolute inset-0"
+                className="absolute inset-0 pointer-events-none"
                 style={{
-                  backgroundImage:
-                    "linear-gradient(135deg, transparent calc(50% - 1px), rgba(0,0,0,0.1) 50%, transparent calc(50% + 1px)), linear-gradient(45deg, transparent calc(50% - 1px), rgba(0,0,0,0.1) 50%, transparent calc(50% + 1px))",
+                  background:
+                    "radial-gradient(52% 52% at 50% 48%, rgba(255,90,0,0.16) 0%, rgba(255,90,0,0.05) 44%, rgba(255,90,0,0) 72%)",
                 }}
               />
-              <img
-                src={helmetImage}
-                alt=""
-                className="absolute left-[8%] top-[14%] w-[82%] h-[72%] object-contain"
-                draggable={false}
-              />
+              <HeroPlus />
             </div>
           </div>
 
