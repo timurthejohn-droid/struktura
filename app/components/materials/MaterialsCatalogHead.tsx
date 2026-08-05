@@ -10,7 +10,15 @@ import NumberTicker from "../kit/NumberTicker";
 // «инженерность», декодирование заголовка — терминальный характер, тикающие
 // цифры — живой масштаб. Кнопок нет: каталог начинается сразу под цифрами.
 
-export default function MaterialsCatalogHead() {
+export default function MaterialsCatalogHead({
+  eyebrow = "Материалы · STRUKTURA+",
+  title = "Материалы",
+  subtitle = "Динамический каталог материалов и их инженерных возможностей.",
+}: {
+  eyebrow?: string;
+  title?: string;
+  subtitle?: string;
+} = {}) {
   const stats = matrixStats();
 
   const facts = [
@@ -34,7 +42,7 @@ export default function MaterialsCatalogHead() {
       />
 
       <div className="container-x relative pt-32 md:pt-36 pb-10 md:pb-12">
-        <span className="eyebrow text-orange rise-in">Материалы · STRUKTURA+</span>
+        <span className="eyebrow text-orange rise-in">{eyebrow}</span>
 
         <div className="grid lg:grid-cols-[1fr_0.85fr] gap-5 lg:gap-16 items-end mt-5">
           <h1
@@ -46,14 +54,14 @@ export default function MaterialsCatalogHead() {
               animationDelay: "0.08s",
             }}
           >
-            <ScrambleText text="Материалы" />
+            <ScrambleText text={title} />
           </h1>
 
           <p
             className="font-body text-white/60 rise-in lg:pb-3"
             style={{ fontSize: "clamp(15px, 1.25vw, 19px)", lineHeight: 1.55, animationDelay: "0.16s" }}
           >
-            Динамический каталог материалов и&nbsp;их&nbsp;инженерных возможностей.
+            {subtitle}
           </p>
         </div>
 

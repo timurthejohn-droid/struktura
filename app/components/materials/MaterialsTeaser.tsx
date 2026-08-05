@@ -57,7 +57,13 @@ const stageIndex = (p: number) => {
   return 3;
 };
 
-export default function MaterialsTeaser() {
+export default function MaterialsTeaser({
+  variant = "home",
+}: {
+  /** "home" — тизер с CTA в /materials. "page" — на самой странице: без
+   *  само-ссылки, финал ведёт в каталог ниже. */
+  variant?: "home" | "page";
+}) {
   const reduced = useReducedMotion();
   const wrapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -358,9 +364,18 @@ export default function MaterialsTeaser() {
               </div>
             ))}
           </div>
-          <Link href="/materials" className="btn btn-orange mt-12">
-            Смотреть все материалы
-          </Link>
+          {variant === "home" ? (
+            <Link href="/materials" className="btn btn-orange mt-12">
+              Смотреть все материалы
+            </Link>
+          ) : (
+            <p
+              className="font-mono text-white/40 uppercase mt-12"
+              style={{ fontSize: 11, letterSpacing: "0.18em" }}
+            >
+              И&nbsp;это только четыре из&nbsp;девяти возможностей — полный каталог&nbsp;ниже
+            </p>
+          )}
         </div>
       </section>
     );
@@ -481,7 +496,7 @@ export default function MaterialsTeaser() {
         </div>
       </div>
 
-      {/* Финал: CTA в раздел */}
+      {/* Финал */}
       <div className="container-x py-24 md:py-36">
         <motion.div
           className="max-w-3xl"
@@ -509,11 +524,26 @@ export default function MaterialsTeaser() {
             Металл, стекло, камень, композиты — карта инженерных возможностей
             с&nbsp;реальными кейсами: от&nbsp;Cloud Gate до&nbsp;Лахта Центра.
           </p>
-          <div className="mt-10">
-            <Link href="/materials" className="btn btn-orange">
-              Смотреть все возможности
-            </Link>
-          </div>
+          {variant === "home" ? (
+            <div className="mt-10">
+              <Link href="/materials" className="btn btn-orange">
+                Смотреть все возможности
+              </Link>
+            </div>
+          ) : (
+            /* на самой странице: не ссылаемся на себя, а ведём в каталог ниже */
+            <div className="mt-12 flex items-center gap-4">
+              <span
+                className="font-mono text-orange uppercase"
+                style={{ fontSize: 12, letterSpacing: "0.16em" }}
+              >
+                Полный каталог возможностей
+              </span>
+              <span className="sk-nudge text-orange" aria-hidden style={{ fontSize: 20 }}>
+                ↓
+              </span>
+            </div>
+          )}
         </motion.div>
       </div>
     </section>
