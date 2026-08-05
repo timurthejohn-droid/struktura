@@ -3,21 +3,42 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 
 // Блок «Материалы» на главной.
-// Весь блок залит цветом фона видео (нейтральный светло-серый ~#C4C4C4),
-// поэтому левая текстовая часть и видео справа читаются как одна плоскость.
-// Левый край видео растворяется в этом же сером — стыка колонок не видно,
-// на текст видео не наезжает.
+// Видео materials_new.mp4 залито на всю ширину блока (full-bleed фон секции),
+// текст лежит поверх слева. Мягкий скрим слева направо в цвет фона видео
+// (нейтральный светло-серый ~#C4C4C4) держит текст читаемым, а справа видео
+// остаётся чистым и открытым.
 
 const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const VIDEO_BG = "#c4c4c4"; // фон студийного видео materials_main.mp4
+const VIDEO_BG = "#c4c4c4"; // фон студийного видео materials_new.mp4
 
 export default function MaterialsHome() {
   return (
     <section id="materials" className="relative overflow-hidden" style={{ background: VIDEO_BG }}>
-      <div className="grid items-stretch lg:grid-cols-2">
-        {/* ——— Текст: слева, на фоне того же серого ——— */}
+      {/* ——— Видео: на всю ширину блока ——— */}
+      <video
+        className="absolute inset-0 h-full w-full object-cover"
+        src={`${BP}/materials/materials_new.mp4`}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        aria-hidden
+      />
+
+      {/* ——— Скрим слева: держит текст читаемым поверх видео ——— */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "linear-gradient(100deg, #c4c4c4 0%, rgba(196,196,196,0.92) 32%, rgba(196,196,196,0.45) 55%, rgba(196,196,196,0) 72%)",
+        }}
+      />
+
+      {/* ——— Текст: поверх видео, слева ——— */}
+      <div className="relative z-10 grid items-stretch lg:grid-cols-2">
         <div
-          className="relative z-10 flex items-center py-24 lg:py-40"
+          className="flex items-center py-24 lg:py-40"
           style={{
             paddingLeft: "max(24px, calc((100vw - 1440px) / 2 + 64px))",
             paddingRight: "24px",
@@ -57,20 +78,8 @@ export default function MaterialsHome() {
           </motion.div>
         </div>
 
-        {/* ——— Видео: справа, чистое, без вуали. Фон блока совпадает с фоном ——— */}
-        {/* видео, поэтому стык колонок и так не выделяется. ——— */}
-        <div className="relative min-h-[320px] lg:min-h-[600px]">
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            src={`${BP}/materials/materials_main.mp4`}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            aria-hidden
-          />
-        </div>
+        {/* правая колонка — пустая, видео просвечивает под текстовым слоем */}
+        <div className="min-h-[320px] lg:min-h-[600px]" aria-hidden />
       </div>
     </section>
   );
