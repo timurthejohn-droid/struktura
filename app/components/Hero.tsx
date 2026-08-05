@@ -53,14 +53,15 @@ export default function Hero() {
                 letterSpacing: "-0.01em",
               }}
             >
-              Превращаем сложные&nbsp;идеи
-              <br />в <span className="text-orange">реализованные</span> объекты
+              Превращаем
+              <br />сложные&nbsp;идеи в
+              <br /><span className="text-orange">реализованные</span> объекты
             </h1>
           </div>
 
           {/* 3D plus */}
           <div
-            className="relative my-6 min-h-[360px] md:min-h-[460px] rise-in lg:my-[-56px] lg:min-h-0 lg:col-start-2 lg:row-span-2 lg:self-stretch lg:mr-[-6%]"
+            className="relative my-6 h-[320px] md:h-[420px] fade-in lg:my-0 lg:col-start-2 lg:row-span-2 lg:self-center lg:h-[min(560px,58vh)]"
             style={{ animationDelay: "0.2s" }}
           >
             {/* Orange halo / aura — outer soft ring */}

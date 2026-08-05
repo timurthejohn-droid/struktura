@@ -20,8 +20,8 @@ const ORANGE = "#ff5a00";
 const BASE_ROT_X = -0.16;
 const BASE_ROT_Y = -0.42;
 // How far the plus leans toward the cursor.
-const MAX_TILT_X = 0.32; // pitch (vertical mouse)
-const MAX_TILT_Y = 0.6; // yaw (horizontal mouse)
+const MAX_TILT_X = 0.28; // pitch (vertical mouse)
+const MAX_TILT_Y = 0.5; // yaw (horizontal mouse)
 const DAMP = 3.4; // lower = smoother / slower follow
 
 type Pointer = { x: number; y: number };
@@ -79,12 +79,12 @@ function Plus({ pointer, reduced }: { pointer: MutableRefObject<Pointer>; reduce
     g.rotation.y = MathUtils.damp(g.rotation.y, targetY, DAMP, d);
     g.rotation.x = MathUtils.damp(g.rotation.x, targetX, DAMP, d);
     // Gentle idle life so the object breathes even when the mouse is still.
-    g.rotation.z = Math.sin(t * 0.5) * 0.04;
-    g.position.y = Math.sin(t * 0.9) * 0.06;
+    g.rotation.z = Math.sin(t * 0.5) * 0.03;
+    g.position.y = Math.sin(t * 0.9) * 0.03;
   });
 
   return (
-    <group ref={ref} scale={1.45}>
+    <group ref={ref} rotation={[BASE_ROT_X, BASE_ROT_Y, 0]} scale={1.45}>
       <mesh geometry={geometry}>
         <meshStandardMaterial color={ORANGE} metalness={1} roughness={0.26} envMapIntensity={1.7} />
       </mesh>
@@ -155,7 +155,7 @@ export default function HeroPlus() {
       <Suspense fallback={<StaticPlusFallback />}>
         <Canvas
           className="absolute inset-0"
-          camera={{ position: [0, 0, 6], fov: 30 }}
+          camera={{ position: [0, 0, 6.6], fov: 30 }}
           dpr={[1, 1.75]}
           gl={{ alpha: true, antialias: true }}
           style={{ pointerEvents: "none", touchAction: "pan-y" }}
