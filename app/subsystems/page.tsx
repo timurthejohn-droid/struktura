@@ -1,6 +1,7 @@
 import Nav from "../components/Nav";
 import ContactForm from "../components/ContactForm";
 import Footer from "../components/Footer";
+import Subsystems from "../components/Subsystems";
 
 const benefits = [
   "Снижение рисков на сложных узлах",
@@ -34,6 +35,8 @@ export default function SubsystemsPage() {
             </div>
           </div>
         </section>
+
+        <Subsystems />
 
         <section className="py-16 md:py-20">
           <div className="container-x grid gap-10 md:grid-cols-2 md:gap-20">

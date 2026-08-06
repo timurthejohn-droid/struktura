@@ -7,7 +7,7 @@ import ProblemsBlock from "./components/ProblemsBlock";
 import AlgoPrinciples from "./components/AlgoPrinciples";
 import DigitalEnvFlow from "./components/DigitalEnvFlow";
 import MaterialsHome from "./components/materials/MaterialsHome";
-import Subsystems from "./components/Subsystems";
+import SubsystemsHomeTeaser from "./components/SubsystemsHomeTeaser";
 import IpdBlock from "./components/IpdBlock";
 import TeamTeaser from "./components/TeamTeaser";
 import ContactForm from "./components/ContactForm";
@@ -34,7 +34,7 @@ export default function Home() {
         {/* DARK — блок «Материалы»: текст слева + видео справа */}
         <MaterialsHome />
         {/* DARK */}
-        <Subsystems />
+        <SubsystemsHomeTeaser />
         {/* ORANGE */}
         <IpdBlock />
         {/* LIGHT */}

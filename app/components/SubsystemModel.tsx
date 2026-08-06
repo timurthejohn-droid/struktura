@@ -3,7 +3,7 @@
 import { Component, Suspense, useEffect, useMemo, useRef, type ErrorInfo, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Bounds, Environment, Lightformer, useGLTF } from "@react-three/drei";
-import { Box3, Material, Mesh, MeshStandardMaterial, Vector3, type Group, type Object3D } from "three";
+import { Box3, DoubleSide, Material, Mesh, MeshStandardMaterial, Plane, Vector3, type Group, type Object3D } from "three";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const MODEL_PATH = `${BASE_PATH}/models/Untitled1234.web.glb`;
@@ -15,6 +15,7 @@ const PARTICLE_SPREAD = 1.45;
 const ASSEMBLY_MIN_SCALE = 0.08;
 const DETAIL_ZOOM_SCALE = 3.15;
 const PANEL_SPREAD = 28000;
+const FULL_TURN = Math.PI * 2;
 
 type AssemblyPiece = {
   mesh: Mesh;
@@ -49,6 +50,34 @@ function isInsideRoot(object: Object3D, root: Object3D | undefined) {
   return false;
 }
 
+function isPanelObject(object: Object3D) {
+  return object.name === PANELS_ROOT_NAME || object.name.startsWith(`${PANELS_ROOT_NAME}.`);
+}
+
+function countMeshes(root: Object3D) {
+  let count = 0;
+  root.traverse((object) => {
+    if (object instanceof Mesh) count += 1;
+  });
+  return count;
+}
+
+function findPanelsRoot(root: Object3D) {
+  let best: Object3D | undefined;
+  let bestCount = 0;
+
+  root.traverse((object) => {
+    if (!isPanelObject(object)) return;
+    const meshCount = countMeshes(object);
+    if (meshCount > bestCount) {
+      best = object;
+      bestCount = meshCount;
+    }
+  });
+
+  return best;
+}
+
 function LoadingState() {
   return null;
 }
@@ -69,14 +98,48 @@ class ModelErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
   }
 }
 
-function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, showTopPanels }: { assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; showTopPanels: boolean }) {
+function Model({
+  assemblyProgress,
+  zoomProgress,
+  spinProgress,
+  panelProgress,
+  showTopPanels,
+  autoSpin = false,
+  hideRightPanels = false,
+  panelCutOffset = 0,
+  screenOffsetX = 0,
+  idleSpeed = 1,
+  panelLayerHeightScale = 1,
+  forcePanelsVisible = false,
+}: {
+  assemblyProgress: number;
+  zoomProgress: number;
+  spinProgress: number;
+  panelProgress: number;
+  showTopPanels: boolean;
+  autoSpin?: boolean;
+  hideRightPanels?: boolean;
+  panelCutOffset?: number;
+  screenOffsetX?: number;
+  idleSpeed?: number;
+  panelLayerHeightScale?: number;
+  forcePanelsVisible?: boolean;
+}) {
   const { scene } = useGLTF(MODEL_PATH);
   const groupRef = useRef<Group>(null);
   const animationRef = useRef<AssemblyPiece[]>([]);
   const panelAnimationRef = useRef<PanelPiece[]>([]);
   const panelRootRef = useRef<Object3D | undefined>(undefined);
+  const panelRootScaleRef = useRef(new Vector3(1, 1, 1));
+  // Плоскость среза живёт в ref и мутируется в useFrame — материалы держат ссылку на тот же объект.
+  const cutPlaneRef = useRef(new Plane(new Vector3(-1, 0, 0), 0));
+  const modelRightRef = useRef(new Vector3());
+  const cameraRightRef = useRef(new Vector3());
+  const modelCenterRef = useRef(new Vector3());
   const { model, pieces, panelPieces, panelsRoot } = useMemo(() => {
+    const cutPlane = cutPlaneRef.current;
     const orangeModel = scene.clone(true);
+    const panels = findPanelsRoot(orangeModel);
     const tintMaterial = (source: Material) => {
       const material = source.clone();
 
@@ -103,11 +166,16 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
       box.getCenter(center);
       box.getSize(size);
 
+      const isPanelLayer = isPanelObject(object) || isInsideRoot(object, panels);
+
       if (
-        Math.abs(center.x) > MODEL_OUTLIER_LIMIT ||
-        Math.abs(center.y) > MODEL_OUTLIER_LIMIT ||
-        Math.abs(center.z) > MODEL_OUTLIER_LIMIT ||
-        size.length() > MODEL_OUTLIER_LIMIT
+        !isPanelLayer &&
+        (
+          Math.abs(center.x) > MODEL_OUTLIER_LIMIT ||
+          Math.abs(center.y) > MODEL_OUTLIER_LIMIT ||
+          Math.abs(center.z) > MODEL_OUTLIER_LIMIT ||
+          size.length() > MODEL_OUTLIER_LIMIT
+        )
       ) {
         outliers.push(object);
         return;
@@ -117,14 +185,19 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
     });
     outliers.forEach((object) => object.parent?.remove(object));
 
-    const panels = orangeModel.getObjectByName(PANELS_ROOT_NAME);
     if (panels) {
       panels.visible = false;
       panels.traverse((object) => {
         if (!(object instanceof Mesh)) return;
         for (const material of collectMaterials(object.material)) {
+          material.transparent = true;
           material.opacity = 0;
           material.depthWrite = false;
+          if (hideRightPanels) {
+            material.clippingPlanes = [cutPlane];
+            // без DoubleSide срезанные панели исчезали бы при взгляде с изнанки
+            material.side = DoubleSide;
+          }
         }
       });
     }
@@ -169,19 +242,20 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
     });
 
     return { model: orangeModel, pieces: assemblyPieces, panelPieces: panelAssemblyPieces, panelsRoot: panels };
-  }, [scene]);
+  }, [hideRightPanels, scene]);
 
   useEffect(() => {
     animationRef.current = pieces;
     panelAnimationRef.current = panelPieces;
     panelRootRef.current = panelsRoot;
+    if (panelsRoot) panelRootScaleRef.current.copy(panelsRoot.scale);
   }, [panelPieces, panelsRoot, pieces]);
 
   useEffect(() => {
     if (panelRootRef.current) panelRootRef.current.visible = showTopPanels || panelProgress > 0.001;
   }, [panelProgress, showTopPanels]);
 
-  useFrame(() => {
+  useFrame((state) => {
     const progress = clamp01(assemblyProgress);
     const zoom = easeInOutCubic(clamp01(zoomProgress));
     const spin = easeInOutCubic(clamp01(spinProgress));
@@ -189,10 +263,32 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
     const viewZoom = zoom * (1 - spin);
 
     if (groupRef.current) {
-      const scale = 1 + viewZoom * (DETAIL_ZOOM_SCALE - 1);
+      const idleTime = state.clock.elapsedTime * idleSpeed;
+      const idleRotation = autoSpin ? idleTime * 0.36 : 0;
+      const turnPhase = autoSpin ? (idleRotation % FULL_TURN) / FULL_TURN : 0;
+      const zoomCycle = turnPhase < 0.5 ? easeInOutCubic(turnPhase * 2) : easeInOutCubic((1 - turnPhase) * 2);
+      const idleZoomScale = 1 + zoomCycle * 1.15;
+      const scale = (1 + viewZoom * (DETAIL_ZOOM_SCALE - 1)) * idleZoomScale;
       groupRef.current.scale.setScalar(scale);
-      groupRef.current.position.set(-0.08 * viewZoom, -0.82 * viewZoom, 0);
-      groupRef.current.rotation.set(0, MODEL_ROTATION_Y + Math.PI * 2 * spin, 0);
+      groupRef.current.position.set(-0.08 * viewZoom, -0.82 * viewZoom - zoomCycle * 0.34, 0);
+      if (screenOffsetX !== 0) {
+        // Сдвигаем вдоль оси «вправо» камеры, а не по мировому X: камера стоит
+        // под углом, и сдвиг по X уводил бы модель ещё и вверх.
+        const cameraRight = cameraRightRef.current.setFromMatrixColumn(state.camera.matrixWorld, 0).normalize();
+        groupRef.current.position.addScaledVector(cameraRight, screenOffsetX);
+      }
+      groupRef.current.rotation.set(0, MODEL_ROTATION_Y + Math.PI * 2 * spin + idleRotation, 0);
+
+      if (hideRightPanels) {
+        // Рез привязан к локальной оси X модели, поэтому вращается вместе с ней:
+        // у подсистемы срезана своя половина, а не половина экрана.
+        groupRef.current.updateMatrixWorld();
+        const modelRight = modelRightRef.current.setFromMatrixColumn(groupRef.current.matrixWorld, 0).normalize();
+        const modelCenter = groupRef.current.getWorldPosition(modelCenterRef.current);
+        const plane = cutPlaneRef.current;
+        plane.normal.copy(modelRight).negate();
+        plane.constant = modelRight.dot(modelCenter) + panelCutOffset;
+      }
     }
 
     for (const piece of animationRef.current) {
@@ -209,13 +305,15 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
     }
 
     if (panelRootRef.current) {
-      panelRootRef.current.visible = showTopPanels || panelPhase > 0.001;
+      const base = panelRootScaleRef.current;
+      panelRootRef.current.visible = forcePanelsVisible || showTopPanels || panelPhase > 0.001;
+      panelRootRef.current.scale.set(base.x, base.y * panelLayerHeightScale, base.z);
     }
 
     for (const piece of panelAnimationRef.current) {
-      const local = easeOutCubic(clamp01((panelPhase - piece.delay) / 0.32));
+      const local = forcePanelsVisible ? 1 : easeOutCubic(clamp01((panelPhase - piece.delay) / 0.32));
       const scatter = 1 - local;
-      const opacity = clamp01(local / 0.18);
+      const opacity = forcePanelsVisible ? 1 : clamp01(local / 0.18);
       piece.mesh.position.copy(piece.position).addScaledVector(piece.offset, scatter);
       piece.mesh.scale.copy(piece.scale);
       piece.mesh.updateMatrix();
@@ -235,15 +333,43 @@ function Model({ assemblyProgress, zoomProgress, spinProgress, panelProgress, sh
   );
 }
 
-export default function SubsystemModel({ assemblyProgress, zoomProgress, spinProgress, panelProgress, showTopPanels }: { assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; showTopPanels: boolean }) {
+export default function SubsystemModel({
+  assemblyProgress,
+  zoomProgress,
+  spinProgress,
+  panelProgress,
+  showTopPanels,
+  autoSpin = false,
+  hideRightPanels = false,
+  panelCutOffset = 0,
+  screenOffsetX = 0,
+  idleSpeed = 1,
+  panelLayerHeightScale = 1,
+  forcePanelsVisible = false,
+  fullBleed = false,
+}: {
+  assemblyProgress: number;
+  zoomProgress: number;
+  spinProgress: number;
+  panelProgress: number;
+  showTopPanels: boolean;
+  autoSpin?: boolean;
+  hideRightPanels?: boolean;
+  panelCutOffset?: number;
+  screenOffsetX?: number;
+  idleSpeed?: number;
+  panelLayerHeightScale?: number;
+  forcePanelsVisible?: boolean;
+  fullBleed?: boolean;
+}) {
   return (
-    <div className="absolute inset-x-0 bottom-[118px] top-8 z-0 md:bottom-[124px]">
+    <div className={fullBleed ? "absolute inset-0 z-0" : "absolute inset-x-0 bottom-[118px] top-8 z-0 md:bottom-[124px]"}>
       <ModelErrorBoundary>
         <Suspense fallback={<LoadingState />}>
           <Canvas
             camera={{ position: [5, 3.5, 7], fov: 34 }}
             dpr={[1, 1.5]}
-            gl={{ alpha: true, antialias: true }}
+            gl={{ alpha: true, antialias: true, localClippingEnabled: true }}
             style={{ pointerEvents: "none", touchAction: "pan-y" }}
           >
             <ambientLight intensity={0.7} />
@@ -256,7 +382,20 @@ export default function SubsystemModel({ assemblyProgress, zoomProgress, spinPro
             </Environment>
 
             <Bounds fit clip margin={0.78}>
-              <Model assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} showTopPanels={showTopPanels} />
+              <Model
+                assemblyProgress={assemblyProgress}
+                zoomProgress={zoomProgress}
+                spinProgress={spinProgress}
+                panelProgress={panelProgress}
+                showTopPanels={showTopPanels}
+                autoSpin={autoSpin}
+                hideRightPanels={hideRightPanels}
+                panelCutOffset={panelCutOffset}
+                screenOffsetX={screenOffsetX}
+                idleSpeed={idleSpeed}
+                panelLayerHeightScale={panelLayerHeightScale}
+                forcePanelsVisible={forcePanelsVisible}
+              />
             </Bounds>
           </Canvas>
         </Suspense>
