@@ -24,14 +24,20 @@ export default function IpdBlock() {
     <section id="ipd" className="py-24 md:py-40" style={{ background: "var(--orange)" }}>
       <div className="container-x">
         <div ref={ref} className="reveal">
-          <SectionHead index="08" kicker="IPD · Результат" theme="orange" />
+          <SectionHead index="08" kicker="Единая система · IPD" theme="orange" />
 
-          <h2 className="text-white max-w-4xl mb-16" style={{ fontSize: "clamp(26px, 3.2vw, 50px)", lineHeight: 1.12 }}>
-            STRUKTURA устраняет системные разрывы между стадиями, участниками
-            и&nbsp;дисциплинами за&nbsp;счёт IPD{" "}
-            <span className="text-white/60">(Integrated Project Delivery)</span> и&nbsp;полного
-            цифрового цикла.
+          <h2 className="text-white max-w-4xl mb-8" style={{ fontSize: "clamp(26px, 3.2vw, 50px)", lineHeight: 1.12 }}>
+            Обычно проект идёт по&nbsp;эстафете и&nbsp;теряет данные на&nbsp;каждой
+            передаче. STRUKTURA собирает всех участников и&nbsp;все стадии
+            в&nbsp;одну систему&nbsp;— по&nbsp;модели IPD{" "}
+            <span className="text-white/60">(Integrated Project Delivery)</span>.
           </h2>
+
+          <p className="font-body text-white/80 max-w-2xl mb-16" style={{ fontSize: "clamp(16px, 1.3vw, 20px)", lineHeight: 1.5 }}>
+            Одна команда, одна цифровая модель, одна ответственность&nbsp;— от&nbsp;проектирования
+            до&nbsp;монтажа. Это устраняет системные разрывы между стадиями, участниками
+            и&nbsp;дисциплинами.
+          </p>
 
           <div className="grid md:grid-cols-3" style={{ gap: 1, background: "rgba(255,255,255,0.25)" }}>
             {outcomes.map((o) => (
@@ -45,7 +51,7 @@ export default function IpdBlock() {
           </div>
 
           <div className="mt-12">
-            <a href="#ipd" className="btn btn-ghost-orange">Подробнее →</a>
+            <a href="/ipd" className="btn btn-ghost-orange">Как устроен IPD в STRUKTURA →</a>
           </div>
         </div>
       </div>
