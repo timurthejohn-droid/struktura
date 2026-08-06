@@ -134,10 +134,10 @@ function Plus({
   });
 
   return (
-    <group ref={ref} rotation={[BASE_ROT_X, BASE_ROT_Y, 0]} scale={1.45}>
+    <group ref={ref} rotation={[BASE_ROT_X, BASE_ROT_Y, 0]} scale={scale}>
       <mesh geometry={geometry}>
         <meshStandardMaterial
-          color={ORANGE}
+          color={color}
           metalness={0.9}
           roughness={0.5}
           roughnessMap={surface ?? undefined}
