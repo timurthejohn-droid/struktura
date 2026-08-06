@@ -1,6 +1,6 @@
 "use client";
 import { useReveal } from "./useReveal";
-import HeroPlus from "./HeroPlus";
+import AboutMark from "./AboutMark";
 
 export default function IntroBlock() {
   const ref = useReveal();
@@ -21,7 +21,7 @@ export default function IntroBlock() {
               style={{ background: "var(--paper)" }}
               aria-hidden="true"
             >
-              <HeroPlus color="#171717" scale={1.05} roughness={0.72} steel spin />
+              <AboutMark />
             </div>
           </div>
 
