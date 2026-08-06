@@ -21,7 +21,7 @@ export default function IntroBlock() {
               style={{ background: "var(--paper)" }}
               aria-hidden="true"
             >
-              <HeroPlus color="#c2c6cc" scale={1.05} steel spin />
+              <HeroPlus color="#171717" scale={1.05} roughness={0.72} steel spin />
             </div>
           </div>
 

@@ -90,12 +90,14 @@ function Plus({
   color,
   scale,
   spin,
+  roughness,
 }: {
   pointer: MutableRefObject<Pointer>;
   reduced: boolean;
   color: string;
   scale: number;
   spin: boolean;
+  roughness: number;
 }) {
   const ref = useRef<Group>(null);
   const geometry = useMemo(buildPlusGeometry, []);
@@ -139,7 +141,7 @@ function Plus({
         <meshStandardMaterial
           color={color}
           metalness={0.9}
-          roughness={0.5}
+          roughness={roughness}
           roughnessMap={surface ?? undefined}
           bumpMap={surface ?? undefined}
           bumpScale={0.004}
@@ -190,6 +192,8 @@ type HeroPlusProps = {
   steel?: boolean;
   /** Ignore the cursor and spin continuously around Y. */
   spin?: boolean;
+  /** Surface roughness. Higher = more matte, blurrier reflections. */
+  roughness?: number;
 };
 
 export default function HeroPlus({
@@ -197,6 +201,7 @@ export default function HeroPlus({
   scale = 1.45,
   steel = false,
   spin = false,
+  roughness = 0.5,
 }: HeroPlusProps) {
   const pointer = useRef<Pointer>({ x: 0, y: 0 });
   const [reduced, setReduced] = useState(false);
@@ -259,7 +264,7 @@ export default function HeroPlus({
             <Lightformer form="rect" position={[0, -5, 2]} scale={[10, 3, 1]} intensity={0.5} color={steel ? "#1c2028" : "#3a2416"} />
           </Environment>
 
-          <Plus pointer={pointer} reduced={reduced} color={color} scale={scale} spin={spin} />
+          <Plus pointer={pointer} reduced={reduced} color={color} scale={scale} spin={spin} roughness={roughness} />
         </Canvas>
       </Suspense>
     </CanvasErrorBoundary>
