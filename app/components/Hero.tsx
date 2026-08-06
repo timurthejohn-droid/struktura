@@ -64,24 +64,24 @@ export default function Hero() {
             className="relative my-6 h-[320px] md:h-[420px] fade-in lg:my-0 lg:col-start-2 lg:row-span-2 lg:self-center lg:h-[min(560px,58vh)]"
             style={{ animationDelay: "0.2s" }}
           >
-            {/* Soft warm bloom — outer ring, kept subtle so the metal reads silver */}
+            {/* Orange halo / aura — outer soft ring */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(70% 70% at 50% 50%, rgba(255,120,40,0.07) 0%, rgba(255,90,0,0) 66%)",
+                  "radial-gradient(70% 70% at 50% 50%, rgba(255,120,40,0.12) 0%, rgba(255,90,0,0) 66%)",
               }}
             />
-            {/* Soft warm bloom — light core behind the metal */}
+            {/* Orange halo / aura — bright core behind the metal */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(46% 50% at 50% 50%, rgba(255,90,0,0.13) 0%, rgba(255,90,0,0.05) 42%, rgba(255,90,0,0) 72%)",
+                  "radial-gradient(46% 50% at 50% 50%, rgba(255,90,0,0.30) 0%, rgba(255,90,0,0.10) 42%, rgba(255,90,0,0) 72%)",
                 mixBlendMode: "screen",
               }}
             />
-            <HeroPlus color="#c2c6cc" scale={0.97} steel />
+            <HeroPlus />
           </div>
 
           {/* Sub-copy, CTAs, sector tags */}
