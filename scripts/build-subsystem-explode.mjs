@@ -4,8 +4,8 @@ import { Vector3 } from "three";
 
 globalThis.ProgressEvent ??= class ProgressEvent {};
 
-const SOURCE_PATH = "public/models/Untitled.glb";
-const OUTPUT_PATH = "public/models/Untitled.explode.bin";
+const SOURCE_PATH = "public/models/Untitled123.glb";
+const OUTPUT_PATH = "public/models/Untitled123.explode.bin";
 const MAGIC = 0x50584553;
 const OFFSET_SCALE = 3.5;
 

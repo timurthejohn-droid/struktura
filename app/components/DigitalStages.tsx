@@ -169,6 +169,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           height: calc(100svh - 72px);
           min-height: 600px;
           overflow: hidden;
+          border-top: 1px solid rgba(255, 255, 255, 0.12);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.12);
         }
         .tl-grid {
           position: absolute;
