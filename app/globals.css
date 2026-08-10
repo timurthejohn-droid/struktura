@@ -263,6 +263,86 @@ h1, h2, h3, h4, h5, h6 {
   .dot-grid span { animation: none; opacity: 0.22; }
 }
 
+/* ---- About: структурная сетка узлов (подложка героя) ---- */
+@keyframes abDraw { to { stroke-dashoffset: 0; } }
+@keyframes abNode { from { opacity: 0; transform: scale(0.3); } to { opacity: 1; transform: none; } }
+.ab-line {
+  stroke-dasharray: 2600;
+  stroke-dashoffset: 2600;
+  animation: abDraw 2.4s var(--ease-out) forwards;
+}
+.ab-node {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: abNode 0.55s var(--ease-out) forwards;
+}
+.preloading .ab-line,
+.preloading .ab-node { animation-play-state: paused; }
+
+/* ---- Спотлайт-карточка: пятно света за курсором + угловые засечки ---- */
+.spot { position: relative; overflow: hidden; }
+.spot-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  background: radial-gradient(
+    320px circle at var(--x, 50%) var(--y, 50%),
+    var(--spot-tint, rgba(255, 90, 0, 0.16)),
+    transparent 62%
+  );
+}
+.spot-corner {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .spot:hover .spot-glow,
+  .spot:hover .spot-corner { opacity: 1; }
+}
+
+/* ---- Раскрывающийся индекс (ценности) ---- */
+.idx-row { transition: background-color 0.35s var(--ease-out); }
+.idx-body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.45s var(--ease-out);
+}
+.idx-row.on .idx-body { grid-template-rows: 1fr; }
+.idx-body > div { overflow: hidden; }
+.idx-sign { transition: transform 0.35s var(--ease-out), color 0.3s ease; }
+.idx-row.on .idx-sign { transform: rotate(135deg); }
+
+/* ---- Ряды с подсветкой при наведении (ответственность) ---- */
+.hov-row { transition: background-color 0.3s ease; }
+.hov-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--orange);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.4s var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hov-row:hover { background: rgba(255, 90, 0, 0.035); }
+  .hov-row:hover::before { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-line { animation: none; stroke-dashoffset: 0; }
+  .ab-node { animation: none; opacity: 1; }
+  .idx-body { transition: none; }
+}
+
 /* ---- Buttons ---- */
 .btn {
   display: inline-flex;
