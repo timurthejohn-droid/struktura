@@ -6,8 +6,8 @@ const cards = [
   {
     label: "Адрес",
     value: address,
-    href: `https://yandex.ru/maps/?text=${encodeURIComponent(address)}`,
-    cta: "Открыть на карте",
+    href: "#map",
+    cta: "Показать на карте",
   },
   {
     label: "Телефон",
@@ -27,14 +27,12 @@ export default function ContactsInfo() {
   return (
     <section className="bg-paper py-16 md:py-24">
       <div className="container-x">
-        <SectionHead index="01" kicker="Как нас найти" theme="light" />
+        <SectionHead index="01" kicker="Контакты" theme="light" />
         <div className="grid border-l border-t border-black/10 sm:grid-cols-3">
           {cards.map((card) => (
             <a
               key={card.label}
               href={card.href}
-              target={card.label === "Адрес" ? "_blank" : undefined}
-              rel={card.label === "Адрес" ? "noreferrer" : undefined}
               className="group relative flex min-h-[220px] flex-col justify-between border-b border-r border-black/10 p-6 transition-colors hover:bg-black/[0.02] md:min-h-[250px] md:p-8"
             >
               <span className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink/45">{card.label}</span>
