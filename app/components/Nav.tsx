@@ -13,7 +13,7 @@ const items = [
   { href: "/approach", label: "Алгоритмический подход" },
   { href: "/ipd", label: "IPD" },
   { href: "/contacts", label: "Контакты" },
-  { href: "/#team", label: "Соискателям" },
+  { href: "/careers", label: "Соискателям" },
 ];
 
 function Wordmark({ onClick }: { onClick?: () => void }) {

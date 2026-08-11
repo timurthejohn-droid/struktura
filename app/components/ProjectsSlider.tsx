@@ -1,119 +1,139 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useReveal } from "./useReveal";
+import { cases } from "./projects/casesData";
 
-type Project = {
-  name: string;
-  type: string;
-  place: string;
-  year: string;
-  tone: string; // placeholder accent
-};
+// Избранные кейсы на главной: те же данные, что и на странице проектов,
+// с реальными кадрами объектов. Клик по превью — переход к нужному кейсу.
 
-const projects: Project[] = [
-  { name: "Сбербанк-Сити", type: "Фасадные и интерьерные решения штаб-квартиры", place: "Москва", year: "2023", tone: "#2b2b2b" },
-  { name: "Лахта Центр", type: "Арка главного входа", place: "Санкт-Петербург", year: "2022", tone: "#243038" },
-  { name: "Музей Кремля", type: "Стеклянный пол подземного музея", place: "Москва", year: "2020", tone: "#33271c" },
-  { name: "Москва-Сити", type: "Монументальные художественные панно", place: "Москва", year: "2021", tone: "#2c2630" },
-];
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
+const items = cases;
 
 export default function ProjectsSlider() {
   const revealRef = useReveal();
   const [idx, setIdx] = useState(0);
-  const n = projects.length;
+  const n = items.length;
   const go = (d: number) => setIdx((p) => (p + d + n) % n);
 
   useEffect(() => {
-    const t = setInterval(() => setIdx((p) => (p + 1) % n), 6000);
+    const t = setInterval(() => setIdx((p) => (p + 1) % n), 6500);
     return () => clearInterval(t);
   }, [n]);
-
-  const p = projects[idx];
 
   return (
     <section id="projects" className="py-20 md:py-28" style={{ background: "var(--paper)" }}>
       <div className="container-x reveal" ref={revealRef}>
-        {/* Stage */}
-        <div className="relative w-full overflow-hidden" style={{ aspectRatio: "16 / 9", maxHeight: 620 }}>
-          {projects.map((proj, i) => (
+        {/* Шапка блока */}
+        <div className="mb-8 grid gap-6 border-b border-black/10 pb-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+          <div>
+            <p className="eyebrow text-ink/45">Избранные кейсы</p>
+            <h2 className="mt-5 max-w-[720px] text-[clamp(28px,3.6vw,54px)] leading-[1.0] text-ink">
+              Работаем с архитектурой в её реальном масштабе
+            </h2>
+          </div>
+          <a
+            href={`${basePath}/projects`}
+            className="group inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink transition-colors hover:text-orange md:pb-1"
+          >
+            Все кейсы
+            <span aria-hidden className="transition-transform group-hover:translate-x-1">
+              →
+            </span>
+          </a>
+        </div>
+
+        {/* Сцена */}
+        <div
+          className="relative aspect-[4/5] w-full overflow-hidden bg-coal sm:aspect-[16/10] md:aspect-[16/9]"
+          style={{ maxHeight: 620 }}
+        >
+          {items.map((item, i) => (
             <div
-              key={proj.name}
+              key={item.slug}
               className="absolute inset-0 transition-opacity duration-700"
               style={{ opacity: i === idx ? 1 : 0, pointerEvents: i === idx ? "auto" : "none" }}
+              aria-hidden={i !== idx}
             >
-              {/* Placeholder visual */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  background: `radial-gradient(120% 120% at 80% 10%, ${proj.tone} 0%, #141414 70%)`,
-                }}
+              <img
+                src={`${basePath}${item.image}`}
+                alt={`${item.name} — ${item.work}`}
+                className="absolute inset-0 h-full w-full object-cover"
+                loading={i === 0 ? "eager" : "lazy"}
               />
-              <div
-                className="absolute inset-0 opacity-[0.18]"
-                style={{
-                  backgroundImage:
-                    "repeating-linear-gradient(135deg, rgba(255,255,255,0.6) 0 1px, transparent 1px 26px)",
-                }}
-              />
-              {/* Giant ghost index */}
-              <div
-                className="absolute right-6 top-2 font-mono text-white/[0.06] leading-none select-none"
-                style={{ fontSize: "clamp(120px, 22vw, 320px)" }}
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/50" />
+              <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+
+              {/* Номер-призрак */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute right-[3%] top-[4%] select-none font-mono leading-none text-white/[0.08]"
+                style={{ fontSize: "clamp(90px,15vw,230px)" }}
               >
-                {String(i + 1).padStart(2, "0")}
+                {item.number}
+              </span>
+
+              {/* Служебная строка */}
+              <div className="absolute inset-x-6 top-6 flex items-center justify-between md:inset-x-8 md:top-7">
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/60">{item.category}</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/60">{item.year}</span>
               </div>
 
-              {/* Top label */}
-              <div className="absolute top-7 left-7">
-                <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/50">
-                  {proj.place} · {proj.year}
-                </span>
-              </div>
-
-              {/* Bottom info */}
-              <div className="absolute bottom-7 left-7 right-7 flex flex-wrap items-end justify-between gap-6">
-                <div className="max-w-xl">
-                  <h3 className="text-white mb-3" style={{ fontSize: "clamp(28px, 4vw, 56px)" }}>
-                    {proj.name}
-                  </h3>
-                  <p className="font-body text-white/60 text-sm md:text-base max-w-md">{proj.type}</p>
+              {/* Подпись кейса */}
+              <div className="absolute inset-x-6 bottom-6 max-w-[640px] md:inset-x-8 md:bottom-8">
+                <p className="max-w-[86%] font-mono text-[10px] uppercase leading-[1.5] tracking-[0.16em] text-orange md:max-w-none md:text-[11px]">
+                  {item.work}
+                </p>
+                <h3 className="mt-4 text-white" style={{ fontSize: "clamp(24px,3.4vw,52px)", lineHeight: 1.02 }}>
+                  {item.name}
+                </h3>
+                {item.href ? (
                   <a
-                    href="#projects"
-                    className="inline-flex mt-6 font-mono text-[11px] tracking-[0.12em] uppercase text-white border-b border-orange pb-1 hover:text-orange transition-colors"
+                    href={`${basePath}${item.href}`}
+                    className="mt-6 inline-flex items-center gap-3 border-b border-orange pb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-white transition-colors hover:text-orange"
                   >
-                    Читать кейс →
+                    Читать кейс
+                    <span aria-hidden>→</span>
                   </a>
-                </div>
+                ) : (
+                  <a
+                    href={`${basePath}/projects`}
+                    className="mt-6 inline-flex items-center gap-3 border-b border-white/35 pb-1 font-mono text-[11px] uppercase tracking-[0.12em] text-white/80 transition-colors hover:border-orange hover:text-orange"
+                  >
+                    Смотреть в каталоге
+                    <span aria-hidden>→</span>
+                  </a>
+                )}
               </div>
             </div>
           ))}
 
-          {/* Arrows */}
-          <div className="absolute bottom-7 right-7 flex gap-2 z-10">
+          {/* Стрелки */}
+          <div className="absolute bottom-6 right-6 z-10 flex gap-2 md:bottom-8 md:right-8">
             <button
               onClick={() => go(-1)}
-              aria-label="Назад"
-              className="w-11 h-11 flex items-center justify-center text-white border border-white/25 hover:bg-white hover:text-ink transition-colors"
+              aria-label="Предыдущий кейс"
+              className="flex h-9 w-9 items-center justify-center border border-white/25 text-white transition-colors hover:bg-white hover:text-ink md:h-11 md:w-11"
             >
               ←
             </button>
             <button
               onClick={() => go(1)}
-              aria-label="Вперёд"
-              className="w-11 h-11 flex items-center justify-center text-white border border-white/25 hover:bg-white hover:text-ink transition-colors"
+              aria-label="Следующий кейс"
+              className="flex h-9 w-9 items-center justify-center border border-white/25 text-white transition-colors hover:bg-white hover:text-ink md:h-11 md:w-11"
             >
               →
             </button>
           </div>
         </div>
 
-        {/* Dots / progress */}
-        <div className="flex items-center gap-2 mt-6">
-          {projects.map((proj, i) => (
+        {/* Индикаторы */}
+        <div className="mt-6 flex items-center gap-2">
+          {items.map((item, i) => (
             <button
-              key={proj.name}
+              key={item.slug}
               onClick={() => setIdx(i)}
-              aria-label={proj.name}
+              aria-label={`Кейс ${item.number}: ${item.name}`}
+              aria-current={i === idx ? "true" : undefined}
               className="h-[3px]"
               style={{
                 width: i === idx ? 48 : 22,

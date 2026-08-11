@@ -5,7 +5,7 @@ const nav = [
   { href: "/projects", label: "Проекты" },
   { href: "/approach", label: "Алгоритмический подход" },
   { href: "/contacts", label: "Контакты" },
-  { href: "/#team", label: "Соискателям" },
+  { href: "/careers", label: "Соискателям" },
 ];
 
 export default function Footer() {

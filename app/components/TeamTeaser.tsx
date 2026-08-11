@@ -26,8 +26,8 @@ export default function TeamTeaser({ index = "09" }: { index?: string }) {
               Конкретные лица — не&nbsp;обезличенные эксперты.
             </p>
             <div className="flex gap-3">
-              <a href="#team" className="btn btn-dark">О команде →</a>
-              <a href="#team" className="btn btn-ghost-light">Вакансии →</a>
+              <a href="/about" className="btn btn-dark">О команде →</a>
+              <a href="/careers" className="btn btn-ghost-light">Вакансии →</a>
             </div>
           </div>
 
