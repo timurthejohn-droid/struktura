@@ -11,20 +11,20 @@ export default function AlgoPrinciples() {
         style={{ backgroundImage: "repeating-linear-gradient(135deg, #fff 0 1px, transparent 1px 30px)" }}
       />
       <div className="container-x relative z-10">
-        <SectionHead index="04 · Решение" kicker="Алгоритмический подход" theme="orange" />
+        <SectionHead index="04 · Решение" kicker="Алгоритмический подход" theme="dark" indexColor="#ffffff" />
 
         {/* методология + cta */}
         <div
           ref={revealRef}
-          className="reveal grid lg:grid-cols-[1.15fr_0.85fr] gap-10 lg:gap-24 items-center"
+          className="reveal"
         >
-          <p className="font-body text-white" style={{ fontSize: "clamp(18px, 1.7vw, 28px)", lineHeight: 1.45 }}>
-            В&nbsp;основе STRUKTURA+ — собственная методология цифровизации всех этапов
-            проекта. Хаос превращается в&nbsp;систему, а&nbsp;результат становится
-            предсказуемым. Подход работает по&nbsp;4&nbsp;принципам теории алгоритмов.
+          <p className="font-body max-w-4xl text-white" style={{ fontSize: "clamp(18px, 1.7vw, 28px)", lineHeight: 1.45 }}>
+            В&nbsp;основе алгоритмического подхода STRUKTURA&nbsp;— собственная
+            методология цифровизации всех этапов проекта. Это точная последовательность
+            действий, которая приводит к&nbsp;предсказуемому результату.
           </p>
-          <div className="lg:justify-self-end">
-            <a href="#digital" className="btn btn-white">Подробнее о подходе →</a>
+          <div className="mt-10">
+            <a href="#digital" className="btn btn-white">Подробнее о подходе</a>
           </div>
         </div>
       </div>

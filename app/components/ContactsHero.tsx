@@ -21,7 +21,7 @@ export default function ContactsHero() {
             <p className="max-w-[680px] font-body text-[clamp(15px,1.2vw,19px)] leading-[1.55] text-ink/60">
               Опишите задачу — ответим в течение рабочего дня.
             </p>
-            <a href="#contact" className="btn btn-orange">Оставить заявку ↓</a>
+            <a href="#contact" className="btn btn-orange">Оставить заявку</a>
           </div>
         </div>
       </div>

@@ -38,7 +38,7 @@ const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
 
 function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, panelProgress, active, modelEnabled }: { progress: number; assemblyProgress: number; zoomProgress: number; spinProgress: number; panelProgress: number; active: number; modelEnabled: boolean }) {
   return (
-    <div className="relative w-full" style={{ aspectRatio: "4 / 5", background: "var(--coal)" }}>
+    <div className="relative h-[calc(100vh-88px)] min-h-[640px] w-full" style={{ background: "var(--coal)" }}>
       {/* corner ticks */}
       {(
         [
@@ -66,20 +66,20 @@ function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, 
 
       {/* drawing stamp */}
       <div className="absolute bottom-5 left-5 right-5 z-10">
-        <div className="flex" style={{ border: "1px solid rgba(255,90,0,0.55)" }}>
-          <div className="flex items-center justify-center px-5" style={{ borderRight: "1px solid rgba(255,90,0,0.55)" }}>
+        <div className="flex" style={{ border: "1px solid rgba(255,90,0,0.55)", background: "var(--coal)" }}>
+          <div className="flex items-center justify-center px-5" style={{ borderRight: "1px solid rgba(255,90,0,0.55)", background: "var(--coal)" }}>
             <span className="font-mono text-orange" style={{ fontSize: 26, letterSpacing: "0.04em" }}>
               07<span style={{ fontSize: 14, verticalAlign: "super" }}>+</span>
             </span>
           </div>
-          <div className="flex-1">
-            <div className="px-4 py-2.5 font-mono text-orange uppercase" style={{ fontSize: 10, letterSpacing: "0.13em", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
+          <div className="flex-1" style={{ background: "var(--coal)" }}>
+            <div className="px-4 py-2.5 font-mono text-orange uppercase" style={{ fontSize: 10, letterSpacing: "0.13em", borderBottom: "1px solid rgba(255,90,0,0.4)", background: "var(--coal)" }}>
               {titles[active]}
             </div>
-            <div className="px-4 py-2.5 font-mono uppercase" style={{ fontSize: 10, letterSpacing: "0.13em", color: "rgba(255,90,0,0.85)", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
+            <div className="px-4 py-2.5 font-mono uppercase" style={{ fontSize: 10, letterSpacing: "0.13em", color: "rgba(255,90,0,0.85)", borderBottom: "1px solid rgba(255,90,0,0.4)", background: "var(--coal)" }}>
               Чертёж №: {drawings[active]}
             </div>
-            <div className="px-4 py-2.5 font-mono uppercase" style={{ fontSize: 10, letterSpacing: "0.13em", color: "rgba(255,90,0,0.85)" }}>
+            <div className="px-4 py-2.5 font-mono uppercase" style={{ fontSize: 10, letterSpacing: "0.13em", color: "rgba(255,90,0,0.85)", background: "var(--coal)" }}>
               Масштаб: 1/100
             </div>
           </div>
@@ -156,28 +156,14 @@ export default function Subsystems() {
       <div className="container-x">
         {/* reveal — только на шапке: ниже sticky-чертёж, transform его сломал бы */}
         <div className="reveal" ref={headRevealRef}>
-        <SectionHead index="07" kicker="Подсистемы STRUKTURA" theme="dark" />
+        <SectionHead index="01" kicker="Подсистемы. Ядровое решение STRUKTURA" theme="dark" />
 
-        <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-8 lg:gap-20 mb-14 lg:mb-24">
-          <h2 className="text-white" style={{ fontSize: "clamp(28px, 3.4vw, 54px)", lineHeight: 1.05 }}>
-            Физическое воплощение цифровой платформы
-          </h2>
-          <div>
+        <div className="mb-14 max-w-3xl lg:mb-24">
             <p className="font-body text-white/65" style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.6 }}>
-              С первых проектов STRUKTURA разрабатывает и производит собственные подсистемы для
-              сложных архитектурных решений. Более десяти лет мы последовательно развиваем их вместе
-              с алгоритмическим проектированием, автоматизацией производства, маркировки, логистики
-              и монтажа.
+              Мы выстроили систему реализации сложных архитектурных проектов, результатом
+              которой стали подсистемы STRUKTURA. Физическое воплощение опыта
+              и&nbsp;индивидуальные инженерные решения для ваших задач.
             </p>
-            <p className="font-body text-white/65 mt-5" style={{ fontSize: "clamp(16px, 1.25vw, 20px)", lineHeight: 1.6 }}>
-              Сегодня это единая платформа адаптивных систем. Каждое решение конфигурируется под
-              геометрию, материал, нагрузки, основание, способ монтажа и эксплуатационные требования
-              проекта, а затем выпускается как малая промышленная серия.
-            </p>
-            <a href="/subsystems" className="btn btn-ghost-dark mt-8">
-              Подробнее о платформе систем →
-            </a>
-          </div>
         </div>
         </div>
 
@@ -185,7 +171,7 @@ export default function Subsystems() {
         <div ref={wrapRef} className="flex flex-col lg:grid lg:grid-cols-[1fr_1.05fr] gap-10 lg:gap-20">
           {/* visual — first on mobile, sticky on the right on desktop */}
           <div className="order-1 lg:order-2 w-full">
-            <div className="lg:sticky" style={{ top: "12vh" }}>
+            <div className="lg:sticky" style={{ top: 88 }}>
               <SubsystemViz progress={progress} assemblyProgress={assemblyProgress} zoomProgress={zoomProgress} spinProgress={spinProgress} panelProgress={panelProgress} active={active} modelEnabled={modelEnabled} />
             </div>
           </div>

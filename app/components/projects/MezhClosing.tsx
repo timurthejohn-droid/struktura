@@ -38,7 +38,7 @@ export default function MezhClosing() {
             Опишите свою задачу — обсудим, с какой стадии подключиться к вашему проекту.
           </p>
           <div className="mt-10 flex flex-wrap items-center gap-8">
-            <a href="/contacts" className="btn btn-orange">Обсудить проект →</a>
+            <a href="/contacts" className="btn btn-orange">Обсудить проект</a>
             <a href="/projects" className="font-mono text-[12px] uppercase tracking-[0.16em] text-white/70 transition-colors hover:text-white">
               Все проекты
             </a>
