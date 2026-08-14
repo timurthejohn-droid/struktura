@@ -25,9 +25,9 @@ export default function TeamTeaser({ index = "09" }: { index?: string }) {
               Амбициозная технологичная команда, полная идей и&nbsp;решений.
               Конкретные лица — не&nbsp;обезличенные эксперты.
             </p>
-            <div className="flex gap-3">
-              <a href="/about" className="btn btn-dark">О команде →</a>
-              <a href="/careers" className="btn btn-ghost-light">Вакансии →</a>
+            <div className="flex flex-wrap gap-3">
+              <a href="/about" className="btn btn-dark">О команде</a>
+              <a href="/careers" className="btn btn-ghost-light">Вакансии</a>
             </div>
           </div>
 

@@ -120,12 +120,9 @@ export default function ResumeForm() {
                   <button
                     type="submit"
                     disabled={!agreed}
-                    className="inline-grid h-11 w-[240px] grid-cols-[1fr_44px] bg-orange font-mono text-[12px] uppercase tracking-[0.16em] text-white transition-colors hover:bg-orange-dark disabled:cursor-not-allowed disabled:bg-black/15"
+                    className="btn btn-orange"
                   >
-                    <span className="flex items-center px-5">Отправить резюме</span>
-                    <span className="flex items-center justify-center border-l border-white/35" aria-hidden>
-                      →
-                    </span>
+                    Отправить резюме
                   </button>
 
                   <label className="flex max-w-[280px] items-start gap-[14px]">

@@ -38,21 +38,19 @@ export default function IntroBlock() {
             </h2>
 
             <p
-              className="font-body text-ink-soft max-w-[648px] mt-16 md:mt-28"
+              className="font-body text-ink-soft max-w-[648px] mt-8 md:mt-12"
               style={{ fontSize: "clamp(16px, 1.45vw, 20px)", lineHeight: 1.4 }}
             >
-              Объединяем проектирование, производство и&nbsp;монтаж в&nbsp;единую
-              систему реализации сложных проектов.
+              Объединяем проектирование, производство и&nbsp;монтаж сложных
+              архитектурных объектов в&nbsp;единую управляемую систему — от&nbsp;идеи
+              до&nbsp;готового результата.
             </p>
 
             <a
               href="#about"
-              className="mt-11 inline-grid h-10 w-[220px] grid-cols-[1fr_40px] bg-orange font-mono text-[12px] uppercase tracking-[0.16em] text-white transition-colors hover:bg-orange-dark"
+              className="btn btn-orange mt-11"
             >
-              <span className="flex items-center px-5">О компании</span>
-              <span className="flex items-center justify-center border-l border-white/35" aria-hidden="true">
-                →
-              </span>
+              О компании
             </a>
           </div>
         </div>

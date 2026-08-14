@@ -108,12 +108,9 @@ export default function ContactForm() {
                     <button
                       type="submit"
                       disabled={!agreed}
-                      className="inline-grid h-10 w-[220px] grid-cols-[1fr_40px] bg-orange font-mono text-[12px] uppercase tracking-[0.16em] text-white transition-colors hover:bg-orange-dark disabled:cursor-not-allowed disabled:bg-black/15"
+                      className="btn btn-orange"
                     >
-                      <span className="flex items-center px-5">Оставить заявку</span>
-                      <span className="flex items-center justify-center border-l border-white/35" aria-hidden="true">
-                        →
-                      </span>
+                      Оставить заявку
                     </button>
 
                     <label className="flex max-w-[260px] items-start gap-[15px]">
