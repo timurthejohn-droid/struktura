@@ -3,12 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Capability,
-  CAPABILITIES,
-  CONTENT,
-  FAMILIES,
-  MATERIALS,
+  CAPABILITIES as DEFAULT_CAPABILITIES,
+  CONTENT as DEFAULT_CONTENT,
+  FAMILIES as DEFAULT_FAMILIES,
+  MATERIALS as DEFAULT_MATERIALS,
   Material,
   CaseItem,
+  Family,
+  MaterialContent,
 } from "./materialsData";
 
 // Каталог в одном окне (master-detail, два уровня в левой колонке):
@@ -17,13 +19,20 @@ import {
 // материал (чертёжный штамп → характеристики → проекты → статьи → кейсы).
 // Deep-link: /materials#forma открывает раздел сразу.
 
-type Group = { family: (typeof FAMILIES)[number]; items: Material[] };
+type ExplorerData = {
+  capabilities?: Capability[];
+  families?: Family[];
+  materials?: Material[];
+  content?: Record<string, MaterialContent>;
+};
 
-function groupsFor(cap: Capability): Group[] {
+type Group = { family: Family; items: Material[] };
+
+function groupsFor(cap: Capability, families: Family[], materials: Material[]): Group[] {
   const inCap = cap.materials
-    .map((name) => MATERIALS.find((m) => m.name === name))
+    .map((name) => materials.find((m) => m.name === name))
     .filter((m): m is Material => Boolean(m));
-  return FAMILIES.map((family) => ({
+  return families.map((family) => ({
     family,
     items: inCap.filter((m) => m.family === family.id),
   })).filter((g) => g.items.length > 0);
@@ -62,27 +71,35 @@ function ContentBlock({ label, items }: { label: string; items?: CaseItem[] }) {
   );
 }
 
-export default function CapabilityExplorer() {
+export default function CapabilityExplorer({
+  capabilities = DEFAULT_CAPABILITIES,
+  families = DEFAULT_FAMILIES,
+  materials = DEFAULT_MATERIALS,
+  content = DEFAULT_CONTENT,
+}: ExplorerData) {
   const [capSlug, setCapSlug] = useState<string | null>(null);
   const [hovered, setHovered] = useState<Capability | null>(null);
   const [openFamily, setOpenFamily] = useState<string>("");
   const [active, setActive] = useState<Material | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const cap = CAPABILITIES.find((c) => c.slug === capSlug) ?? null;
-  const groups = useMemo(() => (cap ? groupsFor(cap) : []), [cap]);
+  const cap = capabilities.find((c) => c.slug === capSlug) ?? null;
+  const groups = useMemo(() => (cap ? groupsFor(cap, families, materials) : []), [cap, families, materials]);
+  const totalCaps = capabilities.length;
+  const totalMaterials = materials.length;
+  const totalFamilies = families.length;
 
   // deep-link при загрузке
   useEffect(() => {
     const slug = window.location.hash.replace("#", "");
-    if (CAPABILITIES.some((c) => c.slug === slug)) openCapability(slug, false);
+    if (capabilities.some((c) => c.slug === slug)) openCapability(slug, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [capabilities]);
 
   const openCapability = (slug: string, pushHash = true) => {
-    const c = CAPABILITIES.find((x) => x.slug === slug);
+    const c = capabilities.find((x) => x.slug === slug);
     if (!c) return;
-    const g = groupsFor(c);
+    const g = groupsFor(c, families, materials);
     setCapSlug(slug);
     setOpenFamily(g[0]?.family.id ?? "");
     setActive(g[0]?.items[0] ?? null);
@@ -105,11 +122,11 @@ export default function CapabilityExplorer() {
   const g = active ? groups.find((gr) => gr.family.id === active.family) : null;
   const idxInFamily = g && active ? g.items.findIndex((m) => m.name === active.name) + 1 : 1;
   const code = `${g?.family.n ?? "01"}.${String(idxInFamily).padStart(2, "0")}`;
-  const content = active ? CONTENT[active.name] : null;
+  const materialContent = active ? content[active.name] : null;
 
-  const capIdx = cap ? CAPABILITIES.findIndex((c) => c.slug === cap.slug) : 0;
-  const prev = CAPABILITIES[(capIdx + CAPABILITIES.length - 1) % CAPABILITIES.length];
-  const next = CAPABILITIES[(capIdx + 1) % CAPABILITIES.length];
+  const capIdx = cap ? capabilities.findIndex((c) => c.slug === cap.slug) : 0;
+  const prev = capabilities[(capIdx + capabilities.length - 1) % capabilities.length];
+  const next = capabilities[(capIdx + 1) % capabilities.length];
 
   const preview = hovered ?? cap;
 
@@ -133,7 +150,7 @@ export default function CapabilityExplorer() {
                   Каталог возможностей
                 </span>
               </div>
-              {CAPABILITIES.map((c) => (
+              {capabilities.map((c) => (
                 <button
                   key={c.slug}
                   onClick={() => openCapability(c.slug)}
@@ -158,7 +175,7 @@ export default function CapabilityExplorer() {
               ))}
               <div className="mt-auto px-6 py-5">
                 <p className="font-mono text-ink/35 uppercase" style={{ fontSize: 10, letterSpacing: "0.12em", lineHeight: 1.7 }}>
-                  9 возможностей · 29 материалов · 6 семейств
+                  {totalCaps} возможностей · {totalMaterials} материалов · {totalFamilies} семейств
                 </p>
               </div>
             </div>
@@ -182,7 +199,7 @@ export default function CapabilityExplorer() {
                     {cap.title}
                   </span>
                   <span className="font-mono text-ink/35" style={{ fontSize: 10.5 }}>
-                    {cap.n} / 09
+                    {cap.n} / {String(totalCaps).padStart(2, "0")}
                   </span>
                 </div>
               </div>
@@ -255,7 +272,7 @@ export default function CapabilityExplorer() {
             <div className="flex flex-col justify-between min-h-[420px] lg:min-h-[560px] p-8 md:p-12">
               <div className="flex items-start justify-between gap-4">
                 <span className="font-mono text-white/50 uppercase" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
-                  {preview ? `${preview.n} / 09` : "Каталог"}
+                  {preview ? `${preview.n} / ${String(totalCaps).padStart(2, "0")}` : "Каталог"}
                 </span>
                 <span className="font-mono text-orange/70 uppercase" style={{ fontSize: 10, letterSpacing: "0.2em" }}>
                   STRUKTURA<span style={{ fontSize: 8, verticalAlign: "super" }}>+</span>
@@ -414,9 +431,9 @@ export default function CapabilityExplorer() {
                 </div>
               </div>
 
-              <ContentBlock label="Наши проекты" items={content?.projects} />
-              <ContentBlock label="Статьи" items={content?.articles} />
-              <ContentBlock label="Мировые кейсы" items={content?.world} />
+              <ContentBlock label="Наши проекты" items={materialContent?.projects} />
+              <ContentBlock label="Статьи" items={materialContent?.articles} />
+              <ContentBlock label="Мировые кейсы" items={materialContent?.world} />
 
               {/* CTA в конце панели */}
               <div className="px-6 md:px-9 py-9 flex flex-wrap items-center justify-between gap-5" style={{ borderTop: "1px solid rgba(255,90,0,0.35)" }}>
