@@ -1,13 +1,6 @@
 import GridLines from "./GridLines";
 import HeroPlus from "./HeroPlus";
 
-const sectors = [
-  "Общественные пространства",
-  "Арт-объекты",
-  "Фасады и навесы",
-  "Интерьерные системы",
-];
-
 export default function Hero() {
   return (
     <section
@@ -20,31 +13,9 @@ export default function Hero() {
     >
       <GridLines theme="dark" count={5} />
       <div className="container-x w-full flex flex-col flex-1 pt-24 md:pt-28 pb-8 relative z-10">
-        {/* Top technical strip — sits well below the fixed nav, on its own hairline */}
-        <div
-          className="flex items-center justify-between pb-4 md:pb-5 rise-in"
-          style={{ borderBottom: "1px solid var(--line-dark)", animationDelay: "0.05s" }}
-        >
-          <div className="flex items-center gap-4">
-            <span
-              className="font-mono font-medium tracking-[0.04em] text-white"
-              style={{ fontSize: 13 }}
-            >
-              STRUKTURA<span className="text-orange">+</span>
-            </span>
-            <span className="hidden sm:inline font-mono text-[10px] tracking-[0.2em] uppercase text-white/45">
-              Инжиниринг сложных объектов
-            </span>
-          </div>
-          <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-white/45">
-            Москва
-          </span>
-        </div>
-
         {/* Body — copy on the left, the metallic 3D plus on the right */}
-        <div className="flex-1 grid gap-x-10 content-center lg:grid-cols-[1fr_1.08fr] lg:grid-rows-[auto_auto]">
-          {/* Headline */}
-          <div className="lg:col-start-1 lg:row-start-1 lg:self-end rise-in" style={{ animationDelay: "0.14s" }}>
+        <div className="flex-1 grid items-center gap-x-10 lg:grid-cols-[1fr_1.08fr]">
+          <div className="rise-in" style={{ animationDelay: "0.14s" }}>
             <h1
               className="text-white"
               style={{
@@ -54,14 +25,32 @@ export default function Hero() {
               }}
             >
               Превращаем
-              <br />сложные&nbsp;идеи в
-              <br /><span className="text-orange">реализованные</span> объекты
+              <br />сложные&nbsp;идеи
+              <br />в&nbsp;<span className="text-orange">реализованные</span> объекты
             </h1>
+
+            <p
+              className="font-body max-w-lg text-white/60 rise-in mt-10"
+              style={{
+                fontSize: "clamp(15px, 1.2vw, 19px)",
+                lineHeight: 1.55,
+                animationDelay: "0.28s",
+              }}
+            >
+              Объединяем проектирование, производство и&nbsp;монтаж в&nbsp;единую
+              систему реализации сложных проектов.
+            </p>
+
+            <div className="mt-9 flex flex-wrap gap-3 rise-in" style={{ animationDelay: "0.36s" }}>
+              <a href="#projects" className="btn btn-orange">
+                Все проекты
+              </a>
+            </div>
           </div>
 
           {/* 3D plus */}
           <div
-            className="relative my-6 h-[320px] md:h-[420px] fade-in lg:my-0 lg:col-start-2 lg:row-span-2 lg:self-center lg:h-[min(560px,58vh)]"
+            className="relative my-6 h-[320px] md:h-[420px] fade-in lg:my-0 lg:h-[min(560px,58vh)]"
             style={{ animationDelay: "0.2s" }}
           >
             {/* Orange halo / aura — outer soft ring */}
@@ -82,42 +71,6 @@ export default function Hero() {
               }}
             />
             <HeroPlus />
-          </div>
-
-          {/* Sub-copy, CTAs, sector tags */}
-          <div className="lg:col-start-1 lg:row-start-2 lg:self-start">
-            <p
-              className="font-body max-w-lg text-white/60 rise-in"
-              style={{
-                fontSize: "clamp(15px, 1.2vw, 19px)",
-                lineHeight: 1.55,
-                animationDelay: "0.28s",
-              }}
-            >
-              Объединяем проектирование, производство и&nbsp;монтаж сложных
-              архитектурных объектов в&nbsp;единую управляемую систему — от&nbsp;идеи
-              до&nbsp;готового результата.
-            </p>
-
-            <div className="mt-7 flex flex-wrap gap-3 rise-in" style={{ animationDelay: "0.36s" }}>
-              <a href="#projects" className="btn btn-orange">
-                Все проекты →
-              </a>
-              <a href="#contact" className="btn btn-ghost-dark">
-                Обсудить проект
-              </a>
-            </div>
-
-            <div className="mt-9 flex flex-wrap gap-x-8 gap-y-2 rise-in" style={{ animationDelay: "0.44s" }}>
-              {sectors.map((s) => (
-                <span
-                  key={s}
-                  className="font-mono text-[10px] tracking-[0.16em] uppercase text-white/45"
-                >
-                  {s}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </div>

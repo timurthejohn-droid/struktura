@@ -35,7 +35,7 @@ export default function CareersHero() {
               Команда единомышленников, которая делает архитектуру инженерными методами: расчёт,
               цифровая модель, производство и монтаж — внутри одной компании.
             </p>
-            <a href="#vacancies" className="btn btn-orange">Открытые вакансии ↓</a>
+            <a href="#vacancies" className="btn btn-orange">Открытые вакансии</a>
           </div>
 
           <div className="mt-10 grid gap-x-8 gap-y-5 border-t border-black/10 pt-6 sm:grid-cols-3">

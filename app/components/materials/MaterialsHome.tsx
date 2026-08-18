@@ -38,7 +38,7 @@ export default function MaterialsHome() {
       {/* ——— Текст: поверх видео, слева ——— */}
       <div className="relative z-10 grid items-stretch lg:grid-cols-2">
         <div
-          className="flex items-center py-24 lg:py-40"
+          className="flex items-center py-40 lg:py-64"
           style={{
             paddingLeft: "max(24px, calc((100vw - 1440px) / 2 + 64px))",
             paddingRight: "24px",
@@ -51,23 +51,16 @@ export default function MaterialsHome() {
             viewport={{ once: true, amount: 0.4 }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            <p
-              className="font-mono uppercase"
-              style={{ fontSize: 11, letterSpacing: "0.18em", lineHeight: 1.7, color: "rgba(0,0,0,0.5)" }}
-            >
-              Форма · Масштаб · Кинетика · Акустика — и&nbsp;это только четыре из&nbsp;девяти возможностей
-            </p>
-
-            <h2 className="text-ink mt-6" style={{ fontSize: "clamp(30px, 4vw, 60px)", lineHeight: 1.02 }}>
-              Безграничные возможности. <span className="text-orange">Доказано проектами.</span>
+            <h2 className="text-ink" style={{ fontSize: "clamp(30px, 4vw, 60px)", lineHeight: 1.02 }}>
+              Любая идея. Любая форма. <span className="text-orange">Любой материал.</span>
             </h2>
 
             <p
               className="font-body text-ink-soft mt-6 max-w-md"
               style={{ fontSize: "clamp(15px, 1.3vw, 18px)", lineHeight: 1.55 }}
             >
-              Металл, стекло, камень, композиты — карта инженерных возможностей
-              с&nbsp;реальными кейсами: от&nbsp;Cloud Gate до&nbsp;Лахта Центра.
+              Раскрываем возможности материала: меняем его форму, размеры, фактуру,
+              цвет, плотность, покрытие и&nbsp;акустические свойства под задачу проекта.
             </p>
 
             <div className="mt-10">
@@ -79,7 +72,7 @@ export default function MaterialsHome() {
         </div>
 
         {/* правая колонка — пустая, видео просвечивает под текстовым слоем */}
-        <div className="min-h-[320px] lg:min-h-[600px]" aria-hidden />
+        <div className="min-h-[520px] lg:min-h-[920px]" aria-hidden />
       </div>
     </section>
   );

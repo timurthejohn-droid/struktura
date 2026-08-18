@@ -31,11 +31,15 @@ export default function SectionHead({
   kicker,
   theme = "light",
   className = "",
+  indexColor,
+  markColor,
 }: {
   index: string;
   kicker: string;
   theme?: Theme;
   className?: string;
+  indexColor?: string;
+  markColor?: string;
 }) {
   const c = C[theme];
   return (
@@ -45,13 +49,13 @@ export default function SectionHead({
       >
         <span
           className="font-mono font-medium"
-          style={{ color: c.index, fontSize: 13, letterSpacing: "0.04em" }}
+          style={{ color: indexColor ?? c.index, fontSize: 13, letterSpacing: "0.04em" }}
         >
           {index}
         </span>
         <span
           className="hidden sm:inline font-mono select-none"
-          style={{ color: c.mark, fontSize: 12, letterSpacing: "0.32em" }}
+          style={{ color: markColor ?? c.mark, fontSize: 12, letterSpacing: "0.32em" }}
           aria-hidden
         >
           STRUKTURA

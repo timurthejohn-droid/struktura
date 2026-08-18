@@ -12,6 +12,7 @@ const items = [
   { href: "/subsystems", label: "Подсистемы" },
   { href: "/approach", label: "Алгоритмический подход" },
   { href: "/ipd", label: "IPD" },
+  { href: "/news", label: "Новости и статьи" },
   { href: "/contacts", label: "Контакты" },
   { href: "/careers", label: "Соискателям" },
 ];
@@ -112,7 +113,7 @@ export default function Nav() {
             {/* CTA — оранжевая кнопка «Обсудить проект» (как сейчас) */}
             <Link
               href="/contacts"
-              className="hidden sm:inline-flex items-center px-6 font-mono text-[12px] tracking-[0.12em] uppercase text-white bg-orange hover:bg-orange-dark transition-colors"
+              className="btn btn-orange nav-cta"
             >
               Обсудить проект
             </Link>

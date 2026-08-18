@@ -142,13 +142,13 @@ export default function HeroCanvas() {
             <div className="flex flex-wrap gap-4">
               <a
                 href="#contact"
-                className="px-8 py-4 bg-accent text-white font-mono text-xs tracking-[0.12em] uppercase hover:bg-accent-dark transition-colors"
+                className="btn btn-orange"
               >
                 Обсудить проект
               </a>
               <a
                 href="/projects"
-                className="px-8 py-4 border border-white/30 text-white font-mono text-xs tracking-[0.12em] uppercase hover:border-white/70 transition-colors"
+                className="btn btn-ghost-dark"
               >
                 Все проекты
               </a>

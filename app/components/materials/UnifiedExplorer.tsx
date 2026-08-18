@@ -615,11 +615,11 @@ export default function UnifiedExplorer({
                 {/* явная оранжевая кнопка входа в карточку */}
                 <button
                   onClick={() => setCardFor(material)}
-                  className="btn btn-orange w-full justify-center mt-4"
-                  style={{ padding: "22px 30px", fontSize: 14, letterSpacing: "0.12em" }}
+                  className="btn btn-orange w-full mt-4"
+                  style={{ fontSize: 14, letterSpacing: "0.12em" }}
                   aria-label={`Открыть карточку материала: ${material.name}`}
                 >
-                  Открыть карточку материала →
+                  Открыть карточку материала
                 </button>
               </div>
 

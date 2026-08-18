@@ -3,7 +3,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { useReveal } from "./useReveal";
-import SectionHead from "./SectionHead";
 
 const stages = [
   { n: "01", name: "Предпроект", desc: "Концепция, ТЗ, оценка реализуемости и предварительные решения.", tech: ["Rhino", "AutoCAD"] },
@@ -14,7 +13,7 @@ const stages = [
   { n: "06", name: "Монтаж", desc: "Съёмка по модели и контроль геометрии на объекте.", tech: ["ReCap", "Лазерное сканирование"] },
 ];
 
-const COLS = 36;
+const DIGIT_COLS = 5;
 const ROWS = 7;
 
 // Пиксельный шрифт 5×7 для табло (нужны цифры 0–6)
@@ -28,104 +27,135 @@ const DIGITS: Record<string, string[]> = {
   "6": ["00110", "01000", "10000", "11110", "10001", "10001", "01110"],
 };
 
-// левые колонки двух цифр: по центру матрицы (12 колонок под «0X»)
-const D1_START = 12;
-const D2_START = 19;
-
 function cellOn(col: number, row: number, num: string): boolean {
-  const [d1, d2] = num.split("");
-  if (col >= D1_START && col < D1_START + 5) return DIGITS[d1]?.[row][col - D1_START] === "1";
-  if (col >= D2_START && col < D2_START + 5) return DIGITS[d2]?.[row][col - D2_START] === "1";
-  return false;
+  return DIGITS[num]?.[row][col] === "1";
 }
 
 export default function DigitalEnvFlow() {
   const ref = useReveal();
   const [hovered, setHovered] = useState<number | null>(null);
-  const [opened, setOpened] = useState<number | null>(null);
 
-  // на табло — наведённый этап, иначе открытый
-  const shown = hovered ?? opened;
-  const num = shown !== null ? stages[shown].n : null;
-  const a = opened !== null ? stages[opened] : null;
+  const a = hovered !== null ? stages[hovered] : null;
 
   return (
-    <section id="digital" className="py-28 md:py-44" style={{ background: "var(--paper)" }}>
+    <section id="digital" className="py-28 md:py-44" style={{ background: "var(--coal)" }}>
       <div className="container-x">
-        <SectionHead index="05" kicker="Цифровая среда" theme="light" />
+        <div className="mb-10 md:mb-14">
+          <div className="flex items-center justify-between gap-4 pb-3">
+            <span
+              className="font-mono font-medium text-orange"
+              style={{ fontSize: 13, letterSpacing: "0.04em" }}
+            >
+              05
+            </span>
+            <span
+              className="hidden sm:inline font-mono select-none text-white/20"
+              style={{ fontSize: 12, letterSpacing: "0.32em" }}
+              aria-hidden
+            >
+              STRUKTURA
+              <span style={{ fontSize: 9, verticalAlign: "super", letterSpacing: 0 }}>+</span>
+            </span>
+          </div>
 
-        {/* intro */}
-        <div ref={ref} className="reveal grid lg:grid-cols-[1fr_1fr] gap-10 lg:gap-24 items-end mb-14 md:mb-20">
-          <h2 className="text-ink" style={{ fontSize: "clamp(30px, 3.6vw, 60px)", lineHeight: 1.04 }}>
-            STRUKTURA<span className="text-orange">+</span>
-          </h2>
-          <div>
-            <p className="font-body text-ink/70" style={{ fontSize: "clamp(15px, 1.2vw, 19px)", lineHeight: 1.6 }}>
-              Единая цифровая среда связывает все этапы проекта в&nbsp;одну систему: данные
-              передаются между этапами без&nbsp;потерь, а&nbsp;каждый процесс работает
-              на&nbsp;общий результат.
-            </p>
-            <p className="font-mono text-ink/40 text-[11px] tracking-[0.18em] uppercase mt-5">
-              Наведите на&nbsp;этап — табло покажет его номер. Нажмите — раскроется технологический стек
-            </p>
+          <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
+            <h2
+              className="font-mono uppercase text-white"
+              style={{
+                fontSize: "clamp(30px, 4.6vw, 72px)",
+                lineHeight: 0.98,
+                letterSpacing: "-0.01em",
+              }}
+            >
+              Цифровая среда
+            </h2>
+            <Link href="/digital" className="btn btn-orange md:mt-2">
+              Подробнее о цифровой среде
+            </Link>
           </div>
         </div>
 
-        {/* environment board */}
-        <div style={{ border: "1px solid var(--line-light)", background: "var(--paper-card)" }}>
-          {/* табло: пиксельная матрица, цифры собираются с волной */}
-          <div style={{ display: "grid", gridTemplateColumns: `repeat(${COLS}, 1fr)`, gap: 3 }}>
-            {Array.from({ length: COLS * ROWS }).map((_, idx) => {
-              const col = idx % COLS;
-              const row = Math.floor(idx / COLS);
-              const on = num !== null && cellOn(col, row, num);
-              return (
-                <span
-                  key={idx}
-                  style={{
-                    aspectRatio: "1 / 1",
-                    border: `1px solid ${on ? "rgba(255,90,0,0.9)" : "rgba(255,90,0,0.2)"}`,
-                    background: on ? "var(--orange)" : "transparent",
-                    transition: "background 0.35s ease, border-color 0.35s ease",
-                    transitionDelay: on ? `${(col - D1_START) * 28 + row * 22}ms` : "0ms",
-                  }}
-                />
-              );
-            })}
-          </div>
+        {/* intro */}
+        <div ref={ref} className="reveal mb-14 md:mb-20">
+          <p className="font-body max-w-2xl text-white/70" style={{ fontSize: "clamp(15px, 1.2vw, 19px)", lineHeight: 1.6 }}>
+            Единая цифровая среда связывает все этапы проекта в&nbsp;одну систему: данные
+            передаются между этапами без&nbsp;потерь, а&nbsp;каждый процесс работает
+            на&nbsp;общий результат.
+          </p>
+        </div>
 
-          {/* stage labels aligned under the matrix */}
-          <div className="grid grid-cols-3 md:grid-cols-6" style={{ borderTop: "1px solid var(--line-light)" }}>
+        {/* environment board */}
+        <div style={{ border: "1px solid var(--line-dark)", background: "var(--coal)" }}>
+          {/* stage cells: each digit appears directly above the hovered stage */}
+          <div
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+            style={{ gap: 1, background: "var(--line-dark)" }}
+          >
             {stages.map((s, i) => {
-              const on = opened === i || hovered === i;
+              const on = hovered === i;
+              const digit = String(i + 1);
               return (
-                <button
+                <div
                   key={s.n}
                   onMouseEnter={() => setHovered(i)}
                   onMouseLeave={() => setHovered(null)}
-                  onFocus={() => setHovered(i)}
-                  onBlur={() => setHovered(null)}
-                  onClick={() => setOpened((prev) => (prev === i ? null : i))}
-                  aria-expanded={opened === i}
-                  className="text-left p-4 md:p-5 transition-colors"
                   style={{
-                    borderLeft: i % 6 === 0 ? undefined : "1px solid var(--line-light)",
-                    background: on ? "var(--paper)" : "transparent",
+                    background: on ? "#211d1a" : "var(--coal)",
                   }}
                 >
-                  <span className="font-mono text-orange text-xs">{s.n}</span>
-                  <span
-                    className="block font-mono text-[12px] tracking-[0.02em] mt-1"
-                    style={{ color: on ? "var(--ink)" : "rgba(26,26,26,0.5)" }}
+                  <div
+                    className="flex h-[260px] items-center justify-center p-4 md:h-[230px] md:p-5 xl:h-[280px]"
+                    style={{
+                      borderBottom: "1px solid var(--line-dark)",
+                    }}
+                    aria-hidden="true"
                   >
-                    {s.name}
-                  </span>
-                </button>
+                    <div
+                      className="grid w-full max-w-[360px]"
+                      style={{
+                        gridTemplateColumns: `repeat(${DIGIT_COLS}, minmax(0, 1fr))`,
+                        gap: 6,
+                      }}
+                    >
+                      {Array.from({ length: DIGIT_COLS * ROWS }).map((_, idx) => {
+                        const col = idx % DIGIT_COLS;
+                        const row = Math.floor(idx / DIGIT_COLS);
+                        const lit = hovered === i && cellOn(col, row, digit);
+                        return (
+                          <span
+                            key={idx}
+                            style={{
+                              aspectRatio: "1 / 1",
+                              border: `1px solid ${lit ? "rgba(255,90,0,0.9)" : "rgba(255,90,0,0.2)"}`,
+                              background: lit ? "var(--orange)" : "transparent",
+                              transition: "background 0.35s ease, border-color 0.35s ease",
+                              transitionDelay: lit ? `${col * 28 + row * 22}ms` : "0ms",
+                            }}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <button
+                    onFocus={() => setHovered(i)}
+                    onBlur={() => setHovered(null)}
+                    className="w-full text-left p-4 md:p-5 transition-colors"
+                  >
+                    <span className="font-mono text-orange text-xs">{s.n}</span>
+                    <span
+                      className="block font-mono text-[12px] tracking-[0.02em] mt-1"
+                      style={{ color: on ? "#fff" : "rgba(255,255,255,0.55)" }}
+                    >
+                      {s.name}
+                    </span>
+                  </button>
+                </div>
               );
             })}
           </div>
 
-          {/* выдвижная панель: технологический стек открытого этапа + CTA */}
+          {/* выдвижная панель: технологический стек наведённого этапа */}
           <AnimatePresence initial={false}>
             {a && (
               <motion.div
@@ -134,7 +164,7 @@ export default function DigitalEnvFlow() {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                style={{ overflow: "hidden", borderTop: "1px solid var(--line-light)" }}
+                style={{ overflow: "hidden", borderTop: "1px solid var(--line-dark)" }}
               >
                 <div className="p-6 md:p-9">
                   <div key={a.n} className="env-slide grid md:grid-cols-[auto_1fr_auto] gap-5 md:gap-10 md:items-center">
@@ -142,8 +172,8 @@ export default function DigitalEnvFlow() {
                       {a.n}
                     </div>
                     <div>
-                      <h3 className="font-mono text-ink text-lg mb-2 tracking-[0.02em]">{a.name}</h3>
-                      <p className="font-body text-ink/60 max-w-xl" style={{ fontSize: 15, lineHeight: 1.55 }}>
+                      <h3 className="font-mono text-white text-lg mb-2 tracking-[0.02em]">{a.name}</h3>
+                      <p className="font-body text-white/60 max-w-xl" style={{ fontSize: 15, lineHeight: 1.55 }}>
                         {a.desc}
                       </p>
                     </div>
@@ -151,18 +181,13 @@ export default function DigitalEnvFlow() {
                       {a.tech.map((tt) => (
                         <span
                           key={tt}
-                          className="font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 text-ink/80 whitespace-nowrap"
+                          className="font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 text-white/80 whitespace-nowrap"
                           style={{ border: "1px solid rgba(255,90,0,0.5)" }}
                         >
                           {tt}
                         </span>
                       ))}
                     </div>
-                  </div>
-                  <div className="mt-8">
-                    <Link href="/digital" className="btn btn-orange">
-                      Подробнее о цифровой среде STRUKTURA+
-                    </Link>
                   </div>
                 </div>
               </motion.div>

@@ -347,27 +347,46 @@ h1, h2, h3, h4, h5, h6 {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  justify-content: space-between;
   font-family: "CoFo Sans Mono", monospace;
   font-size: 12px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
-  padding: 16px 30px;
+  min-height: 56px;
+  min-width: 220px;
+  padding: 0 0 0 28px;
+  overflow: hidden;
   /* только нужные свойства — transition: all тянет лишнее и мимо GPU */
   transition:
-    transform 0.2s var(--ease-out),
+    transform 0.28s var(--ease-out),
     background-color 0.2s ease,
     border-color 0.2s ease,
     color 0.2s ease;
   cursor: pointer;
   white-space: nowrap;
 }
+.btn::after {
+  content: "→";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  width: 56px;
+  margin-left: 28px;
+  border-left: 1px solid currentColor;
+  transform-origin: left center;
+  transition: transform 0.28s var(--ease-out);
+}
+.btn > span[aria-hidden] {
+  display: none;
+}
 /* hover-движение только там, где есть настоящий hover (не тач) */
 @media (hover: hover) and (pointer: fine) {
-  .btn:hover { transform: translateY(-2px); }
+  .btn:not(:disabled):not([aria-disabled="true"]):hover { transform: translateY(-4px); }
+  .btn:not(:disabled):not([aria-disabled="true"]):hover::after { transform: scaleX(1.18); }
 }
 /* отклик на нажатие: интерфейс «услышал» клик */
-.btn:active { transform: scale(0.97); transition-duration: 0.1s; }
+.btn:active { transform: translateY(-1px) scale(0.98); transition-duration: 0.1s; }
 .btn-orange { background: var(--orange); color: #fff; }
 .btn-orange:hover { background: var(--orange-dark); }
 .btn-dark { background: var(--ink); color: #fff; }
@@ -380,6 +399,24 @@ h1, h2, h3, h4, h5, h6 {
 .btn-ghost-orange:hover { background: #fff; color: var(--orange); }
 .btn-white { background: #fff; color: var(--orange); }
 .btn-white:hover { background: var(--ink); color: #fff; }
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  background: rgba(0,0,0,0.15);
+  color: rgba(255,255,255,0.72);
+}
+.nav-cta {
+  display: none;
+  min-height: 44px;
+  min-width: 206px;
+}
+.nav-cta::after {
+  width: 48px;
+  margin-left: 20px;
+}
+@media (min-width: 640px) {
+  .nav-cta { display: inline-flex; }
+}
 
 /* ---- Nav: подчёркивание ссылок через scaleX (из брендбука анимаций) ---- */
 .nav-link {

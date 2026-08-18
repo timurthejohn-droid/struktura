@@ -24,7 +24,7 @@ export default function ServicesHero() {
             <p className="max-w-[680px] font-body text-[clamp(15px,1.2vw,19px)] leading-[1.55] text-ink/60">
               Объединяем инженерную разработку, проектирование, производство и монтаж сложных архитектурных решений в одну управляемую систему.
             </p>
-            <a href="#services" className="btn btn-orange">Смотреть услуги ↓</a>
+            <a href="#services" className="btn btn-orange">Смотреть услуги</a>
           </div>
           <div className="mt-6 flex flex-wrap gap-x-8 gap-y-2">
             {directions.map((direction) => (

@@ -70,9 +70,6 @@ export default function TrustStrip() {
         </div>
 
         {/* Client ticker */}
-        <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-ink/35 mb-6">
-          Реализовано для лидеров рынка
-        </p>
         <div
           className="relative overflow-hidden no-scrollbar"
           style={{ maskImage: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)", WebkitMaskImage: "linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent)" }}
