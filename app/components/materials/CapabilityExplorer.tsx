@@ -3,12 +3,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   Capability,
-  CAPABILITIES,
-  CONTENT,
-  FAMILIES,
-  MATERIALS,
+  CAPABILITIES as DEFAULT_CAPABILITIES,
+  CONTENT as DEFAULT_CONTENT,
+  FAMILIES as DEFAULT_FAMILIES,
+  MATERIALS as DEFAULT_MATERIALS,
   Material,
   CaseItem,
+  Family,
+  MaterialContent,
 } from "./materialsData";
 
 // Каталог в одном окне (master-detail, два уровня в левой колонке):
@@ -17,13 +19,20 @@ import {
 // материал (чертёжный штамп → характеристики → проекты → статьи → кейсы).
 // Deep-link: /materials#forma открывает раздел сразу.
 
-type Group = { family: (typeof FAMILIES)[number]; items: Material[] };
+type ExplorerData = {
+  capabilities?: Capability[];
+  families?: Family[];
+  materials?: Material[];
+  content?: Record<string, MaterialContent>;
+};
 
-function groupsFor(cap: Capability): Group[] {
+type Group = { family: Family; items: Material[] };
+
+function groupsFor(cap: Capability, families: Family[], materials: Material[]): Group[] {
   const inCap = cap.materials
-    .map((name) => MATERIALS.find((m) => m.name === name))
+    .map((name) => materials.find((m) => m.name === name))
     .filter((m): m is Material => Boolean(m));
-  return FAMILIES.map((family) => ({
+  return families.map((family) => ({
     family,
     items: inCap.filter((m) => m.family === family.id),
   })).filter((g) => g.items.length > 0);
@@ -62,27 +71,35 @@ function ContentBlock({ label, items }: { label: string; items?: CaseItem[] }) {
   );
 }
 
-export default function CapabilityExplorer() {
+export default function CapabilityExplorer({
+  capabilities = DEFAULT_CAPABILITIES,
+  families = DEFAULT_FAMILIES,
+  materials = DEFAULT_MATERIALS,
+  content = DEFAULT_CONTENT,
+}: ExplorerData) {
   const [capSlug, setCapSlug] = useState<string | null>(null);
   const [hovered, setHovered] = useState<Capability | null>(null);
   const [openFamily, setOpenFamily] = useState<string>("");
   const [active, setActive] = useState<Material | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const cap = CAPABILITIES.find((c) => c.slug === capSlug) ?? null;
-  const groups = useMemo(() => (cap ? groupsFor(cap) : []), [cap]);
+  const cap = capabilities.find((c) => c.slug === capSlug) ?? null;
+  const groups = useMemo(() => (cap ? groupsFor(cap, families, materials) : []), [cap, families, materials]);
+  const totalCaps = capabilities.length;
+  const totalMaterials = materials.length;
+  const totalFamilies = families.length;
 
   // deep-link при загрузке
   useEffect(() => {
     const slug = window.location.hash.replace("#", "");
-    if (CAPABILITIES.some((c) => c.slug === slug)) openCapability(slug, false);
+    if (capabilities.some((c) => c.slug === slug)) openCapability(slug, false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [capabilities]);
 
   const openCapability = (slug: string, pushHash = true) => {
-    const c = CAPABILITIES.find((x) => x.slug === slug);
+    const c = capabilities.find((x) => x.slug === slug);
     if (!c) return;
-    const g = groupsFor(c);
+    const g = groupsFor(c, families, materials);
     setCapSlug(slug);
     setOpenFamily(g[0]?.family.id ?? "");
     setActive(g[0]?.items[0] ?? null);
@@ -105,11 +122,11 @@ export default function CapabilityExplorer() {
   const g = active ? groups.find((gr) => gr.family.id === active.family) : null;
   const idxInFamily = g && active ? g.items.findIndex((m) => m.name === active.name) + 1 : 1;
   const code = `${g?.family.n ?? "01"}.${String(idxInFamily).padStart(2, "0")}`;
-  const content = active ? CONTENT[active.name] : null;
+  const materialContent = active ? content[active.name] : null;
 
-  const capIdx = cap ? CAPABILITIES.findIndex((c) => c.slug === cap.slug) : 0;
-  const prev = CAPABILITIES[(capIdx + CAPABILITIES.length - 1) % CAPABILITIES.length];
-  const next = CAPABILITIES[(capIdx + 1) % CAPABILITIES.length];
+  const capIdx = cap ? capabilities.findIndex((c) => c.slug === cap.slug) : 0;
+  const prev = capabilities[(capIdx + capabilities.length - 1) % capabilities.length];
+  const next = capabilities[(capIdx + 1) % capabilities.length];
 
   const preview = hovered ?? cap;
 
@@ -133,7 +150,7 @@ export default function CapabilityExplorer() {
                   Каталог возможностей
                 </span>
               </div>
-              {CAPABILITIES.map((c) => (
+              {capabilities.map((c) => (
                 <button
                   key={c.slug}
                   onClick={() => openCapability(c.slug)}
@@ -158,7 +175,7 @@ export default function CapabilityExplorer() {
               ))}
               <div className="mt-auto px-6 py-5">
                 <p className="font-mono text-ink/35 uppercase" style={{ fontSize: 10, letterSpacing: "0.12em", lineHeight: 1.7 }}>
-                  9 возможностей · 29 материалов · 6 семейств
+                  {totalCaps} возможностей · {totalMaterials} материалов · {totalFamilies} семейств
                 </p>
               </div>
             </div>
@@ -182,7 +199,7 @@ export default function CapabilityExplorer() {
                     {cap.title}
                   </span>
                   <span className="font-mono text-ink/35" style={{ fontSize: 10.5 }}>
-                    {cap.n} / 09
+                    {cap.n} / {String(totalCaps).padStart(2, "0")}
                   </span>
                 </div>
               </div>
@@ -255,7 +272,7 @@ export default function CapabilityExplorer() {
             <div className="flex flex-col justify-between min-h-[420px] lg:min-h-[560px] p-8 md:p-12">
               <div className="flex items-start justify-between gap-4">
                 <span className="font-mono text-white/50 uppercase" style={{ fontSize: 11, letterSpacing: "0.18em" }}>
-                  {preview ? `${preview.n} / 09` : "Каталог"}
+                  {preview ? `${preview.n} / ${String(totalCaps).padStart(2, "0")}` : "Каталог"}
                 </span>
                 <span className="font-mono text-orange/70 uppercase" style={{ fontSize: 10, letterSpacing: "0.2em" }}>
                   STRUKTURA<span style={{ fontSize: 8, verticalAlign: "super" }}>+</span>
@@ -350,23 +367,28 @@ export default function CapabilityExplorer() {
                     <div className="px-4 md:px-5 py-3 font-mono text-white uppercase" style={{ fontSize: 12, letterSpacing: "0.13em", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
                       Материал — {active.name}
                     </div>
-                    <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 11, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
-                      Возможность — {active.edge}
-                    </div>
-                    <div className="grid md:grid-cols-2">
-                      <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)", borderRight: "1px solid rgba(255,90,0,0.4)" }}>
-                        Статус — {active.statuses.join(" · ")}
+                    {active.edge && (
+                      <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 11, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
+                        {active.edge}
                       </div>
-                      <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)" }}>
-                        Техника — {active.fmt} · {active.zone}
+                    )}
+                    {(active.statuses.length > 0 || active.fmt || active.zone) && (
+                      <div className="grid md:grid-cols-2">
+                        {active.statuses.length > 0 && (
+                          <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)", borderRight: "1px solid rgba(255,90,0,0.4)" }}>
+                            {active.statuses.join(" · ")}
+                          </div>
+                        )}
+                        {(active.fmt || active.zone) && (
+                          <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)" }}>
+                            {[active.fmt, active.zone].filter(Boolean).join(" · ")}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                <p className="font-mono text-white/35 uppercase mt-4 mb-8" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                  Листайте вниз: характеристики · проекты · статьи · мировые кейсы ↓
-                </p>
               </div>
 
               {/* ХАРАКТЕРИСТИКИ */}
@@ -380,7 +402,7 @@ export default function CapabilityExplorer() {
                     { l: "Вес", v: active.weight },
                     { l: "Зона", v: active.zone },
                     { l: "Пожарный статус", v: active.fire },
-                  ].map((s) => (
+                  ].filter((s) => s.v).map((s) => (
                     <div key={s.l} className="p-4" style={{ background: "var(--coal-deep)" }}>
                       <div className="font-mono uppercase text-white/40" style={{ fontSize: 9.5, letterSpacing: "0.12em" }}>
                         {s.l}
@@ -393,40 +415,31 @@ export default function CapabilityExplorer() {
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 mt-7">
-                  <div>
-                    <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                      Что может
-                    </p>
-                    {active.can.map((c) => (
-                      <p key={c} className="font-body text-white/75 mb-1.5" style={{ fontSize: 14, lineHeight: 1.5 }}>
-                        <span className="text-orange">—</span> {c}
+                  {active.can.length > 0 && (
+                    <div>
+                      <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
+                        Что может
                       </p>
-                    ))}
-                  </div>
-                  <div>
+                      {active.can.map((c) => (
+                        <p key={c} className="font-body text-white/75 mb-1.5" style={{ fontSize: 14, lineHeight: 1.5 }}>
+                          <span className="text-orange">—</span> {c}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                  {active.watch && <div>
                     <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                      Что важно учесть
+                      Риски и ограничения
                     </p>
                     <p className="font-body text-white/60" style={{ fontSize: 14, lineHeight: 1.55 }}>
                       {active.watch}
                     </p>
-                  </div>
+                  </div>}
                 </div>
               </div>
 
-              <ContentBlock label="Наши проекты" items={content?.projects} />
-              <ContentBlock label="Статьи" items={content?.articles} />
-              <ContentBlock label="Мировые кейсы" items={content?.world} />
+              <ContentBlock label="источник характеристик" items={materialContent?.articles} />
 
-              {/* CTA в конце панели */}
-              <div className="px-6 md:px-9 py-9 flex flex-wrap items-center justify-between gap-5" style={{ borderTop: "1px solid rgba(255,90,0,0.35)" }}>
-                <p className="font-mono text-white uppercase" style={{ fontSize: 14, letterSpacing: "0.04em" }}>
-                  Задача с этим материалом? Проверим на реализуемость.
-                </p>
-                <Link href="/#contact" className="btn btn-orange">
-                  Обсудить проект
-                </Link>
-              </div>
             </div>
           )}
         </div>

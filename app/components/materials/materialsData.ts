@@ -4,6 +4,7 @@
 // Логика: не каталог свойств, а карта возможностей, доказанных проектами.
 
 export type FamilyId =
+  | "coatings"
   | "metal"
   | "glass"
   | "wood"
