@@ -367,23 +367,28 @@ export default function CapabilityExplorer({
                     <div className="px-4 md:px-5 py-3 font-mono text-white uppercase" style={{ fontSize: 12, letterSpacing: "0.13em", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
                       Материал — {active.name}
                     </div>
-                    <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 11, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
-                      Возможность — {active.edge}
-                    </div>
-                    <div className="grid md:grid-cols-2">
-                      <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)", borderRight: "1px solid rgba(255,90,0,0.4)" }}>
-                        Статус — {active.statuses.join(" · ")}
+                    {active.edge && (
+                      <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 11, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.75)", borderBottom: "1px solid rgba(255,90,0,0.4)" }}>
+                        {active.edge}
                       </div>
-                      <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)" }}>
-                        Техника — {active.fmt} · {active.zone}
+                    )}
+                    {(active.statuses.length > 0 || active.fmt || active.zone) && (
+                      <div className="grid md:grid-cols-2">
+                        {active.statuses.length > 0 && (
+                          <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)", borderRight: "1px solid rgba(255,90,0,0.4)" }}>
+                            {active.statuses.join(" · ")}
+                          </div>
+                        )}
+                        {(active.fmt || active.zone) && (
+                          <div className="px-4 md:px-5 py-3 font-mono uppercase" style={{ fontSize: 10.5, letterSpacing: "0.1em", lineHeight: 1.6, color: "rgba(255,255,255,0.6)" }}>
+                            {[active.fmt, active.zone].filter(Boolean).join(" · ")}
+                          </div>
+                        )}
                       </div>
-                    </div>
+                    )}
                   </div>
                 </div>
 
-                <p className="font-mono text-white/35 uppercase mt-4 mb-8" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                  Листайте вниз: характеристики · проекты · статьи · мировые кейсы ↓
-                </p>
               </div>
 
               {/* ХАРАКТЕРИСТИКИ */}
@@ -397,7 +402,7 @@ export default function CapabilityExplorer({
                     { l: "Вес", v: active.weight },
                     { l: "Зона", v: active.zone },
                     { l: "Пожарный статус", v: active.fire },
-                  ].map((s) => (
+                  ].filter((s) => s.v).map((s) => (
                     <div key={s.l} className="p-4" style={{ background: "var(--coal-deep)" }}>
                       <div className="font-mono uppercase text-white/40" style={{ fontSize: 9.5, letterSpacing: "0.12em" }}>
                         {s.l}
@@ -410,40 +415,31 @@ export default function CapabilityExplorer({
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-6 mt-7">
-                  <div>
-                    <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                      Что может
-                    </p>
-                    {active.can.map((c) => (
-                      <p key={c} className="font-body text-white/75 mb-1.5" style={{ fontSize: 14, lineHeight: 1.5 }}>
-                        <span className="text-orange">—</span> {c}
+                  {active.can.length > 0 && (
+                    <div>
+                      <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
+                        Что может
                       </p>
-                    ))}
-                  </div>
-                  <div>
+                      {active.can.map((c) => (
+                        <p key={c} className="font-body text-white/75 mb-1.5" style={{ fontSize: 14, lineHeight: 1.5 }}>
+                          <span className="text-orange">—</span> {c}
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                  {active.watch && <div>
                     <p className="font-mono uppercase text-white/40 mb-2" style={{ fontSize: 10, letterSpacing: "0.14em" }}>
-                      Что важно учесть
+                      Риски и ограничения
                     </p>
                     <p className="font-body text-white/60" style={{ fontSize: 14, lineHeight: 1.55 }}>
                       {active.watch}
                     </p>
-                  </div>
+                  </div>}
                 </div>
               </div>
 
-              <ContentBlock label="Наши проекты" items={materialContent?.projects} />
-              <ContentBlock label="Статьи" items={materialContent?.articles} />
-              <ContentBlock label="Мировые кейсы" items={materialContent?.world} />
+              <ContentBlock label="источник характеристик" items={materialContent?.articles} />
 
-              {/* CTA в конце панели */}
-              <div className="px-6 md:px-9 py-9 flex flex-wrap items-center justify-between gap-5" style={{ borderTop: "1px solid rgba(255,90,0,0.35)" }}>
-                <p className="font-mono text-white uppercase" style={{ fontSize: 14, letterSpacing: "0.04em" }}>
-                  Задача с этим материалом? Проверим на реализуемость.
-                </p>
-                <Link href="/#contact" className="btn btn-orange">
-                  Обсудить проект
-                </Link>
-              </div>
             </div>
           )}
         </div>

@@ -7,7 +7,6 @@ import MaterialsHero from "../../components/materials/MaterialsHero";
 import MaterialsNavigator from "../../components/materials/MaterialsNavigator";
 import LabBar from "../../components/materials/LabBar";
 import {
-  CAPABILITIES as DEFAULT_CAPABILITIES,
   FAMILIES as DEFAULT_FAMILIES,
   MATERIALS as DEFAULT_MATERIALS,
   Capability,
@@ -104,11 +103,7 @@ function materialSub(material: CustomerMaterial) {
 }
 
 function materialStatuses(material: CustomerMaterial) {
-  const rows = [
-    material.proven ? "доказано: проектами / источниками" : "статус: в разработке",
-    material.base ? `основа: ${material.base}` : "",
-    material.uv ? `UV: ${material.uv}` : "",
-  ];
+  const rows = [material.proven ? "доказано" : "в разработке", material.base ?? "", material.uv ?? ""];
   return rows.filter(Boolean);
 }
 
@@ -146,14 +141,14 @@ function toExplorerData(data: CustomerMaterialsData): {
         family,
         name: material.name,
         sub: materialSub(material),
-        can: material.can?.length ? material.can : [material.promise ?? "Материал требует проектной проверки."],
-        edge: material.promise ?? material.can?.[0] ?? "Материал требует проектной проверки.",
+        can: material.can ?? [],
+        edge: material.promise ?? "",
         statuses: materialStatuses(material),
-        watch: materialWatch(material) || "Проверить ограничения по проекту и подтвердить образцом.",
-        fmt: material.format ?? "по проекту",
-        weight: material.weight ?? "по проекту",
-        zone: material.zone ?? "по проекту",
-        fire: material.fire ?? "требуется подтверждение",
+        watch: materialWatch(material),
+        fmt: material.format ?? "",
+        weight: material.weight ?? "",
+        zone: material.zone ?? "",
+        fire: material.fire ?? "",
         grad: materialGrad(material.name, family),
       };
     })
@@ -163,13 +158,12 @@ function toExplorerData(data: CustomerMaterialsData): {
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([num, label], index) => {
       const slug = CAP_SLUG_BY_NUM[num] ?? `cap-${num}`;
-      const fallback = DEFAULT_CAPABILITIES.find((capability) => capability.slug === slug);
       return {
         slug,
         n: String(index + 1).padStart(2, "0"),
         title: label,
-        tags: fallback?.tags ?? "Материалы · ограничения · проверка",
-        desc: fallback?.desc ?? "Материалы сгруппированы по возможности из файла заказчика.",
+        tags: `${num} ${label}`,
+        desc: "",
         materials: data.materials.filter((material) => material.caps?.some((cap) => cap.num === num)).map((material) => material.name),
       };
     });
@@ -182,8 +176,8 @@ function toExplorerData(data: CustomerMaterialsData): {
         {
           articles: [
             {
-              title: "Источник характеристик",
-              meta: "Данные заказчика",
+              title: "источник характеристик",
+              meta: "",
               desc: material.src ?? "",
             },
           ],
