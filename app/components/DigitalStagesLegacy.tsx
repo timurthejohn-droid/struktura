@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import DigitalStageGraphic from "./DigitalStageGraphic";
 import { useRef, useState } from "react";
 import {
   AnimatePresence,
@@ -11,6 +13,8 @@ import {
   useTransform,
 } from "framer-motion";
 
+export type StageAction = { do: string; value: string };
+
 export type DigitalStage = {
   slug: string;
   n: string;
@@ -18,25 +22,27 @@ export type DigitalStage = {
   process: string;
   problems: string[];
   solution: string[];
+  actions?: StageAction[];
 };
 
-type AccordionKey = "problems" | "solution";
+const STAGE_CTA: Record<string, { label: string; href: string }> = {
+  design: { label: "Алгоритмический подход", href: "/approach" },
+  production: { label: "Возможности материалов", href: "/materials" },
+};
 
 function ReadoutAccordion({
   label,
   items,
   open,
-  accent,
   onToggle,
 }: {
   label: string;
-  items: string[];
+  items: StageAction[];
   open: boolean;
-  accent?: boolean;
   onToggle: () => void;
 }) {
   return (
-    <div className={`readout-accordion ${accent ? "is-accent" : ""}`}>
+    <div className="readout-accordion is-accent">
       <button type="button" onClick={onToggle} aria-expanded={open}>
         <span>{label}</span>
         <span className="readout-accordion-count">{String(items.length).padStart(2, "0")}</span>
@@ -53,7 +59,13 @@ function ReadoutAccordion({
           >
             <ul>
               {items.map((item) => (
-                <li key={item}><b>{accent ? "+" : "—"}</b><span>{item}</span></li>
+                <li key={item.do}>
+                  <b>+</b>
+                  <div className="readout-action">
+                    <span className="readout-action-do">{item.do}</span>
+                    {item.value ? <span className="readout-action-val">{item.value}</span> : null}
+                  </div>
+                </li>
               ))}
             </ul>
           </motion.div>
@@ -105,7 +117,7 @@ function ConveyorStage({
 export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
   const sectionRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
-  const [openAccordion, setOpenAccordion] = useState<AccordionKey | null>(null);
+  const [openSolution, setOpenSolution] = useState(false);
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
   const smoothProgress = useSpring(scrollYProgress, { stiffness: 160, damping: 32, mass: 0.3 });
 
@@ -114,6 +126,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
   });
 
   const selected = stages[active] ?? stages[0];
+  const cta = STAGE_CTA[selected.slug];
 
   return (
     <section
@@ -171,6 +184,20 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           </div>
 
           <div className="scanner-readout" aria-live="polite">
+            <div className="scanner-graphic" aria-hidden>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={selected.slug}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <DigitalStageGraphic index={active} />
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
             <AnimatePresence mode="wait">
               <motion.div
                 key={selected.slug}
@@ -187,19 +214,22 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
                 <h3>{selected.title}</h3>
                 <p>{selected.process}</p>
 
+                {cta && (
+                  <div className="scanner-cta">
+                    <Link href={cta.href} className="btn btn-orange">
+                      {cta.label}
+                    </Link>
+                  </div>
+                )}
+
                 <div className="scanner-accordions">
                   <ReadoutAccordion
-                    label="Риски этапа"
-                    items={selected.problems}
-                    open={openAccordion === "problems"}
-                    onToggle={() => setOpenAccordion((value) => (value === "problems" ? null : "problems"))}
-                  />
-                  <ReadoutAccordion
                     label="Что делает STRUKTURA+"
-                    items={selected.solution}
-                    open={openAccordion === "solution"}
-                    accent
-                    onToggle={() => setOpenAccordion((value) => (value === "solution" ? null : "solution"))}
+                    items={
+                      selected.actions ?? selected.solution.map((s) => ({ do: s, value: "" }))
+                    }
+                    open={openSolution}
+                    onToggle={() => setOpenSolution((value) => !value)}
                   />
                 </div>
               </motion.div>
@@ -393,18 +423,35 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           border-left: 2px solid rgba(255, 90, 0, 0.72);
           background: linear-gradient(90deg, rgba(255, 90, 0, 0.045), rgba(255, 90, 0, 0.008) 58%, transparent);
         }
+        /* правая часть — единая карточка (графика + текст), центрируется по вертикали */
         .scanner-readout {
           position: relative;
           align-self: stretch;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
           width: min(640px, calc(100% - 40px));
           height: 100%;
           margin: 0 0 0 auto;
-          padding-top: 26vh;
+          padding: 54px 0 42px;
           overflow: visible;
+        }
+        .scanner-graphic {
+          flex: none;
+          display: flex;
+          justify-content: flex-end;
+          margin-bottom: 26px;
+          pointer-events: none;
+        }
+        .scanner-graphic :global(svg) {
+          display: block;
+          width: auto;
+          height: clamp(96px, 17vh, 178px);
+          opacity: 0.85;
         }
         .scanner-readout-content {
           width: 100%;
-          max-height: calc(100svh - 72px - 26vh - 34px);
+          min-height: 0;
           padding-right: 14px;
           overflow-y: auto;
           scrollbar-width: thin;
@@ -438,6 +485,9 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           font-size: 15px;
           line-height: 1.62;
           color: rgba(255, 255, 255, 0.56);
+        }
+        .scanner-cta {
+          margin-top: 26px;
         }
         .scanner-accordions {
           margin-top: 34px;
@@ -494,6 +544,17 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         }
         :global(.readout-accordion.is-accent .readout-accordion-body li) { color: rgba(255, 255, 255, 0.78); }
         :global(.readout-accordion.is-accent .readout-accordion-body li b) { color: #ff5a00; }
+        :global(.readout-action) {
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        }
+        :global(.readout-action-do) { color: rgba(255, 255, 255, 0.88); }
+        :global(.readout-action-val) {
+          font-size: 11px;
+          line-height: 1.45;
+          color: rgba(255, 255, 255, 0.42);
+        }
         .scanner-hint {
           position: absolute;
           z-index: 8;
@@ -515,7 +576,11 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           :global(.conveyor-stage) { grid-template-columns: 42px 34px minmax(80px, 1fr); }
           :global(.conveyor-stage-line) { left: 50px; width: 26px; }
           .scanner-readout { width: calc(100% - 48px); }
+          .scanner-graphic :global(svg) { height: clamp(78px, 14vh, 132px); }
           :global(.readout-accordion-body li) { font-size: 11px; }
+          :global(.readout-action-val) { font-size: 10px; }
+          .scanner-cta { margin-top: 22px; }
+          .scanner-cta :global(.btn) { min-height: 48px; min-width: 200px; font-size: 11px; }
         }
         @media (max-width: 767px) {
           .scanner-viewport { min-height: 580px; }
@@ -545,14 +610,18 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           :global(.conveyor-stage.is-active .conveyor-stage-node) { width: 19px; height: 19px; }
           :global(.conveyor-stage.is-active .conveyor-stage-title) { font-size: 10px; transform: translateX(4px); }
           .scanner-readout { width: calc(100% - 28px); }
-          .scanner-readout { padding-top: 23vh; }
-          .scanner-readout-content { max-height: calc(100svh - 72px - 23vh - 24px); padding-right: 6px; }
+          .scanner-graphic { display: none; }
+          .scanner-readout { padding: 34px 0 28px; }
+          .scanner-readout-content { padding-right: 6px; }
           .scanner-readout-head { padding-bottom: 11px; font-size: 6px; }
           .scanner-readout h3 { margin-top: 18px; font-size: clamp(22px, 7vw, 34px); overflow-wrap: anywhere; }
           .scanner-readout p { margin-top: 17px; font-size: 10px; line-height: 1.52; }
           .scanner-accordions { margin-top: 22px; }
           :global(.readout-accordion > button) { padding: 13px 0; font-size: 7px; gap: 7px; }
           :global(.readout-accordion-body li) { grid-template-columns: 13px 1fr; padding: 4px 0; font-size: 9px; }
+          :global(.readout-action-val) { font-size: 8px; }
+          .scanner-cta { margin-top: 18px; }
+          .scanner-cta :global(.btn) { min-height: 42px; min-width: 0; width: 100%; font-size: 9px; padding-left: 18px; }
           .scanner-hint { display: none; }
         }
         @media (prefers-reduced-motion: reduce) {

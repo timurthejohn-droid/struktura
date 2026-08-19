@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SectionHead from "../SectionHead";
-import { email, vacancies } from "./careersData";
+import { email, ROLE_EVENT, vacancies } from "./careersData";
 
 // Отклик уходит письмом: кнопка собирает готовое письмо в почтовом клиенте —
 // так резюме можно приложить файлом, и заявка не теряется без бэкенда.
@@ -13,6 +13,18 @@ export default function ResumeForm() {
   const [form, setForm] = useState({ name: "", mail: "", role: roles[0], link: "", message: "" });
   const [agreed, setAgreed] = useState(false);
   const [sent, setSent] = useState(false);
+
+  // клик по вакансии в списке выше: прокрутка сюда + выбранная роль
+  useEffect(() => {
+    const onSelectRole = (event: Event) => {
+      const role = (event as CustomEvent<string>).detail;
+      if (!roles.includes(role)) return;
+      setSent(false);
+      setForm((current) => ({ ...current, role }));
+    };
+    window.addEventListener(ROLE_EVENT, onSelectRole);
+    return () => window.removeEventListener(ROLE_EVENT, onSelectRole);
+  }, []);
 
   const set = (key: keyof typeof form) => (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setForm({ ...form, [key]: event.target.value });

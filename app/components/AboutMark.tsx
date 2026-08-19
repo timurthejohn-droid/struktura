@@ -83,8 +83,11 @@ function buildSignGeometries(): BufferGeometry[] {
     }
   }
 
-  // SVG's Y axis points down — flip so the glyph is upright in 3D.
-  geos.forEach((g) => g.scale(1, -1, 1));
+  // SVG's Y axis points down — turn the glyph upright. A 180° turn around X, not
+  // scale(1,-1,1): mirroring flips triangle winding without flipping the stored normals,
+  // so every face renders as a back face and the mark looks hollow / see-through when it
+  // spins. A rotation keeps handedness (same silhouette, correct winding).
+  geos.forEach((g) => g.rotateX(Math.PI));
 
   // One combined bounding box → shared center + uniform scale for the whole mark.
   const bb = new Box3();
@@ -132,13 +135,13 @@ function Sign({ reduced }: { reduced: boolean }) {
       {geometries.map((geo, i) => (
         <mesh key={i} geometry={geo}>
           <meshStandardMaterial
-            color="#171717"
-            metalness={0.9}
-            roughness={0.72}
+            color="#1f1f1f"
+            metalness={0.86}
+            roughness={0.52}
             roughnessMap={surface ?? undefined}
             bumpMap={surface ?? undefined}
             bumpScale={0.004}
-            envMapIntensity={1.0}
+            envMapIntensity={1.5}
           />
         </mesh>
       ))}
@@ -195,7 +198,7 @@ export default function AboutMark() {
 
           {/* Neutral studio so the black metal reads as metal (not tinted). */}
           <Environment resolution={512}>
-            <Lightformer form="rect" position={[0, 4, 6]} scale={[10, 10, 1]} intensity={3} color="#f4f6fa" />
+            <Lightformer form="rect" position={[0, 4, 6]} scale={[10, 10, 1]} intensity={3.6} color="#f4f6fa" />
             <Lightformer form="rect" position={[-6, 1, 2]} scale={[4, 10, 1]} intensity={1.4} color="#eef1f6" />
             <Lightformer form="rect" position={[6, 0, 3]} scale={[4, 10, 1]} intensity={1.1} color="#dfe7ff" />
             <Lightformer form="ring" position={[2, 3, -6]} scale={[6, 6, 1]} intensity={2.4} color="#ffffff" />

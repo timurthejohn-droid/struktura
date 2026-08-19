@@ -1,7 +1,10 @@
-import SectionHead from "../SectionHead";
-import { mailto, vacancies } from "./careersData";
+"use client";
 
-// Список вакансий: строка-ссылка с откликом на почту.
+import SectionHead from "../SectionHead";
+import { ROLE_EVENT, vacancies } from "./careersData";
+
+// Список вакансий: клик уводит вниз к форме отклика и подставляет вакансию в неё.
+// Скролл делает сам якорь (#resume + scroll-behavior: smooth), клик лишь сообщает форме роль.
 // .hov-row из globals.css даёт оранжевую засечку слева при наведении.
 
 export default function VacancyList() {
@@ -14,7 +17,10 @@ export default function VacancyList() {
           {vacancies.map((vacancy) => (
             <a
               key={vacancy.number}
-              href={mailto(vacancy.title)}
+              href="#resume"
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent(ROLE_EVENT, { detail: vacancy.title }))
+              }
               className="hov-row group relative grid grid-cols-[38px_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 border-b border-black/10 py-6 md:grid-cols-[70px_minmax(0,1fr)_260px_44px] md:gap-x-8 md:py-8"
             >
               <span className="font-mono text-[12px] tracking-[0.14em] text-orange md:pl-5">{vacancy.number}</span>

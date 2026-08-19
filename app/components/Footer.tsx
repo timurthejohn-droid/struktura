@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 const nav = [
   { href: "/about", label: "О компании" },
   { href: "/projects", label: "Проекты" },
@@ -17,12 +19,12 @@ export default function Footer() {
             <ul className="space-y-5">
               {nav.map((l) => (
                 <li key={l.href}>
-                  <a
+                  <Link
                     href={l.href}
                     className="font-mono text-[12px] uppercase leading-none tracking-[0.16em] text-white transition-colors hover:text-orange"
                   >
                     {l.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -46,13 +48,13 @@ export default function Footer() {
               </a>
             </div>
 
-            <a href="/" className="self-start justify-self-start md:justify-self-end" aria-label="STRUKTURA+">
+            <Link href="/" className="self-start justify-self-start md:justify-self-end" aria-label="STRUKTURA+">
               <img
                 src={`${process.env.NEXT_PUBLIC_BASE_PATH || ""}/logos/logo-white.svg`}
                 alt="STRUKTURA+"
                 className="h-auto w-[156px]"
               />
-            </a>
+            </Link>
           </div>
         </div>
 

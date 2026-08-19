@@ -28,7 +28,7 @@ export default function IpdBlock() {
         <div ref={ref} className="reveal">
           <SectionHead
             index="08"
-            kicker="Единая система · IPD"
+            kicker="Интегрированная система управления проектами"
             theme="orange"
             indexColor="#ffffff"
             markColor="rgba(255,255,255,0.6)"
