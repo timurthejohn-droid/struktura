@@ -25,7 +25,7 @@ const cards = [
 
 export default function ContactsInfo() {
   return (
-    <section className="bg-paper py-16 md:py-24">
+    <section className="bg-paper pb-16 pt-28 md:pb-24 md:pt-32">
       <div className="container-x">
         <SectionHead index="01" kicker="Контакты" theme="light" />
         <div className="grid border-l border-t border-black/10 sm:grid-cols-3">

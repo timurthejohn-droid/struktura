@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 import {
   motion,
   useReducedMotion,
@@ -69,16 +69,54 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
   const eased = useTransform(progress, (v) => Math.min(1, Math.max(0, (v - 0.04) / 0.9)));
   const fillW = useTransform(eased, (v) => `${v * 100}%`);
 
+  // на подходе к стрелке кружок сжимается и гаснет
+  const headScale = useTransform(eased, [0.965, 0.998], [1, 0]);
+  const headOpacity = useTransform(eased, [0.965, 0.992], [1, 0]);
+
   const [revealed, setRevealed] = useState(0);
+  const [atEnd, setAtEnd] = useState(false);
   useMotionValueEvent(eased, "change", (v) => {
     let c = 0;
     for (let i = 0; i < count; i++) {
       if (v >= (i + 0.5) / count - 0.06) c = i + 1;
     }
     setRevealed(c);
+    setAtEnd(v >= 0.975);
   });
 
   const shownCount = reduced ? count : revealed;
+
+  // все карточки одной высоты — по самой высокой
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [cardH, setCardH] = useState(0);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    let raf = 0;
+    const measure = () => {
+      const faces = Array.from(wrap.querySelectorAll<HTMLElement>(".tl-card-face"));
+      if (!faces.length) return;
+      faces.forEach((f) => (f.style.height = "auto"));
+      const h = faces.reduce((max, f) => Math.max(max, f.offsetHeight), 0);
+      faces.forEach((f) => (f.style.height = ""));
+      setCardH(h);
+    };
+    const schedule = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(measure);
+    };
+
+    schedule();
+    window.addEventListener("resize", schedule);
+    document.fonts?.ready.then(schedule).catch(() => {});
+
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", schedule);
+    };
+  }, [stages]);
 
   return (
     <section
@@ -118,7 +156,15 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
 
         <div className="tl-timeline">
           <div className="tl-track container-x">
-            <div className="tl-lines-wrap">
+            <div
+              className="tl-lines-wrap"
+              ref={wrapRef}
+              style={
+                cardH
+                  ? ({ "--tl-card-h": `${cardH}px` } as CSSProperties)
+                  : undefined
+              }
+            >
               <span className="tl-line-base" aria-hidden />
               <motion.span
                 className="tl-line-fill"
@@ -127,10 +173,15 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
               />
               {!reduced && (
                 <motion.span className="tl-line-head" aria-hidden style={{ left: fillW }}>
-                  <i />
+                  <motion.i
+                    style={{ x: "-50%", y: "-50%", scale: headScale, opacity: headOpacity }}
+                  />
                 </motion.span>
               )}
-              <span className="tl-line-arrow" aria-hidden />
+              <span
+                className={`tl-line-arrow ${reduced || atEnd ? "on" : ""}`}
+                aria-hidden
+              />
 
               {stages.map((stage, i) => (
                 <StageCard
@@ -275,7 +326,6 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           height: 9px;
           border-radius: 50%;
           background: #ff5a00;
-          transform: translate(-50%, -50%);
           box-shadow: 0 0 0 5px rgba(255, 90, 0, 0.12), 0 0 20px 3px rgba(255, 90, 0, 0.7);
         }
         .tl-line-arrow {
@@ -288,6 +338,11 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           border-bottom: 5px solid transparent;
           border-left: 9px solid rgba(255, 255, 255, 0.4);
           transform: translateY(-50%);
+          transition: border-left-color 0.35s ease, filter 0.35s ease;
+        }
+        .tl-line-arrow.on {
+          border-left-color: #ff5a00;
+          filter: drop-shadow(0 0 7px rgba(255, 90, 0, 0.65));
         }
 
         /* ── stage marker + stem ── */
@@ -295,8 +350,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           position: absolute;
           top: 0;
           bottom: 0;
-          width: clamp(150px, 15vw, 208px);
-          margin-left: calc(clamp(150px, 15vw, 208px) / -2);
+          width: clamp(164px, 16vw, 236px);
+          margin-left: calc(clamp(164px, 16vw, 236px) / -2);
         }
         .tl-marker {
           position: absolute;
@@ -324,23 +379,25 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         .tl-marker.on i {
           background: #ff5a00;
         }
+        /* соединитель: только от маркера до рамки карточки, появляется вместе с ней */
         .tl-stem {
           position: absolute;
           left: 50%;
           width: 1px;
-          height: calc(50% - 7px);
-          background: rgba(255, 255, 255, 0.12);
+          height: 20px;
+          background: rgba(255, 90, 0, 0.55);
           transform: translateX(-50%);
-          transition: background 0.35s ease;
+          opacity: 0;
+          transition: opacity 0.4s ease;
         }
         .tl-card-pos.top .tl-stem {
-          top: 0;
+          bottom: calc(50% + 10px);
         }
         .tl-card-pos.bottom .tl-stem {
-          bottom: 0;
+          top: calc(50% + 10px);
         }
         .tl-stem.on {
-          background: rgba(255, 90, 0, 0.4);
+          opacity: 1;
         }
 
         /* ── card (name + short process only) ── */
@@ -366,7 +423,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
           transform: translateX(-50%) translateY(0);
         }
         .tl-card-face {
-          padding: 15px 15px 16px;
+          height: var(--tl-card-h, auto);
+          padding: 15px 16px 16px;
           border: 1px solid rgba(255, 255, 255, 0.12);
           border-left: 2px solid rgba(255, 90, 0, 0.55);
           background: #131313;
@@ -421,8 +479,8 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         /* ── tablet ── */
         @media (max-width: 1023px) {
           .tl-card-pos {
-            width: clamp(132px, 20vw, 180px);
-            margin-left: calc(clamp(132px, 20vw, 180px) / -2);
+            width: clamp(144px, 20vw, 196px);
+            margin-left: calc(clamp(144px, 20vw, 196px) / -2);
           }
         }
 
@@ -476,6 +534,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
             width: 1px;
             height: calc(100% + 14px);
             background: rgba(255, 255, 255, 0.14);
+            opacity: 1;
           }
           .tl-card,
           .tl-card-pos.top .tl-card,
@@ -489,6 +548,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
             transform: none !important;
           }
           .tl-card-face {
+            height: auto;
             padding: 14px 15px 15px;
           }
           .tl-card-process {

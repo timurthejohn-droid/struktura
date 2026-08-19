@@ -7,6 +7,9 @@ export type Vacancy = {
 
 export const email = "office@sk-struktura.ru";
 
+// клик по вакансии сообщает форме, какую роль подставить
+export const ROLE_EVENT = "careers:select-role";
+
 export const vacancies: Vacancy[] = [
   { number: "01", title: "Архитектор", city: "Москва", format: "Полная занятость" },
   { number: "02", title: "Дизайнер интерьера", city: "Москва", format: "Полная занятость" },
