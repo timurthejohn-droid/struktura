@@ -158,7 +158,7 @@ export default function ServiceDetailPage({ params }: { params: { slug: string }
                 className="group inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white/60 transition-colors hover:text-orange"
               >
                 Следующий формат: {next.title}
-                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-[17px] transition-[transform,border-color] duration-300 ease-out group-hover:scale-[1.15] group-hover:border-orange">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 text-[17px] transition-[transform,border-color] duration-300 ease-out group-hover:translate-x-2 group-hover:scale-[1.15] group-hover:border-orange">
                   <span className="inline-block transition-transform duration-300 ease-out group-hover:scale-[1.35]">
                     →
                   </span>
