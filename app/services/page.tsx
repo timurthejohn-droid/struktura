@@ -78,8 +78,10 @@ export default function ServicesPage() {
 
                   <span className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-white/60 transition-colors group-hover:text-orange">
                     Подробнее
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-[18px] transition-colors group-hover:border-orange">
-                      →
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 text-[18px] transition-[transform,border-color] duration-300 ease-out group-hover:scale-[1.15] group-hover:border-orange">
+                      <span className="inline-block transition-transform duration-300 ease-out group-hover:scale-[1.35]">
+                        →
+                      </span>
                     </span>
                   </span>
                 </div>
