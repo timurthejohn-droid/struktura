@@ -1,5 +1,5 @@
 import GridLines from "./GridLines";
-import HeroPlus from "./HeroPlus";
+import HeroPlus, { LOGO_THICKNESS } from "./HeroPlus";
 
 export default function Hero() {
   return (
@@ -70,7 +70,7 @@ export default function Hero() {
                 mixBlendMode: "screen",
               }}
             />
-            <HeroPlus />
+            <HeroPlus thickness={LOGO_THICKNESS} />
           </div>
         </div>
       </div>

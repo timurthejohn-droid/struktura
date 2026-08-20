@@ -27,10 +27,16 @@ const SPIN_SPEED = 0.6; // rad/s for the continuous turntable (~10.5s per full t
 
 type Pointer = { x: number; y: number };
 
-/** Procedural "+" outline → extruded with a bevel for crisp metallic edges. */
-function buildPlusGeometry() {
+// Bar half-thickness as a fraction of the arm half-extent.
+// Logo mark "+" measures ~84 / 373 ≈ 0.225 (thin arms); the fuller hero look is ~0.33.
+export const LOGO_THICKNESS = 0.225;
+const DEFAULT_THICKNESS = 0.33;
+
+/** Procedural "+" outline → extruded with a bevel for crisp metallic edges.
+ *  `t` = half-thickness of the bars (arm half-extent fixed at 1, so the overall
+ *  size stays constant — a smaller `t` just makes the plus narrower). */
+function buildPlusGeometry(t = DEFAULT_THICKNESS) {
   const e = 1; // half-extent (arm tip)
-  const t = 0.33; // half-thickness of the bars
   const shape = new Shape();
   shape.moveTo(-t, -e);
   shape.lineTo(t, -e);
@@ -91,6 +97,7 @@ function Plus({
   scale,
   spin,
   roughness,
+  thickness,
 }: {
   pointer: MutableRefObject<Pointer>;
   reduced: boolean;
@@ -98,9 +105,10 @@ function Plus({
   scale: number;
   spin: boolean;
   roughness: number;
+  thickness: number;
 }) {
   const ref = useRef<Group>(null);
-  const geometry = useMemo(buildPlusGeometry, []);
+  const geometry = useMemo(() => buildPlusGeometry(thickness), [thickness]);
   const surface = useMemo(makeSurfaceTexture, []);
 
   useFrame((state, delta) => {
@@ -140,12 +148,17 @@ function Plus({
       <mesh geometry={geometry}>
         <meshStandardMaterial
           color={color}
-          metalness={0.9}
+          // Lower metalness so the brand albedo shows through instead of the
+          // environment tinting the surface off-hue; a touch of emissive in the
+          // brand color anchors the shadows so the plus reads as true #FF5A00.
+          metalness={0.45}
           roughness={roughness}
           roughnessMap={surface ?? undefined}
           bumpMap={surface ?? undefined}
           bumpScale={0.004}
-          envMapIntensity={1.0}
+          emissive={color}
+          emissiveIntensity={0.12}
+          envMapIntensity={0.7}
         />
       </mesh>
     </group>
@@ -153,10 +166,13 @@ function Plus({
 }
 
 /** Pure-CSS "+" shown if WebGL is unavailable or the 3D canvas throws. */
-function StaticPlusFallback({ steel = false }: { steel?: boolean }) {
+function StaticPlusFallback({ steel = false, thickness = DEFAULT_THICKNESS }: { steel?: boolean; thickness?: number }) {
   const gradient = steel
     ? "linear-gradient(145deg, #eef1f6 0%, #c2c6cc 45%, #8b9099 100%)"
     : `linear-gradient(145deg, #ff8a3d 0%, ${ORANGE} 45%, #b23f00 100%)`;
+  // Map the bar half-thickness onto the square: arm edges sit at 50% ± t*50%.
+  const lo = (50 - thickness * 50).toFixed(2);
+  const hi = (50 + thickness * 50).toFixed(2);
   return (
     <div aria-hidden className="absolute inset-0 flex items-center justify-center">
       <div
@@ -164,8 +180,7 @@ function StaticPlusFallback({ steel = false }: { steel?: boolean }) {
           width: "min(42%, 220px)",
           aspectRatio: "1 / 1",
           background: gradient,
-          clipPath:
-            "polygon(35% 0, 65% 0, 65% 35%, 100% 35%, 100% 65%, 65% 65%, 65% 100%, 35% 100%, 35% 65%, 0 65%, 0 35%, 35% 35%)",
+          clipPath: `polygon(${lo}% 0, ${hi}% 0, ${hi}% ${lo}%, 100% ${lo}%, 100% ${hi}%, ${hi}% ${hi}%, ${hi}% 100%, ${lo}% 100%, ${lo}% ${hi}%, 0 ${hi}%, 0 ${lo}%, ${lo}% ${lo}%)`,
           transform: "rotate(-6deg)",
         }}
       />
@@ -194,6 +209,9 @@ type HeroPlusProps = {
   spin?: boolean;
   /** Surface roughness. Higher = more matte, blurrier reflections. */
   roughness?: number;
+  /** Bar half-thickness (arm half-extent fixed at 1). Lower = narrower plus,
+   *  overall size unchanged. Use `LOGO_THICKNESS` to match the logo mark. */
+  thickness?: number;
 };
 
 export default function HeroPlus({
@@ -202,6 +220,7 @@ export default function HeroPlus({
   steel = false,
   spin = false,
   roughness = 0.5,
+  thickness = DEFAULT_THICKNESS,
 }: HeroPlusProps) {
   const pointer = useRef<Pointer>({ x: 0, y: 0 });
   const [reduced, setReduced] = useState(false);
@@ -235,8 +254,8 @@ export default function HeroPlus({
   }, [spin]);
 
   return (
-    <CanvasErrorBoundary fallback={<StaticPlusFallback steel={steel} />}>
-      <Suspense fallback={<StaticPlusFallback steel={steel} />}>
+    <CanvasErrorBoundary fallback={<StaticPlusFallback steel={steel} thickness={thickness} />}>
+      <Suspense fallback={<StaticPlusFallback steel={steel} thickness={thickness} />}>
         <Canvas
           className="absolute inset-0"
           camera={{ position: [0, 0, 6.6], fov: 30 }}
@@ -256,15 +275,15 @@ export default function HeroPlus({
             <Lightformer form="rect" position={[0, 4, 6]} scale={[10, 10, 1]} intensity={3} color={steel ? "#f4f6fa" : "#fff2e6"} />
             {/* Wrap from the left */}
             <Lightformer form="rect" position={[-6, 1, 2]} scale={[4, 10, 1]} intensity={1.4} color={steel ? "#eef1f6" : "#ff8a3d"} />
-            {/* Cool fill from the right — adds contrast/realism */}
-            <Lightformer form="rect" position={[6, 0, 3]} scale={[4, 10, 1]} intensity={1.1} color="#dfe7ff" />
-            {/* Bright rim behind for crisp edges */}
-            <Lightformer form="ring" position={[2, 3, -6]} scale={[6, 6, 1]} intensity={2.2} color="#ffffff" />
+            {/* Fill from the right — warm on the orange plus so highlights stay on-brand (cool for steel) */}
+            <Lightformer form="rect" position={[6, 0, 3]} scale={[4, 10, 1]} intensity={0.8} color={steel ? "#dfe7ff" : "#ffd8bf"} />
+            {/* Rim behind for crisp edges — warm-tinted so it doesn't wash the orange toward white */}
+            <Lightformer form="ring" position={[2, 3, -6]} scale={[6, 6, 1]} intensity={1.6} color={steel ? "#ffffff" : "#ffe6d3"} />
             {/* Subtle floor bounce */}
             <Lightformer form="rect" position={[0, -5, 2]} scale={[10, 3, 1]} intensity={0.5} color={steel ? "#1c2028" : "#3a2416"} />
           </Environment>
 
-          <Plus pointer={pointer} reduced={reduced} color={color} scale={scale} spin={spin} roughness={roughness} />
+          <Plus pointer={pointer} reduced={reduced} color={color} scale={scale} spin={spin} roughness={roughness} thickness={thickness} />
         </Canvas>
       </Suspense>
     </CanvasErrorBoundary>
