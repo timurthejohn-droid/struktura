@@ -69,7 +69,7 @@ function SubsystemViz({ progress, assemblyProgress, zoomProgress, spinProgress, 
         <div className="flex" style={{ border: "1px solid rgba(255,90,0,0.55)", background: "var(--coal)" }}>
           <div className="flex items-center justify-center px-5" style={{ borderRight: "1px solid rgba(255,90,0,0.55)", background: "var(--coal)" }}>
             <span className="font-mono text-orange" style={{ fontSize: 26, letterSpacing: "0.04em" }}>
-              07<span style={{ fontSize: 14, verticalAlign: "super" }}>+</span>
+              {steps[active].n}<span style={{ fontSize: 14, verticalAlign: "super" }}>+</span>
             </span>
           </div>
           <div className="flex-1" style={{ background: "var(--coal)" }}>
