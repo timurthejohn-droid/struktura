@@ -2,10 +2,17 @@
 
 import Link from "next/link";
 
+/* Все страницы сайта — тот же список, что и в шапке (Nav.tsx) */
 const nav = [
   { href: "/about", label: "О компании" },
+  { href: "/services", label: "Услуги" },
   { href: "/projects", label: "Проекты" },
+  { href: "/materials", label: "Материалы" },
+  { href: "/digital", label: "Цифровая среда" },
+  { href: "/subsystems", label: "Подсистемы" },
   { href: "/approach", label: "Алгоритмический подход" },
+  { href: "/ipd", label: "IPD" },
+  { href: "/news", label: "Новости и статьи" },
   { href: "/contacts", label: "Контакты" },
   { href: "/careers", label: "Соискателям" },
 ];
@@ -16,7 +23,7 @@ export default function Footer() {
       <div className="container-x">
         <div className="grid min-h-[300px] gap-12 md:grid-cols-2">
           <nav aria-label="Нижняя навигация">
-            <ul className="space-y-5">
+            <ul className="grid grid-cols-1 gap-x-10 gap-y-5 sm:grid-cols-2">
               {nav.map((l) => (
                 <li key={l.href}>
                   <Link
