@@ -13,9 +13,9 @@ import TeamTeaser from "./components/TeamTeaser";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
 
-export default function Home() {
+export function Home({ lightCopy = false }: { lightCopy?: boolean }) {
   return (
-    <>
+    <div className={lightCopy ? "home-copy-theme" : undefined}>
       <Nav />
       <main>
         {/* LIGHT */}
@@ -30,19 +30,21 @@ export default function Home() {
           <AlgoPrinciples />
         </div>
         {/* DARK */}
-        <DigitalEnvFlow />
+        <DigitalEnvFlow light={lightCopy} />
         {/* DARK — блок «Материалы»: текст слева + видео справа */}
         <MaterialsHome />
         {/* DARK */}
-        <SubsystemsHomeTeaser />
+        <SubsystemsHomeTeaser light={lightCopy} />
         {/* ORANGE */}
-        <IpdBlock />
+        <IpdBlock light={lightCopy} />
         {/* LIGHT */}
         <TeamTeaser />
         <ContactForm />
       </main>
       {/* DARK */}
       <Footer />
-    </>
+    </div>
   );
 }
+
+export default Home;

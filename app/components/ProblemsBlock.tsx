@@ -30,7 +30,7 @@ export default function ProblemsBlock() {
   const ref = useReveal();
 
   return (
-    <section className="bg-coal text-white">
+    <section id="problems" className="bg-coal text-white">
       <div className="container-x">
         <div
           ref={ref}
