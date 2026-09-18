@@ -464,6 +464,76 @@ h1, h2, h3, h4, h5, h6 {
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* Light treatment for the homepage duplicate. The original homepage keeps
+   its existing contrast system; only the budget-loss block stays dark here. */
+.home-copy-theme #top {
+  background: var(--paper) !important;
+}
+.home-copy-theme #top .text-white { color: var(--ink) !important; }
+.home-copy-theme #top .text-white\/60 { color: var(--ink-soft) !important; }
+.home-copy-theme #top > div:first-child { display: none; }
+
+.home-copy-theme #algo > div:first-child {
+  background-image: repeating-linear-gradient(135deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 30px) !important;
+}
+.home-copy-theme #algo .flex.items-center > span:last-child {
+  color: var(--ink-soft) !important;
+}
+.home-copy-theme #algo .btn-white {
+  background: var(--orange) !important;
+  color: #fff !important;
+}
+.home-copy-theme #algo .btn-white:hover {
+  background: var(--orange-dark) !important;
+}
+
+.home-copy-theme #algo > section {
+  background: var(--paper) !important;
+  border-top: 1px solid var(--line-light);
+}
+.home-copy-theme #algo h2,
+.home-copy-theme #algo p,
+.home-copy-theme #algo .text-white {
+  color: var(--ink) !important;
+}
+.home-copy-theme #algo .text-white\/55 {
+  color: var(--ink-soft) !important;
+}
+
+.home-copy-theme .sub-home {
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+}
+.home-copy-theme .sub-home .text-white,
+.home-copy-theme .sub-home .text-white\/66 {
+  color: var(--ink) !important;
+}
+.home-copy-theme .sub-home-grid {
+  background-image:
+    linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px) !important;
+}
+
+.home-copy-theme footer {
+  background: var(--paper) !important;
+  border-top: 1px solid var(--line-light);
+}
+.home-copy-theme footer .text-white,
+.home-copy-theme footer .text-\[\#989898\] {
+  color: var(--ink-soft) !important;
+}
+.home-copy-theme footer a,
+.home-copy-theme footer p {
+  color: var(--ink-soft) !important;
+}
+.home-copy-theme footer a.text-white,
+.home-copy-theme footer img {
+  filter: invert(1);
+}
+.home-copy-theme footer [class*="border-white"] {
+  border-color: var(--line-light) !important;
+}
+
 /* ---- Reduced motion: убираем движение, оставляем контент видимым ---- */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

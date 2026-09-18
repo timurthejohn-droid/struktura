@@ -26,7 +26,7 @@ export default function ProjectsSlider() {
         {/* Шапка блока */}
         <div className="mb-8 grid gap-6 border-b border-black/10 pb-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div>
-            <p className="eyebrow text-ink/45">Избранные кейсы</p>
+            <p className="eyebrow text-ink/45">Избранные проекты</p>
             <h2 className="mt-5 max-w-[720px] text-[clamp(28px,3.6vw,54px)] leading-[1.0] text-ink">
               Работаем с архитектурой в её реальном масштабе
             </h2>
@@ -35,7 +35,7 @@ export default function ProjectsSlider() {
             href={`${basePath}/projects`}
             className="group inline-flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink transition-colors hover:text-orange md:pb-1"
           >
-            Все кейсы
+            Все проекты
             <span aria-hidden className="transition-transform group-hover:translate-x-1">
               →
             </span>
@@ -60,8 +60,22 @@ export default function ProjectsSlider() {
                 className="absolute inset-0 h-full w-full object-cover"
                 loading={i === 0 ? "eager" : "lazy"}
               />
-              <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/50" />
-              <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-black/60 via-transparent to-transparent" />
+              {/* Локальный контраст для текста: фотография остаётся светлой, затемнение
+                  работает только у нижней подписи и минимально — у верхней строки. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-[58%]"
+                style={{
+                  background: "linear-gradient(to top, rgba(0,0,0,0.74) 0%, rgba(0,0,0,0.32) 30%, rgba(0,0,0,0) 100%)",
+                }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute inset-x-0 top-0 h-[18%]"
+                style={{
+                  background: "linear-gradient(to bottom, rgba(0,0,0,0.26), rgba(0,0,0,0))",
+                }}
+              />
 
               {/* Номер-призрак */}
               <span

@@ -1,6 +1,6 @@
 "use client";
 import { useReveal } from "./useReveal";
-import AboutMark from "./AboutMark";
+import ConeSequence from "./ConeSequence";
 
 export default function IntroBlock() {
   const ref = useReveal();
@@ -21,7 +21,7 @@ export default function IntroBlock() {
               style={{ background: "var(--paper)" }}
               aria-hidden="true"
             >
-              <AboutMark />
+              <ConeSequence />
             </div>
           </div>
 

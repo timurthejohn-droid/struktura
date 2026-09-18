@@ -31,14 +31,21 @@ function cellOn(col: number, row: number, num: string): boolean {
   return DIGITS[num]?.[row][col] === "1";
 }
 
-export default function DigitalEnvFlow() {
+export default function DigitalEnvFlow({ light = false }: { light?: boolean }) {
   const ref = useReveal();
   const [hovered, setHovered] = useState<number | null>(null);
 
   const a = hovered !== null ? stages[hovered] : null;
 
   return (
-    <section id="digital" className="py-28 md:py-44" style={{ background: "var(--coal)" }}>
+    <section
+      id="digital"
+      className="py-28 md:py-44"
+      style={{
+        background: light ? "var(--paper)" : "var(--coal)",
+        borderTop: light ? "1px solid var(--line-light)" : undefined,
+      }}
+    >
       <div className="container-x">
         <div className="mb-10 md:mb-14">
           <div className="flex items-center justify-between gap-4 pb-3">
@@ -49,7 +56,7 @@ export default function DigitalEnvFlow() {
               05
             </span>
             <span
-              className="hidden sm:inline font-mono select-none text-white/20"
+              className={`hidden sm:inline font-mono select-none ${light ? "text-ink/20" : "text-white/20"}`}
               style={{ fontSize: 12, letterSpacing: "0.32em" }}
               aria-hidden
             >
@@ -60,7 +67,7 @@ export default function DigitalEnvFlow() {
 
           <div className="grid gap-8 md:grid-cols-[minmax(0,1fr)_auto] md:items-start">
             <h2
-              className="font-mono uppercase text-white"
+              className={`font-mono uppercase ${light ? "text-ink" : "text-white"}`}
               style={{
                 fontSize: "clamp(30px, 4.6vw, 72px)",
                 lineHeight: 0.98,
@@ -77,7 +84,7 @@ export default function DigitalEnvFlow() {
 
         {/* intro */}
         <div ref={ref} className="reveal mb-14 md:mb-20">
-          <p className="font-body max-w-2xl text-white/70" style={{ fontSize: "clamp(15px, 1.2vw, 19px)", lineHeight: 1.6 }}>
+          <p className={`font-body max-w-2xl ${light ? "text-ink-soft" : "text-white/70"}`} style={{ fontSize: "clamp(15px, 1.2vw, 19px)", lineHeight: 1.6 }}>
             Единая цифровая среда связывает все этапы проекта в&nbsp;одну систему: данные
             передаются между этапами без&nbsp;потерь, а&nbsp;каждый процесс работает
             на&nbsp;общий результат.
@@ -85,11 +92,11 @@ export default function DigitalEnvFlow() {
         </div>
 
         {/* environment board */}
-        <div style={{ border: "1px solid var(--line-dark)", background: "var(--coal)" }}>
+        <div style={{ border: `1px solid ${light ? "var(--line-light)" : "var(--line-dark)"}`, background: light ? "var(--paper-card)" : "var(--coal)" }}>
           {/* stage cells: each digit appears directly above the hovered stage */}
           <div
             className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
-            style={{ gap: 1, background: "var(--line-dark)" }}
+            style={{ gap: 1, background: light ? "var(--line-light)" : "var(--line-dark)" }}
           >
             {stages.map((s, i) => {
               const on = hovered === i;
@@ -100,13 +107,13 @@ export default function DigitalEnvFlow() {
                   onMouseEnter={() => setHovered(i)}
                   onMouseLeave={() => setHovered(null)}
                   style={{
-                    background: on ? "#211d1a" : "var(--coal)",
+                    background: light ? (on ? "#fff7f0" : "var(--paper-card)") : (on ? "#211d1a" : "var(--coal)"),
                   }}
                 >
                   <div
                     className="flex h-[260px] items-center justify-center p-4 md:h-[230px] md:p-5 xl:h-[280px]"
                     style={{
-                      borderBottom: "1px solid var(--line-dark)",
+                      borderBottom: `1px solid ${light ? "var(--line-light)" : "var(--line-dark)"}`,
                     }}
                     aria-hidden="true"
                   >
@@ -145,7 +152,7 @@ export default function DigitalEnvFlow() {
                     <span className="font-mono text-orange text-xs">{s.n}</span>
                     <span
                       className="block font-mono text-[12px] tracking-[0.02em] mt-1"
-                      style={{ color: on ? "#fff" : "rgba(255,255,255,0.55)" }}
+                      style={{ color: light ? (on ? "var(--ink)" : "var(--ink-soft)") : (on ? "#fff" : "rgba(255,255,255,0.55)") }}
                     >
                       {s.name}
                     </span>
@@ -164,7 +171,7 @@ export default function DigitalEnvFlow() {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                style={{ overflow: "hidden", borderTop: "1px solid var(--line-dark)" }}
+                style={{ overflow: "hidden", borderTop: `1px solid ${light ? "var(--line-light)" : "var(--line-dark)"}`, background: light ? "var(--paper-card)" : "var(--coal)" }}
               >
                 <div className="p-6 md:p-9">
                   <div key={a.n} className="env-slide grid md:grid-cols-[auto_1fr_auto] gap-5 md:gap-10 md:items-center">
@@ -172,8 +179,8 @@ export default function DigitalEnvFlow() {
                       {a.n}
                     </div>
                     <div>
-                      <h3 className="font-mono text-white text-lg mb-2 tracking-[0.02em]">{a.name}</h3>
-                      <p className="font-body text-white/60 max-w-xl" style={{ fontSize: 15, lineHeight: 1.55 }}>
+                      <h3 className={`font-mono text-lg mb-2 tracking-[0.02em] ${light ? "text-ink" : "text-white"}`}>{a.name}</h3>
+                      <p className={`font-body max-w-xl ${light ? "text-ink-soft" : "text-white/60"}`} style={{ fontSize: 15, lineHeight: 1.55 }}>
                         {a.desc}
                       </p>
                     </div>
@@ -181,7 +188,7 @@ export default function DigitalEnvFlow() {
                       {a.tech.map((tt) => (
                         <span
                           key={tt}
-                          className="font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 text-white/80 whitespace-nowrap"
+                          className={`font-mono text-[10px] tracking-[0.08em] uppercase px-3 py-2 whitespace-nowrap ${light ? "text-ink-soft" : "text-white/80"}`}
                           style={{ border: "1px solid rgba(255,90,0,0.5)" }}
                         >
                           {tt}

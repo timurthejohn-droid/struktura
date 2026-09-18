@@ -17,38 +17,44 @@ const outcomes = [
   },
 ];
 
-export default function IpdBlock() {
+export default function IpdBlock({ light = false }: { light?: boolean }) {
   const ref = useReveal();
 
   return (
-    <section id="ipd" className="relative overflow-hidden py-24 md:py-40" style={{ background: "var(--orange)" }}>
-      <div className="ipd-grid" aria-hidden />
+    <section
+      id="ipd"
+      className="relative overflow-hidden py-24 md:py-40"
+      style={{
+        background: light ? "var(--paper)" : "var(--orange)",
+      }}
+    >
+      <div className={`ipd-grid ${light ? "ipd-grid-light" : ""}`} aria-hidden />
 
       <div className="container-x relative z-10">
         <div ref={ref} className="reveal">
           <SectionHead
             index="08"
             kicker="Интегрированная система управления проектами"
-            theme="orange"
-            indexColor="#ffffff"
-            markColor="rgba(255,255,255,0.6)"
+            theme={light ? "light" : "orange"}
+            indexColor={light ? undefined : "#ffffff"}
+            markColor={light ? undefined : "rgba(255,255,255,0.6)"}
           />
 
           {/* Тезис — наборным шрифтом: mono-капс уже занят названием секции. */}
           <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-start lg:gap-20">
             <p
-              className="max-w-[720px] font-body text-white"
+              className={`max-w-[720px] font-body ${light ? "text-ink" : "text-white"}`}
               style={{ fontSize: "clamp(21px, 2.2vw, 34px)", lineHeight: 1.32 }}
             >
               Обычно проект идёт по&nbsp;эстафете и&nbsp;теряет данные на&nbsp;каждой передаче.
               STRUKTURA собирает всех участников и&nbsp;все стадии в&nbsp;одну систему&nbsp;—
               по&nbsp;модели <span className="ipd-term">IPD</span>
-              <span className="text-white/55">, Integrated Project Delivery</span>.
+              <span className={light ? "text-ink-soft" : "text-white/55"}>, Integrated Project Delivery</span>.
             </p>
 
             <div className="max-w-[460px]">
               <p
-                className="font-body text-white/80"
+                className={`font-body ${light ? "text-ink-soft" : "text-white/80"}`}
                 style={{ fontSize: "clamp(15px, 1.15vw, 17px)", lineHeight: 1.6 }}
               >
                 Одна команда, одна цифровая модель, одна ответственность&nbsp;— от&nbsp;проектирования
@@ -56,7 +62,7 @@ export default function IpdBlock() {
                 и&nbsp;дисциплинами.
               </p>
               <div className="mt-8">
-                <a href="/ipd" className="btn btn-white">
+                <a href="/ipd" className={`btn ${light ? "btn-orange" : "btn-white"}`}>
                   Как устроен IPD в STRUKTURA
                 </a>
               </div>
@@ -65,13 +71,13 @@ export default function IpdBlock() {
 
           <div
             className="grid md:grid-cols-3 mt-16 md:mt-24"
-            style={{ gap: 1, background: "rgba(255,255,255,0.25)" }}
+            style={{ gap: 1, background: light ? "var(--line-light)" : "rgba(255,255,255,0.25)" }}
           >
             {outcomes.map((o) => (
-              <div key={o.n} className="p-8 md:p-10 flex flex-col gap-6" style={{ background: "var(--orange)" }}>
-                <span className="font-mono text-white/70 text-5xl leading-none">{o.n}</span>
+              <div key={o.n} className="p-8 md:p-10 flex flex-col gap-6" style={{ background: light ? "var(--paper-card)" : "var(--orange)" }}>
+                <span className={`font-mono text-5xl leading-none ${light ? "text-orange" : "text-white/70"}`}>{o.n}</span>
                 <p
-                  className="font-body text-white"
+                  className={`font-body ${light ? "text-ink" : "text-white"}`}
                   style={{ fontSize: "clamp(16px, 1.3vw, 20px)", lineHeight: 1.45 }}
                 >
                   {o.body}
@@ -95,6 +101,12 @@ export default function IpdBlock() {
           background-size: 54px 54px;
           mask-image: radial-gradient(120% 80% at 50% 60%, #000 0%, transparent 80%);
           -webkit-mask-image: radial-gradient(120% 80% at 50% 60%, #000 0%, transparent 80%);
+        }
+
+        #ipd .ipd-grid.ipd-grid-light {
+          background-image:
+            linear-gradient(rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
         }
 
         #ipd .ipd-term {

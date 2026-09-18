@@ -4,9 +4,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import SubsystemModel from "./SubsystemModel";
 
-export default function SubsystemsHomeTeaser() {
+export default function SubsystemsHomeTeaser({ light = false }: { light?: boolean }) {
   return (
-    <section className="sub-home relative overflow-hidden bg-coal text-white">
+    <section id="subsystems" className="sub-home relative overflow-hidden bg-coal text-white">
       <div className="sub-home-grid" aria-hidden />
 
       <div className="container-x relative z-10 grid min-h-[720px] items-center gap-12 md:min-h-[864px] md:grid-cols-[0.9fr_1.1fr]">
@@ -68,7 +68,7 @@ export default function SubsystemsHomeTeaser() {
         </div>
       </div>
 
-      <div className="h-2 bg-orange" aria-hidden />
+      {!light && <div className="h-2 bg-orange" aria-hidden />}
 
       <style jsx>{`
         .sub-home-grid {
