@@ -8,7 +8,7 @@ const metrics = [
   { value: 70, suffix: "+", label: "лучших экспертов в команде" },
 ];
 
-const clients = ["ЛАХТА ЦЕНТР", "СБЕР", "ATOM", "МУЗЕЙ КРЕМЛЯ", "МОСКВА-СИТИ", "MR GROUP", "ГАЗПРОМ", "VESPER"];
+const clients = ["ЛАХТА ЦЕНТР", "СБЕР", "ATOM", "МУЗЕЙ КРЕМЛЯ", "МОСКВА-СИТИ", "ГАЗПРОМ"];
 
 function Counter({ value, suffix }: { value: number; suffix: string }) {
   const [n, setN] = useState(0);

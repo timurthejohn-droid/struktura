@@ -5,6 +5,7 @@ import SectionHead from "../../components/SectionHead";
 import Reveal from "../../components/materials/Reveal";
 import ContactForm from "../../components/ContactForm";
 import AboutProof from "../../components/about/AboutProof";
+import TeamShowcase from "../../components/about/TeamShowcase";
 
 export const metadata: Metadata = {
   title: "О компании — Миссия и ценности · ТЕСТ — STRUKTURA+",
@@ -343,6 +344,8 @@ export function AboutEditorialPage({ showProof = false }: { showProof?: boolean 
                   результата.
                 </p>
               </div>
+
+              <TeamShowcase />
 
               <div className="mt-12 grid border-l border-t border-black/10 sm:grid-cols-2 lg:grid-cols-4">
                 {teamQualities.map((q) => (

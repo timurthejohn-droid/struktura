@@ -7,17 +7,19 @@ export default function Hero() {
       id="top"
       className="relative min-h-[680px] md:min-h-[760px] lg:min-h-[820px] flex flex-col overflow-hidden"
       style={{
+        // светлая сцена: тёплый «софтбокс» за плюсом, к краям — бумажный тон
         background:
-          "radial-gradient(120% 100% at 78% 32%, #251f1b 0%, #191513 52%, #141110 100%)",
+          "radial-gradient(90% 95% at 76% 40%, #faf8f3 0%, #f4f2ec 46%, var(--paper) 100%)",
+        borderBottom: "1px solid var(--line-light)",
       }}
     >
-      <GridLines theme="dark" count={5} />
+      <GridLines theme="light" count={5} />
       <div className="container-x w-full flex flex-col flex-1 pt-24 md:pt-28 pb-8 relative z-10">
         {/* Body — copy on the left, the metallic 3D plus on the right */}
         <div className="flex-1 grid items-center gap-x-10 lg:grid-cols-[1fr_1.08fr]">
           <div className="rise-in" style={{ animationDelay: "0.14s" }}>
             <h1
-              className="text-white"
+              className="text-ink"
               style={{
                 fontSize: "clamp(30px, 4vw, 62px)",
                 lineHeight: 1.0,
@@ -30,7 +32,7 @@ export default function Hero() {
             </h1>
 
             <p
-              className="font-body max-w-lg text-white/60 rise-in mt-10"
+              className="font-body max-w-lg text-ink-soft rise-in mt-10"
               style={{
                 fontSize: "clamp(15px, 1.2vw, 19px)",
                 lineHeight: 1.55,
@@ -53,21 +55,20 @@ export default function Hero() {
             className="relative my-6 h-[320px] md:h-[420px] fade-in lg:my-0 lg:h-[min(560px,58vh)]"
             style={{ animationDelay: "0.2s" }}
           >
-            {/* Orange halo / aura — outer soft ring */}
+            {/* Тёплое свечение за плюсом: на светлом фоне — обычное наложение, без screen */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
                 background:
-                  "radial-gradient(70% 70% at 50% 50%, rgba(255,120,40,0.12) 0%, rgba(255,90,0,0) 66%)",
+                  "radial-gradient(60% 62% at 50% 50%, rgba(255,90,0,0.16) 0%, rgba(255,90,0,0.06) 46%, rgba(255,90,0,0) 74%)",
               }}
             />
-            {/* Orange halo / aura — bright core behind the metal */}
+            {/* Мягкая тень-«пол» под плюсом, чтобы он стоял в кадре, а не парил */}
             <div
-              className="absolute inset-0 pointer-events-none"
+              className="absolute left-1/2 bottom-[6%] h-[7%] w-[46%] -translate-x-1/2 pointer-events-none"
               style={{
-                background:
-                  "radial-gradient(46% 50% at 50% 50%, rgba(255,90,0,0.30) 0%, rgba(255,90,0,0.10) 42%, rgba(255,90,0,0) 72%)",
-                mixBlendMode: "screen",
+                background: "radial-gradient(50% 50% at 50% 50%, rgba(60,40,24,0.18) 0%, rgba(60,40,24,0) 100%)",
+                filter: "blur(6px)",
               }}
             />
             <HeroPlus thickness={LOGO_THICKNESS} />
