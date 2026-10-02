@@ -466,13 +466,6 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Light treatment for the homepage duplicate. The original homepage keeps
    its existing contrast system; only the budget-loss block stays dark here. */
-.home-copy-theme #top {
-  background: var(--paper) !important;
-}
-.home-copy-theme #top .text-white { color: var(--ink) !important; }
-.home-copy-theme #top .text-white\/60 { color: var(--ink-soft) !important; }
-.home-copy-theme #top > div:first-child { display: none; }
-
 .home-copy-theme #algo > div:first-child {
   background-image: repeating-linear-gradient(135deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 30px) !important;
 }
@@ -498,20 +491,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 .home-copy-theme #algo .text-white\/55 {
   color: var(--ink-soft) !important;
-}
-
-.home-copy-theme .sub-home {
-  background: var(--paper) !important;
-  color: var(--ink) !important;
-}
-.home-copy-theme .sub-home .text-white,
-.home-copy-theme .sub-home .text-white\/66 {
-  color: var(--ink) !important;
-}
-.home-copy-theme .sub-home-grid {
-  background-image:
-    linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px) !important;
 }
 
 .home-copy-theme footer {

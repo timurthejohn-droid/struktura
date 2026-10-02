@@ -6,6 +6,7 @@ import IntroBlock from "./components/IntroBlock";
 import ProblemsBlock from "./components/ProblemsBlock";
 import AlgoPrinciples from "./components/AlgoPrinciples";
 import DigitalEnvFlow from "./components/DigitalEnvFlow";
+import DigitalEnvHologram from "./components/DigitalEnvHologram";
 import MaterialsHome from "./components/materials/MaterialsHome";
 import SubsystemsHomeTeaser from "./components/SubsystemsHomeTeaser";
 import IpdBlock from "./components/IpdBlock";
@@ -30,13 +31,13 @@ export function Home({ lightCopy = false }: { lightCopy?: boolean }) {
           <AlgoPrinciples />
         </div>
         {/* DARK */}
-        <DigitalEnvFlow light={lightCopy} />
+        {lightCopy ? <DigitalEnvFlow light /> : <DigitalEnvHologram />}
         {/* DARK — блок «Материалы»: текст слева + видео справа */}
         <MaterialsHome />
-        {/* DARK */}
-        <SubsystemsHomeTeaser light={lightCopy} />
-        {/* ORANGE */}
-        <IpdBlock light={lightCopy} />
+        {/* LIGHT */}
+        <SubsystemsHomeTeaser />
+        {/* LIGHT */}
+        <IpdBlock light />
         {/* LIGHT */}
         <TeamTeaser />
         <ContactForm />

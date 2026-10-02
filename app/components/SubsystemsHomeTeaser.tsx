@@ -4,15 +4,17 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import SubsystemModel from "./SubsystemModel";
 
-export default function SubsystemsHomeTeaser({ light = false }: { light?: boolean }) {
+export default function SubsystemsHomeTeaser() {
   return (
-    <section id="subsystems" className="sub-home relative overflow-hidden bg-coal text-white">
-      <div className="sub-home-grid" aria-hidden />
-
+    <section
+      id="subsystems"
+      className="sub-home relative overflow-hidden text-ink"
+      style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}
+    >
       <div className="container-x relative z-10 grid min-h-[720px] items-center gap-12 md:min-h-[864px] md:grid-cols-[0.9fr_1.1fr]">
         <div className="max-w-[650px] md:max-w-[560px] lg:max-w-[650px]">
           <motion.h2
-            className="font-mono uppercase text-white"
+            className="font-mono uppercase text-ink"
             style={{ fontSize: "clamp(34px, 4.2vw, 66px)", lineHeight: 1, letterSpacing: 0 }}
             initial={{ opacity: 0, y: 22 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -27,7 +29,7 @@ export default function SubsystemsHomeTeaser({ light = false }: { light?: boolea
           </motion.h2>
 
           <motion.p
-            className="mt-9 max-w-[520px] font-body text-white/66"
+            className="mt-9 max-w-[520px] font-body text-ink-soft"
             style={{ fontSize: "clamp(16px, 1.35vw, 21px)", lineHeight: 1.55 }}
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -68,18 +70,7 @@ export default function SubsystemsHomeTeaser({ light = false }: { light?: boolea
         </div>
       </div>
 
-      {!light && <div className="h-2 bg-orange" aria-hidden />}
-
       <style jsx>{`
-        .sub-home-grid {
-          position: absolute;
-          inset: 0;
-          opacity: 0.12;
-          background-image:
-            linear-gradient(rgba(255,255,255,.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.1) 1px, transparent 1px);
-          background-size: 54px 54px;
-        }
         .sub-home-visual {
           overflow: visible;
           /* Выносим колонку за правый паддинг container-x и за его auto-margin,
