@@ -26,7 +26,7 @@ export default function CasesIndex() {
             </h2>
           </div>
           <p className="max-w-[300px] font-body text-[14px] leading-[1.5] text-white/45 md:pb-2">
-            Отфильтруйте по направлению — или вернитесь к стопке кейсов выше.
+            Отфильтруйте по направлению — или вернитесь к стопке проектов выше.
           </p>
         </div>
 

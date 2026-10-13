@@ -117,7 +117,7 @@ function CasePanel({
                 <div className="mt-8 flex flex-wrap items-center gap-x-4 gap-y-3">
                   {item.href ? (
                     <a href={`${basePath}${item.href}`} className="btn btn-orange">
-                      Смотреть кейс
+                      Смотреть проект
                       <span aria-hidden>→</span>
                     </a>
                   ) : (
@@ -219,7 +219,7 @@ export default function CasesStack() {
           visibility: railOn ? "visible" : "hidden",
           transition: "opacity 0.4s var(--ease-out), visibility 0.4s",
         }}
-        aria-label="Навигация по кейсам"
+        aria-label="Навигация по проектам"
       >
         {cases.map((item, index) => {
           const isActive = index === active;
@@ -228,7 +228,7 @@ export default function CasesStack() {
               key={item.slug}
               type="button"
               onClick={() => goTo(index)}
-              aria-label={`Кейс ${item.number}: ${item.name}`}
+              aria-label={`Проект ${item.number}: ${item.name}`}
               aria-current={isActive ? "true" : undefined}
               className="group flex items-center justify-end gap-2 py-1"
             >

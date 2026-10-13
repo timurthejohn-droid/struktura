@@ -6,7 +6,7 @@ import CasesStack from "../components/projects/CasesStack";
 import CasesIndex from "../components/projects/CasesIndex";
 
 export const metadata = {
-  title: "Кейсы — STRUKTURA",
+  title: "Проекты — STRUKTURA",
   description:
     "Реализованные объекты STRUKTURA: фасады, интерьеры и общественные пространства с уникальной геометрией.",
 };
