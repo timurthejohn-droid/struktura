@@ -1,4 +1,5 @@
 import Nav from "../components/Nav";
+import VersionSwitcher, { subsystemsVersions } from "../components/VersionSwitcher";
 import ContactForm from "../components/ContactForm";
 import Footer from "../components/Footer";
 import Subsystems from "../components/Subsystems";
@@ -22,6 +23,7 @@ export default function SubsystemsPage() {
   return (
     <>
       <Nav />
+      <VersionSwitcher versions={subsystemsVersions} />
       <main className="bg-paper">
         <Subsystems />
 

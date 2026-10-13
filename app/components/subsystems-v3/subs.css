@@ -1,0 +1,74 @@
+/* Анимации страницы «Подсистемы STRUKTURA» (HD v3) */
+
+/* Прорисовка линий: pathLength=1, dasharray=1 */
+.cmp-draw { stroke-dashoffset: 1; }
+.cmp-on .cmp-draw { animation: sv3Draw 1.1s var(--ease-out) forwards; }
+@keyframes sv3Draw { to { stroke-dashoffset: 0; } }
+
+.cmp-pop { opacity: 0; transform-box: fill-box; transform-origin: center; transform: scale(0.3); }
+.cmp-on .cmp-pop { animation: sv3Pop 0.5s var(--ease-out) forwards; }
+@keyframes sv3Pop { to { opacity: 1; transform: none; } }
+
+/* Бесконечные петли для микроиллюстраций */
+.sv3-float { animation: sv3Float 3.2s var(--ease-in-out) infinite; transform-box: fill-box; }
+@keyframes sv3Float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+.sv3-scan { animation: sv3Scan 2.8s linear infinite; }
+@keyframes sv3Scan { from { transform: translateX(-40px); } to { transform: translateX(200px); } }
+
+.sv3-blink { animation: sv3Blink 1.6s ease-in-out infinite; }
+@keyframes sv3Blink { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+.sv3-dash { stroke-dasharray: 5 6; animation: sv3Dash 1.2s linear infinite; }
+@keyframes sv3Dash { to { stroke-dashoffset: -22; } }
+
+.sv3-spin { transform-box: fill-box; transform-origin: center; animation: sv3Spin 6s linear infinite; }
+@keyframes sv3Spin { to { transform: rotate(1turn); } }
+
+.sv3-drive { animation: sv3Drive 4s var(--ease-in-out) infinite; }
+@keyframes sv3Drive { 0% { transform: translateX(-30px); } 50% { transform: translateX(30px); } 100% { transform: translateX(-30px); } }
+
+.sv3-slot { animation: sv3Slot 3.6s var(--ease-in-out) infinite; }
+@keyframes sv3Slot {
+  0%, 15% { transform: translateY(-34px); opacity: 0; }
+  40%, 80% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+
+.sv3-grow { transform-box: fill-box; transform-origin: bottom; animation: sv3Grow 3s var(--ease-in-out) infinite; }
+@keyframes sv3Grow { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+
+/* Бегущий импульс по линии */
+.sv3-beam { position: relative; overflow: hidden; }
+.sv3-beam::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 -30%;
+  width: 30%;
+  background: linear-gradient(90deg, transparent, var(--orange), transparent);
+  animation: sv3Beam 3.4s linear infinite;
+}
+@keyframes sv3Beam { to { left: 100%; } }
+
+/* Карточки: подсветка рамки под курсором */
+.sv3-card { position: relative; transition: background-color 0.4s var(--ease-out); }
+.sv3-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgba(255, 90, 0, 0.12), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+@media (hover: hover) and (pointer: fine) {
+  .sv3-card:hover::before { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cmp-draw { stroke-dashoffset: 0; }
+  .cmp-pop { opacity: 1; transform: none; }
+  .cmp-on .cmp-draw, .cmp-on .cmp-pop,
+  .sv3-float, .sv3-scan, .sv3-blink, .sv3-dash, .sv3-spin, .sv3-drive, .sv3-slot, .sv3-grow, .sv3-beam::after { animation: none; }
+  .sv3-slot { opacity: 1; transform: none; }
+}

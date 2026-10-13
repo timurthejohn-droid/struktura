@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
 
 const models = [
   {
     number: "01",
+    slug: "kompleksnaya-realizatsiya",
     title: "Комплексная\nреализация",
     lead: "Единая ответственность за результат",
     text: "Проектируем панели и подсистему, организуем производство, поставку и монтаж — от мастер-модели до готовой конструкции.",
@@ -16,6 +18,7 @@ const models = [
   },
   {
     number: "02",
+    slug: "podsistema-paneli",
     title: "Совместная\nреализация",
     lead: "Наш инжиниринг + выбранный производитель панелей",
     text: "Панели могут изготавливаться выбранным заказчиком производителем. STRUKTURA сохраняет мастер-модель, проектирует систему, задаёт требования производству и обеспечивает совместимость панелей, подсистемы и монтажа.",
@@ -25,6 +28,7 @@ const models = [
   },
   {
     number: "03",
+    slug: "podsistema",
     title: "Подсистема\nSTRUKTURA",
     lead: "Собственный инженерный продукт",
     text: "Проектируем, производим и поставляем адаптивную силовую подсистему для сложных панелей и архитектурных поверхностей.",
@@ -78,7 +82,8 @@ export default function ServicesFormats() {
           <div className="border-t border-white/15">
             {models.map((model, index) => (
               <motion.article key={model.number} {...reveal} transition={{ ...reveal.transition, delay: index * 0.06 }} className="group relative grid overflow-hidden border-b border-white/15 bg-coal-deep lg:grid-cols-[.17fr_.67fr_1fr]">
-                <div className={`absolute bottom-0 left-0 top-0 w-[3px] origin-top transition-transform duration-500 ${model.featured ? "scale-y-100 bg-orange" : "scale-y-0 bg-orange group-hover:scale-y-100"}`} />
+                <Link href={`/services/${model.slug}`} aria-label={model.title.replace("\n", " ")} className="absolute inset-0 z-0 transition-colors hover:bg-white/[0.03]" />
+                <div className={`pointer-events-none absolute bottom-0 left-0 top-0 w-[3px] origin-top transition-transform duration-500 ${model.featured ? "scale-y-100 bg-orange" : "scale-y-0 bg-orange group-hover:scale-y-100"}`} />
                 <div className={`px-5 pb-0 pt-8 md:px-8 ${model.featured ? "lg:py-16" : "lg:py-12"}`}><span className={`font-body font-semibold leading-[.75] text-orange ${model.featured ? "text-[clamp(72px,8.4vw,124px)]" : "text-[clamp(60px,7vw,104px)]"}`}>{model.number}</span></div>
                 <div className={`px-5 pb-8 pt-7 md:px-8 ${model.featured ? "lg:py-16" : "lg:py-12"}`}>
                   {model.tag ? <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.17em] text-orange">● {model.tag}</p> : null}
@@ -91,7 +96,7 @@ export default function ServicesFormats() {
                     <p className={`mt-7 border-t pt-4 font-mono text-[10px] uppercase leading-[1.55] tracking-[0.13em] ${model.featured ? "border-white/25 text-white/60" : "border-white/15 text-white/45"}`}>{model.scope}</p>
                     <p className={`mt-5 max-w-[530px] font-body text-[13px] leading-[1.5] ${model.featured ? "text-white/65" : "text-white/50"}`}>{model.note}</p>
                   </div>
-                  <a href="#contact" className="mt-8 inline-flex items-center gap-4 self-start border-b border-orange/60 pb-2 font-mono text-[11px] uppercase tracking-[0.13em] text-white transition-[gap,color] duration-300 group-hover:gap-7 group-hover:text-orange">{model.action}<span aria-hidden>→</span></a>
+                  <a href="#contact" className="relative z-10 mt-8 inline-flex items-center gap-4 self-start border-b border-orange/60 pb-2 font-mono text-[11px] uppercase tracking-[0.13em] text-white transition-[gap,color] duration-300 group-hover:gap-7 group-hover:text-orange">{model.action}<span aria-hidden>→</span></a>
                 </div>
               </motion.article>
             ))}

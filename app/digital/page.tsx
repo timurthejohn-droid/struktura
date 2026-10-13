@@ -3,6 +3,7 @@ import Link from "next/link";
 import ContactForm from "../components/ContactForm";
 import Footer from "../components/Footer";
 import Nav from "../components/Nav";
+import VersionSwitcher, { digitalVersions } from "../components/VersionSwitcher";
 import Reveal from "../components/materials/Reveal";
 import DigitalStages from "../components/DigitalStages";
 import DigitalStagesLegacy from "../components/DigitalStagesLegacy";
@@ -178,6 +179,7 @@ export default function DigitalPage() {
   return (
     <>
       <Nav />
+      <VersionSwitcher versions={digitalVersions} />
       <main>
         {/* Хиро и «Что это дает» убраны — страница открывается сразу сценой */}
         <h1 className="sr-only">Цифровая среда STRUKTURA+</h1>

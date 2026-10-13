@@ -30,13 +30,13 @@ export default function CasesHero() {
         <div className="grid gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,340px)] md:items-end">
           <div>
             <p className="eyebrow rise-in text-orange" style={{ animationDelay: "60ms" }}>
-              Проекты · Кейсы
+              STRUKTURA · Проекты
             </p>
             <h1
               className="rise-in mt-8 text-white"
               style={{ fontSize: "clamp(52px,11vw,168px)", lineHeight: 0.88, letterSpacing: "-0.02em", animationDelay: "140ms" }}
             >
-              Кейсы
+              Проекты
               <span className="text-orange">+</span>
             </h1>
             <p
@@ -67,7 +67,7 @@ export default function CasesHero() {
         <div className="fade-in mt-10 flex items-center gap-3" style={{ animationDelay: "520ms" }}>
           <span className="sk-nudge font-mono text-[13px]">↓</span>
           <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-white/40">
-            Листайте — кейсы идут стопкой
+            Листайте — проекты идут стопкой
           </span>
         </div>
       </div>
