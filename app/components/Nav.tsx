@@ -18,20 +18,6 @@ const items = [
   { href: "/careers", label: "Соискателям" },
 ];
 
-const homeItems = [
-  { href: "#top", label: "Начало", sectionId: "top" },
-  { href: "#projects", label: "Проекты", sectionId: "projects" },
-  { href: "#about", label: "О компании", sectionId: "about" },
-  { href: "#problems", label: "Проблематика", sectionId: "problems" },
-  { href: "#algo", label: "Алгоритмический подход", sectionId: "algo" },
-  { href: "#digital", label: "Цифровая среда", sectionId: "digital" },
-  { href: "#materials", label: "Материалы", sectionId: "materials" },
-  { href: "#subsystems", label: "Подсистемы", sectionId: "subsystems" },
-  { href: "#ipd", label: "IPD", sectionId: "ipd" },
-  { href: "#team", label: "Команда", sectionId: "team" },
-  { href: "#contact", label: "Контакты", sectionId: "contact" },
-];
-
 function Wordmark({ onClick }: { onClick?: () => void }) {
   return (
     <Link
@@ -62,9 +48,6 @@ export default function Nav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("top");
-  const isHome = pathname === "/" || pathname === "/home-copy";
-  const navItems = isHome ? homeItems : items;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -72,26 +55,6 @@ export default function Nav() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (!isHome) return;
-    const sections = homeItems
-      .map((item) => document.getElementById(item.sectionId))
-      .filter((section): section is HTMLElement => Boolean(section));
-    if (!sections.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-        if (visible[0]) setActiveSection(visible[0].target.id);
-      },
-      { rootMargin: "-18% 0px -62% 0px", threshold: [0.05, 0.2, 0.5] },
-    );
-    sections.forEach((section) => observer.observe(section));
-    return () => observer.disconnect();
-  }, [isHome]);
 
   // Блокируем скролл страницы и вешаем Esc, пока панель открыта
   useEffect(() => {
@@ -221,10 +184,8 @@ export default function Nav() {
 
           {/* Основные пункты — все страницы, плавный стаггер */}
           <nav className="flex-1 flex flex-col justify-center px-6 md:px-10">
-            {navItems.map((item, i) => {
-              const active = isHome
-                ? "sectionId" in item && item.sectionId === activeSection
-                : pathname === item.href || (item.href !== "/" && pathname.startsWith(`${item.href}/`));
+            {items.map((item, i) => {
+              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
 
               return (
               <Link
@@ -266,7 +227,7 @@ export default function Nav() {
               padding: "clamp(12px, 1.8vh, 18px) 0",
               opacity: open ? 1 : 0,
               transition: "opacity 0.5s var(--ease-out)",
-              transitionDelay: open ? `${90 + navItems.length * 42}ms` : "0ms",
+              transitionDelay: open ? `${90 + items.length * 42}ms` : "0ms",
             }}
           >
             <div className="flex items-center gap-5">
