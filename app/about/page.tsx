@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import VersionSwitcher, { aboutVersions } from "../components/VersionSwitcher";
 import { AboutEditorialPage } from "../lab/about/page";
 
 export const metadata: Metadata = {
@@ -8,5 +9,10 @@ export const metadata: Metadata = {
 };
 
 export default function AboutPage() {
-  return <AboutEditorialPage showProof />;
+  return (
+    <>
+      <VersionSwitcher versions={aboutVersions} />
+      <AboutEditorialPage showProof />
+    </>
+  );
 }
