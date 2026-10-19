@@ -16,6 +16,11 @@ export const subsystemsVersions: Version[] = [
   { href: "/subsystems-copy", label: "V2" },
 ];
 
+export const aboutVersions: Version[] = [
+  { href: "/about", label: "V1" },
+  { href: "/about-copy", label: "V2" },
+];
+
 // Маленький плавающий переключатель между версиями одной страницы.
 export default function VersionSwitcher({ versions }: { versions: Version[] }) {
   const pathname = (usePathname() || "/").replace(/\/+$/, "") || "/";
