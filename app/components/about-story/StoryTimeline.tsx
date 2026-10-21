@@ -25,7 +25,7 @@ const digitVariants = {
   exit: (dir: number) => ({ y: dir >= 0 ? "-100%" : "100%" }),
 };
 
-function Year({ value, dir, className = "" }: { value: string; dir: number; className?: string }) {
+export function Year({ value, dir, className = "" }: { value: string; dir: number; className?: string }) {
   const reduced = useReducedMotion();
   return (
     <div className={`flex font-mono leading-none ${className}`} aria-label={value}>
@@ -53,7 +53,7 @@ function Year({ value, dir, className = "" }: { value: string; dir: number; clas
 
 /* ───────────── Фото кейса с лёгким параллаксом ───────────── */
 
-function Photo({ item, className = "" }: { item: StoryCase; className?: string }) {
+export function Photo({ item, className = "" }: { item: StoryCase; className?: string }) {
   const ref = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
@@ -100,7 +100,7 @@ function Draw({ d, delay = 0, stroke = "rgba(255,255,255,0.55)", width = 1 }: { 
   );
 }
 
-function OriginVisual() {
+export function OriginVisual() {
   // Идея (свободная кривая) → инженерная структура под ней.
   const ribs = Array.from({ length: 11 }, (_, i) => 60 + i * 48);
   const curve = (x: number) => 150 - Math.sin(((x - 40) / 520) * Math.PI) * 90;
@@ -124,7 +124,7 @@ function OriginVisual() {
   );
 }
 
-function SubsystemVisual() {
+export function SubsystemVisual() {
   // Изогнутая оболочка на несущем каркасе: стойки, ригели, узлы.
   const cols = Array.from({ length: 9 }, (_, i) => i);
   const rows = Array.from({ length: 5 }, (_, i) => i);
@@ -227,7 +227,7 @@ function ChapterVisual({ c }: { c: StoryChapter }) {
   );
 }
 
-function MoreBody({ blocks }: { blocks: StoryMore[] }) {
+export function MoreBody({ blocks }: { blocks: StoryMore[] }) {
   return (
     <div className="flex flex-col gap-10">
       {blocks.map((b) => (

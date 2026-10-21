@@ -47,14 +47,47 @@ function ArrowRight() {
 export default function Nav() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  // Под шапкой тёмный фон: прозрачное светлое стекло на тёмном выглядит серым — делаем его плотнее
+  const [overDark, setOverDark] = useState(false);
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
+    let raf = 0;
+    const luminance = (color: string) => {
+      const m = color.match(/rgba?\(([^)]+)\)/);
+      if (!m) return null;
+      const [r, g, b, a = 1] = m[1].split(",").map(Number);
+      return a < 0.5 ? null : 0.2126 * r + 0.7152 * g + 0.0722 * b;
+    };
+    const check = () => {
+      raf = 0;
+      setScrolled(window.scrollY > 40);
+      // первый непрозрачный фон за шапкой
+      for (const el of document.elementsFromPoint(window.innerWidth / 2, 36)) {
+        if (el.closest("header")) continue;
+        const l = luminance(getComputedStyle(el).backgroundColor);
+        if (l !== null) return setOverDark(l < 110);
+      }
+      setOverDark(false);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(check);
+    };
+    check();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+    window.addEventListener("resize", onScroll);
+    // при первой загрузке поверх лежит светлый прелоадер — перепроверить, когда он снимет .preloading
+    const mo = new MutationObserver(onScroll);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    const late = window.setTimeout(onScroll, 1200);
+    return () => {
+      cancelAnimationFrame(raf);
+      mo.disconnect();
+      window.clearTimeout(late);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    };
+  }, [pathname]);
 
   // Блокируем скролл страницы и вешаем Esc, пока панель открыта
   useEffect(() => {
@@ -76,10 +109,17 @@ export default function Nav() {
       <header
         className="fixed top-0 left-0 right-0 z-50 fade-in"
         style={{
-          background: scrolled ? "rgba(241,239,233,0.9)" : "rgba(241,239,233,0.82)",
-          backdropFilter: scrolled ? "blur(14px)" : "blur(10px)",
-          borderBottom: scrolled ? "1px solid var(--line-light)" : "1px solid rgba(0,0,0,0.06)",
-          transition: "background-color 0.3s ease, border-color 0.3s ease, backdrop-filter 0.3s ease",
+          // Светлое «стекло»: полупрозрачный белый + сильное размытие с насыщенностью
+          background: overDark
+            ? "rgba(252,251,248,0.88)"
+            : scrolled
+              ? "rgba(252,251,248,0.58)"
+              : "rgba(252,251,248,0.46)",
+          backdropFilter: "blur(22px) saturate(1.6)",
+          WebkitBackdropFilter: "blur(22px) saturate(1.6)",
+          borderBottom: scrolled ? "1px solid rgba(255,255,255,0.55)" : "1px solid rgba(255,255,255,0.4)",
+          boxShadow: scrolled ? "0 1px 0 rgba(0,0,0,0.04), 0 8px 24px -16px rgba(0,0,0,0.18)" : "none",
+          transition: "background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease",
         }}
       >
         <div className="container-x flex items-center justify-between" style={{ height: 72 }}>
@@ -157,7 +197,8 @@ export default function Nav() {
             background: "#fff",
             display: "flex",
             flexDirection: "column",
-            transform: open ? "translateX(0)" : "translateX(100%)",
+            // закрытая панель уезжает вместе с тенью (−30px + blur 80px), иначе тень видна у правого края
+            transform: open ? "translateX(0)" : "translateX(calc(100% + 120px))",
             // плавный экспо-выезд как в рефе
             transition: "transform 0.62s cubic-bezier(0.16, 1, 0.3, 1)",
             boxShadow: "-30px 0 80px rgba(0,0,0,0.18)",
@@ -224,7 +265,9 @@ export default function Nav() {
             style={{
               borderTop: "1px solid var(--line-light)",
               flexShrink: 0,
-              padding: "clamp(12px, 1.8vh, 18px) 0",
+              // только вертикаль: горизонтальные поля задают px-6 md:px-10
+              paddingTop: "clamp(12px, 1.8vh, 18px)",
+              paddingBottom: "clamp(12px, 1.8vh, 18px)",
               opacity: open ? 1 : 0,
               transition: "opacity 0.5s var(--ease-out)",
               transitionDelay: open ? `${90 + items.length * 42}ms` : "0ms",

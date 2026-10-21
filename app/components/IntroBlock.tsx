@@ -1,6 +1,7 @@
 "use client";
 import { useReveal } from "./useReveal";
-import ConeSequence from "./ConeSequence";
+
+const BP = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
 export default function IntroBlock() {
   const ref = useReveal();
@@ -12,20 +13,30 @@ export default function IntroBlock() {
       style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}
     >
       <div className="container-x">
-        <div ref={ref} className="reveal grid lg:grid-cols-2 gap-12 lg:gap-16 xl:gap-20">
+        <div ref={ref} className="reveal grid lg:grid-cols-2 lg:items-center gap-12 lg:gap-16 xl:gap-20">
           <div className="flex flex-col items-start">
             <div className="eyebrow text-ink mb-7">О компании</div>
 
-            <div
-              className="relative w-full max-w-[387px] aspect-square overflow-hidden"
-              style={{ background: "var(--paper)" }}
-              aria-hidden="true"
-            >
-              <ConeSequence />
+            {/* Фирменная каска STRUKTURA — рендер из брендинга (STRUKTURA/3D/HardHat_Seq).
+                Левый край брима — по краю колонки, низ — на уровне кнопки справа. */}
+            <div className="relative w-full max-w-[480px]">
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-x-[8%] bottom-[-6%] h-[16%] rounded-[50%]"
+                style={{ background: "radial-gradient(closest-side, rgba(26,26,26,0.16), rgba(26,26,26,0))", filter: "blur(6px)" }}
+              />
+              <img
+                src={`${BP}/brand/hardhat-orange.webp`}
+                alt="Фирменная строительная каска STRUKTURA"
+                width={1400}
+                height={1245}
+                loading="lazy"
+                className="relative block h-auto w-full"
+              />
             </div>
           </div>
 
-          <div className="lg:pt-1">
+          <div>
             <h2
               className="text-ink max-w-[660px]"
               style={{

@@ -19,6 +19,7 @@ export const subsystemsVersions: Version[] = [
 export const aboutVersions: Version[] = [
   { href: "/about", label: "V1" },
   { href: "/about-copy", label: "V2" },
+  { href: "/about-growth", label: "V3" },
 ];
 
 // Маленький плавающий переключатель между версиями одной страницы.
