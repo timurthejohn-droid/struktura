@@ -1,12 +1,14 @@
 "use client";
 
-import { Component, Suspense, useEffect, useMemo, useRef, type ErrorInfo, type ReactNode } from "react";
+import { Component, Suspense, useEffect, useMemo, useRef, useState, type ErrorInfo, type ReactNode } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Bounds, Environment, Lightformer, useGLTF } from "@react-three/drei";
 import { Box3, DoubleSide, Material, Mesh, MeshStandardMaterial, Plane, Vector3, type Group, type Object3D } from "three";
+import { canUseWebGL } from "./webgl";
 
 const BASE_PATH = process.env.NEXT_PUBLIC_BASE_PATH || "";
 const MODEL_PATH = `${BASE_PATH}/models/Untitled1234.web.glb`;
+const FALLBACK_PATH = `${BASE_PATH}/models/subsystem-fallback.webp`;
 const MODEL_ROTATION_Y = Math.PI - 0.28;
 const MODEL_COLOR = "#ff5a00";
 const PANELS_ROOT_NAME = "col_pnl";
@@ -82,7 +84,21 @@ function LoadingState() {
   return null;
 }
 
-class ModelErrorBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+/** Статичный кадр модели — если WebGL недоступен или сцена упала. */
+function StaticModelFallback() {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={FALLBACK_PATH}
+      alt=""
+      aria-hidden
+      className="pointer-events-none absolute inset-0 h-full w-full select-none object-contain"
+      draggable={false}
+    />
+  );
+}
+
+class ModelErrorBoundary extends Component<{ children: ReactNode; fallback: ReactNode }, { failed: boolean }> {
   state = { failed: false };
 
   static getDerivedStateFromError() {
@@ -94,7 +110,7 @@ class ModelErrorBoundary extends Component<{ children: ReactNode }, { failed: bo
   }
 
   render() {
-    return this.state.failed ? null : this.props.children;
+    return this.state.failed ? this.props.fallback : this.props.children;
   }
 }
 
@@ -111,6 +127,7 @@ function Model({
   idleSpeed = 1,
   panelLayerHeightScale = 1,
   forcePanelsVisible = false,
+  idleZoom = true,
 }: {
   assemblyProgress: number;
   zoomProgress: number;
@@ -124,6 +141,8 @@ function Model({
   idleSpeed?: number;
   panelLayerHeightScale?: number;
   forcePanelsVisible?: boolean;
+  /** Наезд камеры на деталь во время автоповорота; false — модель всегда целиком (карточка на главной). */
+  idleZoom?: boolean;
 }) {
   const { scene } = useGLTF(MODEL_PATH);
   const groupRef = useRef<Group>(null);
@@ -266,7 +285,7 @@ function Model({
       const idleTime = state.clock.elapsedTime * idleSpeed;
       const idleRotation = autoSpin ? idleTime * 0.36 : 0;
       const turnPhase = autoSpin ? (idleRotation % FULL_TURN) / FULL_TURN : 0;
-      const zoomCycle = turnPhase < 0.5 ? easeInOutCubic(turnPhase * 2) : easeInOutCubic((1 - turnPhase) * 2);
+      const zoomCycle = !idleZoom ? 0 : turnPhase < 0.5 ? easeInOutCubic(turnPhase * 2) : easeInOutCubic((1 - turnPhase) * 2);
       const idleZoomScale = 1 + zoomCycle * 1.15;
       const scale = (1 + viewZoom * (DETAIL_ZOOM_SCALE - 1)) * idleZoomScale;
       groupRef.current.scale.setScalar(scale);
@@ -347,6 +366,7 @@ export default function SubsystemModel({
   panelLayerHeightScale = 1,
   forcePanelsVisible = false,
   fullBleed = false,
+  idleZoom = true,
 }: {
   assemblyProgress: number;
   zoomProgress: number;
@@ -361,10 +381,18 @@ export default function SubsystemModel({
   panelLayerHeightScale?: number;
   forcePanelsVisible?: boolean;
   fullBleed?: boolean;
+  idleZoom?: boolean;
 }) {
+  // null — ещё не проверили (SSR и первый кадр), false — WebGL нет, показываем кадр модели
+  const [webgl, setWebgl] = useState<boolean | null>(null);
+  useEffect(() => setWebgl(canUseWebGL()), []);
+
   return (
     <div className={fullBleed ? "absolute inset-0 z-0" : "absolute inset-x-0 bottom-[118px] top-8 z-0 md:bottom-[124px]"}>
-      <ModelErrorBoundary>
+      {webgl === false ? (
+        <StaticModelFallback />
+      ) : webgl && (
+      <ModelErrorBoundary fallback={<StaticModelFallback />}>
         <Suspense fallback={<LoadingState />}>
           <Canvas
             camera={{ position: [5, 3.5, 7], fov: 34 }}
@@ -395,11 +423,13 @@ export default function SubsystemModel({
                 idleSpeed={idleSpeed}
                 panelLayerHeightScale={panelLayerHeightScale}
                 forcePanelsVisible={forcePanelsVisible}
+                idleZoom={idleZoom}
               />
             </Bounds>
           </Canvas>
         </Suspense>
       </ModelErrorBoundary>
+      )}
     </div>
   );
 }

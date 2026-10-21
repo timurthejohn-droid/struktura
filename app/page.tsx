@@ -1,15 +1,11 @@
 import Nav from "./components/Nav";
-import Hero from "./components/Hero";
+import HeroScrollVideo from "./components/hero/HeroScrollVideo";
 import ProjectsSlider from "./components/ProjectsSlider";
 import TrustStrip from "./components/TrustStrip";
 import IntroBlock from "./components/IntroBlock";
 import ProblemsBlock from "./components/ProblemsBlock";
-import AlgoPrinciples from "./components/AlgoPrinciples";
-import DigitalEnvFlow from "./components/DigitalEnvFlow";
-import DigitalEnvHologram from "./components/DigitalEnvHologram";
-import MaterialsHome from "./components/materials/MaterialsHome";
-import SubsystemsHomeTeaser from "./components/SubsystemsHomeTeaser";
-import IpdBlock from "./components/IpdBlock";
+import MaterialsSubsystemsHome from "./components/MaterialsSubsystemsHome";
+import FormulaBlock from "./components/FormulaBlock";
 import TeamTeaser from "./components/TeamTeaser";
 import ContactForm from "./components/ContactForm";
 import Footer from "./components/Footer";
@@ -20,26 +16,19 @@ export function Home({ lightCopy = false }: { lightCopy?: boolean }) {
       <Nav />
       <main>
         {/* LIGHT */}
-        <Hero />
+        {/* Первый экран: ролик раскрывается при скролле */}
+        <HeroScrollVideo />
         <ProjectsSlider />
         <TrustStrip />
         <IntroBlock />
+        {/* LIGHT — «Материалы» и «Подсистемы» двумя карточками в одну линию */}
+        <MaterialsSubsystemsHome />
         {/* DARK */}
         <ProblemsBlock />
-        {/* ORANGE — core */}
-        <div id="algo">
-          <AlgoPrinciples />
-        </div>
-        {/* DARK */}
-        {lightCopy ? <DigitalEnvFlow light /> : <DigitalEnvHologram />}
-        {/* DARK — блок «Материалы»: текст слева + видео справа */}
-        <MaterialsHome />
+        {/* LIGHT — «Формула STRUKTURA+»: подход + цифровая среда + IPD одним блоком */}
+        <FormulaBlock />
         {/* LIGHT */}
-        <SubsystemsHomeTeaser />
-        {/* LIGHT */}
-        <IpdBlock light />
-        {/* LIGHT */}
-        <TeamTeaser />
+        <TeamTeaser index="07" />
         <ContactForm />
       </main>
       {/* DARK */}

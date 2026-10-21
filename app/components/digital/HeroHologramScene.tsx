@@ -57,7 +57,7 @@ export type PointerState = {
   fine: boolean;
 };
 
-export type HologramLayout = "hero" | "section";
+export type HologramLayout = "hero" | "section" | "card";
 
 type SceneProps = {
   pointer: MutableRefObject<PointerState>;
@@ -643,6 +643,7 @@ function Effects() {
 }
 
 function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
+  const card = layout === "card";
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
   const gl = useThree((s) => s.gl);
@@ -1013,18 +1014,20 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
     const k = 1 - Math.exp(-dt * 3);
     const ptr = pointer.current;
     const inside = !reduced && ptr.fine && ptr.inside;
-    const px = inside ? ptr.x : 0;
-    const py = inside ? ptr.y : 0;
+    // card: шар стоит на месте — камера и сцена не следуют за курсором
+    const px = inside && !card ? ptr.x : 0;
+    const py = inside && !card ? ptr.y : 0;
 
     // ── камера и композиция ──
     const aspect = size.width / size.height;
-    const narrow = size.width < 768 || aspect < 0.95;
-    const fit = narrow ? Math.max(1, 0.8 / aspect) : Math.max(1, 1.55 / aspect);
+    const narrow = card || size.width < 768 || aspect < 0.95;
+    // card — сфера целиком и по центру узкой карточки (блок «Формула» на главной)
+    const fit = card ? Math.max(1, 0.95 / aspect) : narrow ? Math.max(1, 0.8 / aspect) : Math.max(1, 1.55 / aspect);
     s.camX += (px * 0.7 - s.camX) * k;
     s.camY += (py * 0.4 - s.camY) * k;
     camera.position.set(s.camX, 1.6 + s.camY, 17.5 * fit);
     camera.lookAt(0, 0, 0);
-    const oy = layout === "hero" ? (narrow ? 0.25 : 0.13) : narrow ? -0.2 : -0.06;
+    const oy = layout === "hero" ? (narrow ? 0.25 : 0.13) : card ? 0.16 : narrow ? -0.2 : -0.06;
     camera.setViewOffset(size.width, size.height, narrow ? 0 : -size.width * 0.17, size.height * oy, size.width, size.height);
     camera.updateMatrixWorld();
 
@@ -1032,13 +1035,14 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
     const holo = holoRef.current;
     const spin = spinRef.current;
     if (!rig || !holo || !spin) return;
-    const sway = reduced ? 0 : Math.sin(T * 0.15) * 0.1;
+    const sway = reduced || card ? 0 : Math.sin(T * 0.15) * 0.1;
     const kr = reduced ? 1 : 1 - Math.exp(-dt * 2.5);
     rig.rotation.y += (-0.16 + sway + px * 0.3 - rig.rotation.y) * kr;
     rig.rotation.x += (-py * 0.1 - rig.rotation.x) * kr;
     holo.position.y = HOLO_Y + Math.sin(T * 0.8) * 0.06;
 
-    s.boost += ((inside ? Math.min(1, ptr.speed * 0.7) : 0) - s.boost) * (1 - Math.exp(-dt * (inside && ptr.speed > s.boost ? 6 : 1.5)));
+    // card: без ускорения и общей подсветки от движения мыши
+    s.boost += ((inside && !card ? Math.min(1, ptr.speed * 0.7) : 0) - s.boost) * (1 - Math.exp(-dt * (inside && ptr.speed > s.boost ? 6 : 1.5)));
     s.ringT += dt * (1 + s.boost * 2.5);
     const spinBoost = 1 + s.boost * 3;
 
@@ -1191,7 +1195,8 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
       tmp.inv.copy(g.matrixWorld).invert();
       tmp.b.copy(s.hitDir).multiplyScalar(sh.spec.r).applyMatrix4(holo.matrixWorld).applyMatrix4(tmp.inv);
       tmp.p.copy(s.wave.dir).multiplyScalar(sh.spec.r).applyMatrix4(holo.matrixWorld).applyMatrix4(tmp.inv);
-      const amt = s.retVis * (1 - i * 0.12);
+      // card: свечение под курсором мягче
+      const amt = s.retVis * (1 - i * 0.12) * (card ? 0.5 : 1);
       for (const m of [sh.traceMat, sh.shardMat, sh.sparkMat]) {
         m.uniforms.uHit.value.copy(tmp.b);
         m.uniforms.uHitAmt.value = amt;
@@ -1223,8 +1228,9 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
   return (
     <>
       <group ref={rigRef}>
+        {/* card: без орбитальных обводок, кольца-надписи и подписей участников — только сфера */}
         {res.rings.map((r, i) =>
-          r.spec.gyro ? null : (
+          r.spec.gyro || (card && i < 2) ? null : (
             <group key={i} position={[0, r.spec.y, 0]} rotation={r.spec.tilt}>
               <mesh ref={(m) => void (ringRefs.current[i] = m)} geometry={r.geo} material={r.mat} />
             </group>
@@ -1241,11 +1247,14 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
         </group>
 
         {/* слои мастер-модели — надпись по кольцу */}
-        <group position={[0, HOLO_Y, 0]} rotation={TEXT_RING.tilt}>
-          <mesh ref={textRingRef} geometry={res.textRingGeo} material={res.textRingMat} />
-        </group>
+        {!card && (
+          <group position={[0, HOLO_Y, 0]} rotation={TEXT_RING.tilt}>
+            <mesh ref={textRingRef} geometry={res.textRingGeo} material={res.textRingMat} />
+          </group>
+        )}
 
         {/* участники среды на орбите и путь детали */}
+        {!card && (
         <group position={[0, HOLO_Y, 0]} rotation={ORBIT_TILT}>
           <group ref={orbitRef}>
             <lineSegments geometry={res.linkGeo} material={res.linkMat} frustumCulled={false} />
@@ -1263,6 +1272,7 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
             ))}
           </group>
         </group>
+        )}
 
         {/* абстрактная сфера */}
         <group ref={holoRef} position={[0, HOLO_Y, 0]}>
@@ -1296,15 +1306,18 @@ function Hologram({ pointer, reduced, layout }: Omit<SceneProps, "active">) {
             <lineSegments geometry={res.octGeo} material={res.coreLineMat2} />
           </group>
 
-          <group ref={reticleRef} visible={false}>
-            {res.retRings.map((r, i) => (
-              <mesh key={i} ref={(m) => void (retRingRefs.current[i] = m)} geometry={r.geo} material={r.mat} />
-            ))}
-            <lineSegments geometry={res.crossGeo} material={res.crossMat} />
-            <Html position={[0.88, 0.5, 0]} zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
-              <div ref={readoutRef} className="hh-read" />
-            </Html>
-          </group>
+          {/* прицел под курсором — в card не нужен */}
+          {!card && (
+            <group ref={reticleRef} visible={false}>
+              {res.retRings.map((r, i) => (
+                <mesh key={i} ref={(m) => void (retRingRefs.current[i] = m)} geometry={r.geo} material={r.mat} />
+              ))}
+              <lineSegments geometry={res.crossGeo} material={res.crossMat} />
+              <Html position={[0.88, 0.5, 0]} zIndexRange={[5, 0]} style={{ pointerEvents: "none" }}>
+                <div ref={readoutRef} className="hh-read" />
+              </Html>
+            </group>
+          )}
           {res.pulses.map((pl, i) => (
             <mesh key={i} ref={(m) => void (pulseRefs.current[i] = m)} geometry={pl.geo} material={pl.mat} visible={false} />
           ))}
