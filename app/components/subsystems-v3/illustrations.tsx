@@ -9,6 +9,34 @@ type P = { dark?: boolean };
 const ink = (dark?: boolean) => (dark ? "rgba(255,255,255,0.55)" : "rgba(26,26,26,0.55)");
 const faint = (dark?: boolean) => (dark ? "rgba(255,255,255,0.14)" : "rgba(26,26,26,0.12)");
 
+type Pt = [number, number];
+
+/** Кубическая кривая Безье: точка и угол касательной по координате x (x монотонен по t). */
+export function cubic(p0: Pt, p1: Pt, p2: Pt, p3: Pt) {
+  const at = (t: number) => {
+    const u = 1 - t;
+    const a = u * u * u, b = 3 * u * u * t, c = 3 * u * t * t, d = t * t * t;
+    return [a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0], a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1]] as Pt;
+  };
+  const tAt = (x: number) => {
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 40; i++) {
+      const m = (lo + hi) / 2;
+      if (at(m)[0] < x) lo = m; else hi = m;
+    }
+    return (lo + hi) / 2;
+  };
+  const y = (x: number) => at(tAt(x))[1];
+  const angle = (x: number) => {
+    const t = tAt(x);
+    const [ax, ay] = at(Math.max(0, t - 0.001));
+    const [bx, by] = at(Math.min(1, t + 0.001));
+    return (Math.atan2(by - ay, bx - ax) * 180) / Math.PI;
+  };
+  const d = `M${p0[0]} ${p0[1]} C ${p1[0]} ${p1[1]} ${p2[0]} ${p2[1]} ${p3[0]} ${p3[1]}`;
+  return { y, angle, d };
+}
+
 /** Псевдо-QR метка, детерминированная по seed. */
 export function Tag({ x, y, size = 30, seed = 7, color = O }: { x: number; y: number; size?: number; seed?: number; color?: string }) {
   const n = 7;
@@ -74,9 +102,9 @@ export function IlluMarking({ dark }: P) {
       <path d="M30 104 L60 40 H170 L150 104 Z" fill="none" stroke={ink(dark)} strokeWidth="1.2" />
       <path d="M60 40 L66 30 H176 L170 40" fill="none" stroke={faint(dark)} />
       <g className="sv3-blink">
-        <Tag x={94} y={54} size={34} seed={3} />
+        <Tag x={86} y={55} size={34} seed={3} />
       </g>
-      <text x="92" y="100" fontFamily={mono} fontSize="8" fill={O}>S-024 / N-07</text>
+      <text x="100" y="124" textAnchor="middle" fontFamily={mono} fontSize="8" fill={O}>S-024 / N-07</text>
     </svg>
   );
 }
@@ -102,17 +130,18 @@ export function IlluLogistics({ dark }: P) {
   );
 }
 
+const assemblyArc = cubic([20, 110], [60, 60], [140, 60], [180, 110]);
+
 export function IlluAssembly({ dark }: P) {
+  const xs = [40, 70, 100, 130, 160];
   return (
     <svg viewBox="0 0 200 140" className="h-full w-full">
-      <path d="M20 110 C 60 60 140 60 180 110" fill="none" stroke={faint(dark)} strokeWidth="10" />
-      {[0, 1, 3, 4].map((i) => {
-        const x = 34 + i * 33;
-        return <rect key={i} x={x} y={72 - (i === 0 || i === 4 ? -12 : 0)} width="28" height="8" fill={ink(dark)} opacity=".7" transform={`rotate(${(i - 2) * 14} ${x + 14} 76)`} />;
+      <path d={assemblyArc.d} fill="none" stroke={faint(dark)} strokeWidth="10" />
+      {xs.map((x, i) => {
+        const y = assemblyArc.y(x);
+        const seg = <rect x={x - 13} y={y - 4} width="26" height="8" fill={i === 2 ? O : ink(dark)} opacity={i === 2 ? 1 : 0.7} transform={`rotate(${assemblyArc.angle(x)} ${x} ${y})`} />;
+        return i === 2 ? <g key={x} className="sv3-slot">{seg}</g> : <g key={x}>{seg}</g>;
       })}
-      <g className="sv3-slot">
-        <rect x="86" y="62" width="28" height="8" fill={O} />
-      </g>
       <g className="sv3-blink">
         <circle cx="168" cy="34" r="12" fill="none" stroke={O} />
         <path d="M162 34l4 4 8-9" stroke={O} strokeWidth="2" fill="none" />
@@ -122,13 +151,15 @@ export function IlluAssembly({ dark }: P) {
 }
 
 /** Адаптивность: одна форма — опоры перестраиваются под разные основания. */
+const adaptArc = cubic([15, 70], [70, 10], [140, 10], [195, 70]);
+
 export function IlluAdapt({ dark }: P) {
   const xs = [30, 60, 90, 120, 150, 180];
   return (
     <svg viewBox="0 0 210 160" className="h-full w-full">
-      <path d="M15 70 C 70 10 140 10 195 70" fill="none" stroke={dark ? "#fff" : "#1a1a1a"} strokeWidth="5" />
+      <path d={adaptArc.d} fill="none" stroke={dark ? "#fff" : "#1a1a1a"} strokeWidth="5" />
       {xs.map((x) => {
-        const top = 70 - Math.sin(((x - 15) / 180) * Math.PI) * 45 + 6;
+        const top = adaptArc.y(x) + 6;
         return (
           <g key={x}>
             <line x1={x} y1={top} x2={x} y2={136} stroke={O} strokeWidth="2.5">
@@ -171,20 +202,20 @@ export function IlluProduction({ dark }: P) {
   );
 }
 
-/** Сборка: «папа–мама» сходятся по меткам. */
+/** Сборка: «папа–мама» — шип входит в паз, детали сходятся по линии стыка и меткам. */
 export function IlluJoint({ dark }: P) {
   const line = dark ? "#fff" : "#1a1a1a";
   return (
     <svg viewBox="0 0 210 160" className="h-full w-full">
-      <g className="sv3-drive" style={{ animationDuration: "3s" }}>
-        <path d="M20 50 H90 V70 H108 V90 H90 V110 H20 Z" fill="none" stroke={line} strokeWidth="1.5" />
-        <path d="M72 96 V104 M78 96 V104" stroke={O} strokeWidth="2" />
+      <g className="sv3-join">
+        <path d="M20 50 H105 V72 H127 V88 H105 V110 H20 Z" fill="none" stroke={line} strokeWidth="1.5" />
+        <path d="M88 96 V104 M94 96 V104" stroke={O} strokeWidth="2" />
       </g>
-      <path d="M190 50 H112 V70 H118 V90 H112 V110 H190 Z" fill="none" stroke={line} strokeWidth="1.5" />
-      <path d="M126 96 V104 M132 96 V104" stroke={O} strokeWidth="2" />
-      <path d="M110 30 V130" stroke={O} strokeDasharray="3 4" opacity=".7" />
+      <path d="M190 50 H105 V70 H129 V90 H105 V110 H190 Z" fill="none" stroke={line} strokeWidth="1.5" />
+      <path d="M116 96 V104 M122 96 V104" stroke={O} strokeWidth="2" />
+      <path d="M105 30 V130" stroke={O} strokeDasharray="3 4" opacity=".7" />
       <text x="20" y="140" fontFamily={mono} fontSize="8" fill={ink(dark)}>N-07/A</text>
-      <text x="152" y="140" fontFamily={mono} fontSize="8" fill={ink(dark)}>N-07/B</text>
+      <text x="190" y="140" textAnchor="end" fontFamily={mono} fontSize="8" fill={ink(dark)}>N-07/B</text>
     </svg>
   );
 }

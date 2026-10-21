@@ -28,6 +28,10 @@
 .sv3-drive { animation: sv3Drive 4s var(--ease-in-out) infinite; }
 @keyframes sv3Drive { 0% { transform: translateX(-30px); } 50% { transform: translateX(30px); } 100% { transform: translateX(-30px); } }
 
+/* Деталь подъезжает к ответной и останавливается на линии стыка (без перехлёста) */
+.sv3-join { animation: sv3Join 3.6s var(--ease-in-out) infinite; }
+@keyframes sv3Join { 0%, 10% { transform: translateX(-18px); } 45%, 80% { transform: translateX(0); } 100% { transform: translateX(-18px); } }
+
 .sv3-slot { animation: sv3Slot 3.6s var(--ease-in-out) infinite; }
 @keyframes sv3Slot {
   0%, 15% { transform: translateY(-34px); opacity: 0; }
@@ -69,6 +73,6 @@
   .cmp-draw { stroke-dashoffset: 0; }
   .cmp-pop { opacity: 1; transform: none; }
   .cmp-on .cmp-draw, .cmp-on .cmp-pop,
-  .sv3-float, .sv3-scan, .sv3-blink, .sv3-dash, .sv3-spin, .sv3-drive, .sv3-slot, .sv3-grow, .sv3-beam::after { animation: none; }
+  .sv3-float, .sv3-scan, .sv3-blink, .sv3-dash, .sv3-spin, .sv3-drive, .sv3-join, .sv3-slot, .sv3-grow, .sv3-beam::after { animation: none; }
   .sv3-slot { opacity: 1; transform: none; }
 }

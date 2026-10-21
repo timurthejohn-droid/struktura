@@ -1,11 +1,12 @@
 "use client";
 import { useInView } from "./hooks";
+import { cubic } from "./illustrations";
 
 // Одна и та же внешняя форма — два устройства конструкции.
-const PTS: [number, number][] = [
-  [70, 128], [122, 98], [176, 78], [232, 68], [288, 66], [344, 72], [400, 88], [452, 112], [498, 140],
-];
-const shellPath = "M50 140 C150 30 380 30 520 152";
+const shell = cubic([50, 140], [150, 30], [380, 30], [520, 152]);
+const shellPath = shell.d;
+// Точки крепления лежат на оболочке (+4 — половина толщины линии оболочки)
+const PTS: [number, number][] = [70, 122, 176, 232, 288, 344, 400, 452, 498].map((x) => [x, shell.y(x) + 4]);
 
 function Draw({ d, delay, stroke, width = 2, dash = false }: { d: string; delay: number; stroke: string; width?: number; dash?: boolean }) {
   return (
@@ -44,7 +45,7 @@ function Scheme({ integrated }: { integrated: boolean }) {
           <Draw d={`M${PTS.map(([x, y]) => `${x} ${y + 30}`).join(" L")}`} delay={0.5} stroke={c} width={5} />
           {PTS.map(([x, y], i) => (
             <g key={x}>
-              <Draw d={`M${x} ${y + 30} L${x} ${y + 6}`} delay={0.8 + i * 0.05} stroke={c} width={3} />
+              <Draw d={`M${x} ${y + 30} L${x} ${y}`} delay={0.8 + i * 0.05} stroke={c} width={3} />
               <circle cx={x} cy={y + 30} r="5" fill="#fff" stroke={c} strokeWidth="2" className="cmp-pop" style={{ animationDelay: `${1 + i * 0.05}s` }} />
               <path d={`M${x + 10} ${y + 10}v16 M${x + 7} ${y + 13}l3 -3 3 3 M${x + 7} ${y + 23}l3 3 3 -3`} stroke={c} strokeWidth="1.2" fill="none" className="cmp-pop" style={{ animationDelay: `${1.2 + i * 0.05}s` }} />
               {i % 4 === 0 && <Draw d={`M${x} ${y + 30} V252`} delay={0.6} stroke="#55534f" width={4} />}
@@ -63,9 +64,9 @@ function Scheme({ integrated }: { integrated: boolean }) {
             const mid = (y + 196) / 2 + (i % 2 ? 8 : -6);
             return (
               <g key={x}>
-                <Draw d={`M${bx} 196 V${mid} H${x} V${y + 6}`} delay={0.8 + i * 0.06} stroke={c} width={3} />
+                <Draw d={`M${bx} 196 V${mid} H${x} V${y + 7}`} delay={0.8 + i * 0.06} stroke={c} width={3} />
                 <rect x={bx - 6} y={mid - 5} width="12" height="10" fill="#fff" stroke={c} strokeWidth="1.5" className="cmp-pop" style={{ animationDelay: `${1.2 + i * 0.06}s` }} />
-                <rect x={x - 5} y={y + 6} width="10" height="7" fill="#fff" stroke={c} strokeWidth="1.5" className="cmp-pop" style={{ animationDelay: `${1.3 + i * 0.06}s` }} />
+                <rect x={x - 5} y={y} width="10" height="7" fill="#fff" stroke={c} strokeWidth="1.5" className="cmp-pop" style={{ animationDelay: `${1.3 + i * 0.06}s` }} />
               </g>
             );
           })}

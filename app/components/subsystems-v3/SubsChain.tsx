@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import SectionHead from "../SectionHead";
 import { useAutoStep, useInView } from "./hooks";
-import { Tag } from "./illustrations";
+import { Tag, cubic } from "./illustrations";
 import { Lead, Reveal } from "./shared";
 
 const ID = "S-024 · N-07";
@@ -16,6 +16,9 @@ const story = [
   { step: "ID", title: "Нанесённая метка", text: "Метка связывает деталь с моделью и монтажным комплектом." },
   { step: "Монтаж", title: "Место в конструкции", text: "Деталь встаёт на своё место и проходит проверку положения." },
 ];
+
+// Оболочка в кадре «место в конструкции»
+const shell = cubic([40, 80], [200, 30], [400, 30], [560, 80]);
 
 // Контур детали — общий для всех кадров
 const PART = "M210 110 H390 V150 H270 V250 H210 Z";
@@ -117,10 +120,10 @@ function PartStage({ step }: { step: number }) {
 
       {/* 05 — место в конструкции */}
       <Frame on={step === 4}>
-        <path d="M40 80 C 200 30 400 30 560 80" fill="none" stroke="#fff" strokeWidth="8" opacity=".85" />
+        <path d={shell.d} fill="none" stroke="#fff" strokeWidth="8" opacity=".85" />
         <path d="M40 300 H560" stroke="rgba(255,255,255,.3)" strokeWidth="6" />
         {[80, 160, 240, 320, 400, 480].map((x, i) => {
-          const y = 80 - Math.sin(((x - 40) / 520) * Math.PI) * 36 + 12;
+          const y = shell.y(x) + 4;
           const hit = i === 3;
           return (
             <g key={x}>
@@ -158,16 +161,16 @@ function Joint({ v }: { v: number }) {
         </linearGradient>
       </defs>
       <g transform={`translate(${-dx} 0)`}>
-        <path d="M120 70 H270 V112 H312 V148 H270 V190 H120 Z" fill="url(#sv3-ja)" stroke="#e9e7e1" strokeWidth="1.2" />
+        <path d="M120 70 H300 V112 H340 V148 H300 V190 H120 Z" fill="url(#sv3-ja)" stroke="#e9e7e1" strokeWidth="1.2" />
         <Tag x={140} y={90} size={28} seed={11} />
         <text x="140" y="174" fill="#fff" fontFamily={mono} fontSize="12">N-07 / A</text>
-        <path d="M246 160 V176 M254 160 V176 M262 160 V176" stroke={O} strokeWidth="2" />
+        <path d="M268 160 V176 M276 160 V176 M284 160 V176" stroke={O} strokeWidth="2" />
       </g>
       <g transform={`translate(${dx} 0)`}>
-        <path d="M312 70 H470 V190 H312 V152 H320 V108 H312 Z" fill="url(#sv3-ja)" stroke="#e9e7e1" strokeWidth="1.2" />
+        <path d="M300 70 H470 V190 H300 V150 H342 V110 H300 Z" fill="url(#sv3-ja)" stroke="#e9e7e1" strokeWidth="1.2" />
         <Tag x={420} y={90} size={28} seed={13} />
-        <text x="380" y="174" fill="#fff" fontFamily={mono} fontSize="12">N-07 / B</text>
-        <path d="M328 160 V176 M336 160 V176 M344 160 V176" stroke={O} strokeWidth="2" />
+        <text x="452" y="174" textAnchor="end" fill="#fff" fontFamily={mono} fontSize="12">N-07 / B</text>
+        <path d="M316 160 V176 M324 160 V176 M332 160 V176" stroke={O} strokeWidth="2" />
       </g>
       <path d="M300 40 V220" stroke={O} strokeDasharray="4 5" opacity=".55" />
       <text x="300" y="246" textAnchor="middle" fill={ready ? "#8ac9a2" : "rgba(255,255,255,.55)"} fontSize="11" fontFamily={mono} letterSpacing="1">
