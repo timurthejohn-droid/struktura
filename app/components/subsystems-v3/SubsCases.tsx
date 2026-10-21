@@ -8,21 +8,19 @@ const O = "#ff5a00";
 
 /** Цифровой фрагмент: триангулированный купол. */
 function FragDome() {
+  // Купол: ряды вершин с одинаковым числом шагов, каждая ячейка — два треугольника
   const rows = 6;
+  const N = 10;
+  const v = (r: number, i: number) => {
+    const w = 44 + 96 * Math.sin(((r / rows) * Math.PI) / 2);
+    return `${(150 - w + (i / N) * w * 2).toFixed(1)} ${20 + r * 19}`;
+  };
   const tris: string[] = [];
-  for (let r = 0; r < rows; r++) {
-    const y0 = 20 + r * 18;
-    const y1 = y0 + 18;
-    const w0 = 30 + r * 20;
-    const w1 = 30 + (r + 1) * 20;
-    const n = 4 + r * 2;
-    for (let i = 0; i < n; i++) {
-      const xa = 150 - w0 + (i / n) * w0 * 2;
-      const xb = 150 - w0 + ((i + 1) / n) * w0 * 2;
-      const xc = 150 - w1 + ((i + 0.5) / n) * w1 * 2;
-      tris.push(`M${xa} ${y0} L${xb} ${y0} L${xc} ${y1} Z`);
+  for (let r = 0; r < rows; r++)
+    for (let i = 0; i < N; i++) {
+      tris.push(`M${v(r, i)} L${v(r, i + 1)} L${v(r + 1, i)} Z`);
+      tris.push(`M${v(r, i + 1)} L${v(r + 1, i + 1)} L${v(r + 1, i)} Z`);
     }
-  }
   return (
     <svg viewBox="0 0 300 150" className="h-full w-full">
       {tris.map((d, i) => (

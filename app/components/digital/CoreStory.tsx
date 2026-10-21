@@ -12,7 +12,6 @@ import {
   useTransform,
 } from "framer-motion";
 import {
-  CHAPTER2_AT,
   CORE_CHAPTERS,
   CORE_KEYFRAMES,
   CORE_LAYERS,
@@ -22,24 +21,36 @@ import {
   coreStepAt,
 } from "./coreStoryData";
 
-// three.js грузим только на клиенте и отдельным чанком
-const CoreStoryScene = dynamic(() => import("./CoreStoryScene"), { ssr: false });
+// Плоская схема в стиле блока «Формула» на главной (canvas 2D, без 3D и свечения)
+const CoreStoryFlat = dynamic(() => import("./CoreStoryFlat"), { ssr: false });
 
 const pad = (n: number) => String(n).padStart(2, "0");
 const SUB_STEP = CORE_STEPS.findIndex((s) => s.key === "sub");
 
 /**
- * Одна развивающаяся инфографика: ядро проходит через всю историю и обрастает информацией.
- * Глава 01 — как развивали среду, глава 02 — как она работает на объекте, финал — STRUKTURA.
+ * Инфографика «Цифровое ядро», разделённая на два самостоятельных блока:
+ * part 0 — глава 01 «как развивали среду», part 1 — глава 02 «как она работает на объекте» + финал.
+ * Каждый блок прокручивает свой отрезок общей шкалы истории (RANGES) и держит свою сцену.
  */
-export default function CoreStory() {
+const RANGES: [number, number][] = [
+  [0, 0.35],
+  [0.392, 1],
+];
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+export default function CoreStory({ part }: { part: 0 | 1 }) {
   const sectionRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion() ?? false;
+  const [r0, r1] = RANGES[part];
+  const toLocal = (g: number) => clamp01((g - r0) / (r1 - r0));
+  const partSteps = CORE_STEPS.map((x, i) => i).filter((i) => (part === 0 ? CORE_STEPS[i].chapter === 0 : CORE_STEPS[i].chapter === 1 || i === CORE_STEPS.length - 1));
 
   const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
-  const [step, setStep] = useState(0);
-  useMotionValueEvent(scrollYProgress, "change", (v) => setStep(coreStepAt(v)));
-  const railFill = useTransform(scrollYProgress, (v) => `${Math.max(0, Math.min(1, v)) * 100}%`);
+  // локальная прокрутка блока → точка на общей шкале истории
+  const progress = useTransform(scrollYProgress, (v) => r0 + clamp01(v) * (r1 - r0));
+  const [step, setStep] = useState(partSteps[0]);
+  useMotionValueEvent(progress, "change", (v) => setStep(coreStepAt(v)));
+  const railFill = useTransform(scrollYProgress, (v) => `${clamp01(v) * 100}%`);
 
   const [active, setActive] = useState(false);
   useEffect(() => {
@@ -61,7 +72,7 @@ export default function CoreStory() {
     if (!s) return;
     const top = s.getBoundingClientRect().top + window.scrollY;
     const travel = s.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: top + CORE_KEYFRAMES[i] * travel, behavior: reduced ? "auto" : "smooth" });
+    window.scrollTo({ top: top + toLocal(CORE_KEYFRAMES[i]) * travel, behavior: reduced ? "auto" : "smooth" });
   };
 
   const s = CORE_STEPS[step];
@@ -70,16 +81,19 @@ export default function CoreStory() {
   const sel = selected === null ? null : CORE_LAYERS[selected];
   const selStations =
     selected === null ? [] : CORE_STATIONS.filter((st) => st.links.includes(selected) && st.at <= (CORE_STARTS[step + 1] ?? 1));
-  // номер внутри главы: 01–03 и 01–06
-  // финал не считается шагом главы
-  const chapterSteps = CORE_STEPS.filter((x, i) => x.chapter === chapter && i < CORE_STEPS.length - 1).length;
+  // номер шага внутри блока: 01, 02, 03…
   const inChapter = step - CORE_STEPS.findIndex((x) => x.chapter === chapter);
 
   return (
-    <section ref={sectionRef} id="digital-core" className={`cs-section${final ? " is-final" : ""}`} aria-label="Цифровое ядро STRUKTURA">
+    <section
+      ref={sectionRef}
+      id={`digital-core-${part + 1}`}
+      className={`cs-section cs-part-${part}${final ? " is-final" : ""}`}
+      aria-label={`${pad(part + 1)} · ${CORE_CHAPTERS[part]}`}
+    >
       <div className="cs-sticky">
         <div className="cs-canvas">
-          <CoreStoryScene progress={scrollYProgress} reduced={reduced} active={active} selected={selected} />
+          <CoreStoryFlat progress={progress} reduced={reduced} active={active} selected={selected} />
         </div>
         <div className="cs-shade" aria-hidden />
 
@@ -87,24 +101,20 @@ export default function CoreStory() {
           <header className="cs-head container-x">
             <div className="cs-meta">
               <span className="cs-meta-idx">Цифровая среда</span>
-              <span className="cs-chapters">
-                {CORE_CHAPTERS.map((c, i) => (
-                  <button
-                    key={c}
-                    type="button"
-                    className={`cs-chapter${chapter === i ? " on" : ""}`}
-                    onClick={() => goTo(i === 0 ? 0 : CORE_STEPS.findIndex((x) => x.chapter === 1))}
-                  >
-                    {pad(i + 1)} · {c}
-                  </button>
-                ))}
-              </span>
               <span className="cs-meta-mark" aria-hidden>
                 STRUKTURA<i>+</i>
               </span>
             </div>
             <h2 className="cs-title">
-              Цифровая среда — <span className="text-orange">одна из основ STRUKTURA.</span>
+              {part === 0 ? (
+                <>
+                  Цифровая среда — <span className="text-orange">одна из основ STRUKTURA.</span>
+                </>
+              ) : (
+                <>
+                  Та же среда — <span className="text-orange">на объекте.</span>
+                </>
+              )}
             </h2>
           </header>
 
@@ -124,10 +134,7 @@ export default function CoreStory() {
                         <b>Финал</b>
                       ) : (
                         <>
-                          <b>
-                            {pad(chapter + 1)}.{inChapter + 1}
-                          </b>{" "}
-                          / {pad(chapterSteps)} · {s.label}
+                          <b>{pad(inChapter + 1)}</b> · {s.label}
                         </>
                       )}
                     </div>
@@ -186,20 +193,22 @@ export default function CoreStory() {
             <div className="cs-rail-track">
               <span className="cs-rail-base" aria-hidden />
               <motion.span className="cs-rail-fill" style={{ width: railFill }} aria-hidden />
-              <span className="cs-rail-split" style={{ left: `${CHAPTER2_AT * 100}%` }} aria-hidden />
-              {CORE_STEPS.map((st, i) => (
+              {partSteps.map((i) => {
+                const st = CORE_STEPS[i];
+                return (
                 <button
                   key={st.key}
                   type="button"
                   className={`cs-rail-btn ${i === step ? "on" : ""} ${i < step ? "past" : ""}`}
-                  style={{ left: `${CORE_STARTS[i] * 100}%` }}
+                  style={{ left: `${toLocal(CORE_STARTS[i]) * 100}%` }}
                   onClick={() => goTo(i)}
                   aria-current={i === step ? "step" : undefined}
                 >
                   <i aria-hidden />
                   <span className="cs-rail-label">{st.label}</span>
                 </button>
-              ))}
+                );
+              })}
             </div>
             <span className="cs-note-geo">Схематическая геометрия</span>
           </nav>
@@ -209,9 +218,12 @@ export default function CoreStory() {
       <style jsx global>{`
         .cs-section {
           position: relative;
-          height: 980svh;
+          height: 400svh;
           background: var(--coal-deep);
           color: #fff;
+        }
+        .cs-section.cs-part-1 {
+          height: 660svh;
         }
         .cs-sticky {
           position: sticky;
@@ -802,7 +814,10 @@ export default function CoreStory() {
         }
         @media (max-width: 767px) {
           .cs-section {
-            height: 860svh;
+            height: 340svh;
+          }
+          .cs-section.cs-part-1 {
+            height: 580svh;
           }
           .cs-sticky {
             min-height: 540px;

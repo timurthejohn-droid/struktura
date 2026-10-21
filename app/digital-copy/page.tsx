@@ -47,8 +47,40 @@ export default function DigitalCopyPage() {
       <main>
         <h1 className="sr-only">Цифровая среда STRUKTURA+</h1>
 
-        {/* ───────────── Цифровое ядро: одна история от развития среды до объекта ───────────── */}
-        <CoreStory />
+        {/* ───────────── Блок 1 · Как развивалась среда ───────────── */}
+        <CoreStory part={0} />
+
+        {/* ───────────── Разделитель глав ───────────── */}
+        <section className="bg-paper py-20 text-ink md:py-32">
+          <div className="container-x">
+            <Reveal>
+              <div className="flex items-center justify-between border-b border-black/10 pb-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink/45">
+                <span>01 · Как развивалась среда — пройдено</span>
+                <span>Далее ↓</span>
+              </div>
+              <div className="mt-12 grid gap-10 md:mt-16 md:grid-cols-[auto_1fr] md:items-end md:gap-16">
+                <span className="font-mono leading-[0.8] text-orange" style={{ fontSize: "clamp(96px, 14vw, 220px)" }}>
+                  02
+                </span>
+                <div>
+                  <h2
+                    className="font-mono uppercase text-ink"
+                    style={{ fontSize: "clamp(32px, 5vw, 80px)", lineHeight: 0.94, letterSpacing: "-0.02em" }}
+                  >
+                    Та же среда <span className="text-orange">на объекте</span>
+                  </h2>
+                  <p className="mt-6 max-w-[620px] font-body text-ink-soft" style={{ fontSize: "clamp(16px, 1.3vw, 20px)", lineHeight: 1.5 }}>
+                    Теперь — модель одного конкретного объекта: как она наполняется данными и связывает
+                    архитектора, проектирование, производства, логистику и площадку.
+                  </p>
+                </div>
+              </div>
+            </Reveal>
+          </div>
+        </section>
+
+        {/* ───────────── Блок 2 · Та же среда на объекте ───────────── */}
+        <CoreStory part={1} />
 
         {/* ───────────── Пояснение и переходы ───────────── */}
         <section className="border-t border-white/10 py-20 md:py-28" style={{ background: "var(--coal-deep)" }}>
