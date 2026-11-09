@@ -15,7 +15,7 @@ export default function IntroBlock() {
       <div className="container-x">
         <div ref={ref} className="reveal grid lg:grid-cols-2 lg:items-center gap-12 lg:gap-16 xl:gap-20">
           <div className="flex flex-col items-start">
-            <div className="eyebrow text-ink mb-7">О компании</div>
+            <div className="eyebrow text-ink mb-7">01 · О компании</div>
 
             {/* Фирменная каска STRUKTURA — рендер из брендинга (STRUKTURA/3D/HardHat_Seq).
                 Левый край брима — по краю колонки, низ — на уровне кнопки справа. */}

@@ -112,7 +112,7 @@ export default function CoreStory({ part }: { part: 0 | 1 }) {
                 </>
               ) : (
                 <>
-                  Та же среда — <span className="text-orange">на объекте.</span>
+                  Цифровая среда — <span className="text-orange">одна из основ STRUKTURA.</span>
                 </>
               )}
             </h2>

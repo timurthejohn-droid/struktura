@@ -4,7 +4,7 @@ import { useReveal } from "./useReveal";
 
 const metrics = [
   { value: 14, suffix: "", label: "лет реализуем уникальные проекты" },
-  { value: 10, suffix: "", label: "отраслевых наград" },
+  { value: 100, suffix: "+", label: "объектов" },
   { value: 70, suffix: "+", label: "лучших экспертов в команде" },
 ];
 

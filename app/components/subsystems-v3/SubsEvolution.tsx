@@ -41,19 +41,27 @@ export default function SubsEvolution() {
           ))}
         </Reveal>
 
-        <Reveal className="mt-16 md:mt-20">
-          <Link
-            href="/digital"
-            className="group relative grid gap-6 overflow-hidden border border-white/12 p-6 transition-colors hover:border-orange md:grid-cols-[auto_1fr_auto] md:items-center md:gap-10 md:p-10"
-          >
-            <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-orange">Цифровая среда</span>
-            <p className="max-w-[720px] font-body text-[clamp(16px,1.3vw,19px)] leading-[1.55] text-white/70">
-              <strong className="font-semibold text-white">Подсистема развивается внутри цифровой среды.</strong>{" "}
-              Это общая основа данных, алгоритмов и взаимодействия участников: в ней инженерный каркас
-              обрастает узлами, расчётами, заданиями и данными сборки.
-            </p>
-            <span className="flex h-14 w-14 items-center justify-center bg-orange text-[20px] transition-transform duration-500 group-hover:translate-x-1">→</span>
-          </Link>
+        {/* Переход к цифровой среде: заголовок слева, пояснение и кнопка справа */}
+        <Reveal className="mt-16 md:mt-24">
+          <div className="border-t border-white/15">
+            <div className="grid gap-8 pt-10 md:pt-12 lg:grid-cols-[1.05fr_1fr] lg:gap-16">
+              <div>
+                <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-orange">Цифровая среда STRUKTURA+</span>
+                <h3 className="mt-6 max-w-[560px] text-[clamp(26px,2.8vw,44px)] leading-[1.02] text-white">
+                  Подсистема развивается <span className="text-orange">внутри цифровой среды</span>
+                </h3>
+              </div>
+              <div className="flex flex-col justify-between gap-8">
+                <p className="max-w-[520px] font-body text-[clamp(16px,1.3vw,19px)] leading-[1.55] text-white/65">
+                  Это общая основа данных, алгоритмов и взаимодействия участников: в ней инженерный каркас
+                  обрастает узлами, расчётами, заданиями и данными сборки.
+                </p>
+                <Link href="/digital" className="btn btn-orange self-start">
+                  Подробнее о цифровой среде
+                </Link>
+              </div>
+            </div>
+          </div>
         </Reveal>
       </div>
     </section>
