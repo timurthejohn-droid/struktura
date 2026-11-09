@@ -28,7 +28,7 @@ export function Home({ lightCopy = false }: { lightCopy?: boolean }) {
         {/* LIGHT — «Формула STRUKTURA+»: подход + цифровая среда + IPD одним блоком */}
         <FormulaBlock />
         {/* LIGHT */}
-        <TeamTeaser index="07" />
+        <TeamTeaser index="05" />
         <ContactForm />
       </main>
       {/* DARK */}

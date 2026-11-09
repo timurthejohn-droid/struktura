@@ -129,7 +129,7 @@ function Card({
   href: string;
   n: string;
   role: string;
-  title: string;
+  title: ReactNode;
   body: string;
   className: string;
   tone: "white" | "ink" | "orange";
@@ -154,7 +154,7 @@ function Card({
       <div className="relative z-10">
         <h3
           className={`font-mono uppercase ${dark ? "text-white" : "text-ink"}`}
-          style={{ fontSize: "clamp(24px, 2.1vw, 34px)", lineHeight: 1.02, letterSpacing: "-0.005em" }}
+          style={{ fontSize: "clamp(22px, 1.8vw, 29px)", lineHeight: 1.02, letterSpacing: "-0.005em" }}
         >
           {title}
         </h3>
@@ -189,7 +189,7 @@ export default function FormulaBlock() {
   return (
     <section id="formula" className="relative overflow-hidden bg-paper py-24 md:py-36">
       <div className="container-x">
-        <SectionHead index="06 · Решение" kicker="Формула STRUKTURA" theme="light" />
+        <SectionHead index="04 · Решение" kicker="Формула STRUKTURA" theme="light" />
 
         <div ref={ref} className="reveal">
           <p className="max-w-[860px] font-body text-ink" style={{ fontSize: "clamp(19px, 1.8vw, 28px)", lineHeight: 1.38 }}>
@@ -249,9 +249,15 @@ export default function FormulaBlock() {
             <Card
               href="/ipd"
               n="03"
-              role="Управление"
-              title="IPD — единая система реализации"
-              body="Одна команда, одна цифровая модель, одна ответственность — от проектирования до монтажа, без эстафеты и потерь между стадиями."
+              role="Подход"
+              title={
+                <>
+                  IPD — единая
+                  <br />
+                  система реализации
+                </>
+              }
+              body="Одна команда, одна цифровая модель, одна ответственность — от проектирования до монтажа, без потерь между стадиями."
               tone="ink"
               className="border border-black/10 bg-white"
               overlay={<span aria-hidden className="formula-grid pointer-events-none absolute inset-0" />}

@@ -104,7 +104,7 @@ export const finaleAmount = (p: number) => sm(0.9, 0.97, p);
 
 export type CoreStep = { key: string; label: string; chapter: 0 | 1; title: string; text: string; outcome: string };
 
-export const CORE_CHAPTERS = ["Как развивалась среда", "Та же среда на объекте"];
+export const CORE_CHAPTERS = ["Как развивалась среда", "Цифровая среда на объекте"];
 
 // Последовательность — по «логике эскиза» маркетинга; формулировки — из эскиза.
 export const CORE_STEPS: CoreStep[] = [

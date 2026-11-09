@@ -33,7 +33,7 @@ export default function ProblemsBlock() {
           style={{ borderTop: "1px solid var(--line-dark)" }}
         >
           <div>
-            <div className="eyebrow text-white/55 mb-8">Проблематика</div>
+            <div className="eyebrow text-white/55 mb-8">03 · Проблематика</div>
             <h2
               className="max-w-[720px] text-white"
               style={{ fontSize: "clamp(30px, 4.4vw, 70px)", lineHeight: 0.98 }}
