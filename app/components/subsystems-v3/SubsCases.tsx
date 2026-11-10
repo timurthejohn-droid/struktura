@@ -4,93 +4,59 @@ import SectionHead from "../SectionHead";
 import { Lead, Reveal } from "./shared";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
-const O = "#ff5a00";
 
-/** Цифровой фрагмент: триангулированный купол. */
-function FragDome() {
-  // Купол: ряды вершин с одинаковым числом шагов, каждая ячейка — два треугольника
-  const rows = 6;
-  const N = 10;
-  const v = (r: number, i: number) => {
-    const w = 44 + 96 * Math.sin(((r / rows) * Math.PI) / 2);
-    return `${(150 - w + (i / N) * w * 2).toFixed(1)} ${20 + r * 19}`;
-  };
-  const tris: string[] = [];
-  for (let r = 0; r < rows; r++)
-    for (let i = 0; i < N; i++) {
-      tris.push(`M${v(r, i)} L${v(r, i + 1)} L${v(r + 1, i)} Z`);
-      tris.push(`M${v(r, i + 1)} L${v(r + 1, i + 1)} L${v(r + 1, i)} Z`);
-    }
+/**
+ * Цифровой фрагмент — чертёж или модель из рабочей документации, стилизованные под тёмную
+ * карточку: линии светлые на прозрачном фоне, главная несущая конструкция — оранжевая.
+ */
+function FragScheme({ src, alt, scale = 1 }: { src: string; alt: string; /** доля ширины панели */ scale?: number }) {
   return (
-    <svg viewBox="0 0 300 150" className="h-full w-full">
-      {tris.map((d, i) => (
-        <path
-          key={i}
-          d={d}
-          fill={i % 7 === 3 ? O : "none"}
-          fillOpacity=".85"
-          stroke="rgba(255,255,255,.45)"
-          strokeWidth=".7"
-          className={i % 7 === 3 ? "sv3-blink" : undefined}
-          style={{ animationDelay: `${(i % 5) * 0.3}s` }}
-        />
-      ))}
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`${basePath}${src}`}
+      alt={alt}
+      loading="lazy"
+      className="mx-auto block h-auto"
+      style={{ width: `${scale * 100}%` }}
+    />
   );
 }
 
-/** Цифровой фрагмент: панно из пластин под разными углами. */
-function FragPlates() {
+/** Заглушка: тонкая инженерная сетка с подписью — пока нет фото или чертежа объекта. */
+function Placeholder({ label, className = "" }: { label: string; className?: string }) {
   return (
-    <svg viewBox="0 0 300 150" className="h-full w-full">
-      {Array.from({ length: 12 * 22 }, (_, k) => {
-        const i = k % 22;
-        const j = Math.floor(k / 22);
-        const a = Math.sin(i * 0.45 + j * 0.7) * Math.cos(j * 0.3 - i * 0.2);
-        const h = 8 * Math.abs(a) + 1.5;
-        return (
-          <rect
-            key={k}
-            x={12 + i * 12.6}
-            y={14 + j * 10.5 + (8 - h) / 2}
-            width="9"
-            height={h}
-            fill={a > 0.7 ? O : "rgba(255,255,255,.55)"}
-            opacity={0.35 + Math.abs(a) * 0.65}
-          />
-        );
-      })}
-    </svg>
-  );
-}
-
-/** Цифровой фрагмент: волновой потолок из рёбер. */
-function FragRibs() {
-  return (
-    <svg viewBox="0 0 300 150" className="h-full w-full">
-      {Array.from({ length: 14 }, (_, i) => (
-        <path
-          key={i}
-          d={`M10 ${30 + i * 7} C 80 ${10 + i * 9 + Math.sin(i) * 14} 200 ${70 + i * 3 - Math.cos(i) * 18} 290 ${24 + i * 8}`}
-          fill="none"
-          stroke={i === 8 ? O : "rgba(255,255,255,.5)"}
-          strokeWidth={i === 8 ? 2 : 1}
-        />
-      ))}
-    </svg>
+    <div
+      className={`flex items-center justify-center bg-coal-deep ${className}`}
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(255,255,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.05) 1px, transparent 1px)",
+        backgroundSize: "32px 32px",
+        backgroundPosition: "center",
+      }}
+    >
+      <span className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.16em] text-white/35">
+        <span className="h-1.5 w-1.5 bg-orange/60" />
+        {label}
+      </span>
+    </div>
   );
 }
 
 type Case = {
   name: string;
-  work: string;
-  year: string;
-  image: string;
+  /** Тип работы — подпись над названием; выводится, когда известна */
+  work?: string;
+  year?: string;
+  /** Фото объекта; без него — заглушка */
+  image?: string;
   summary?: string;
   facts?: { label: string; value: string }[];
   href?: string;
-  fragment: ReactNode;
-  fragmentLabel: string;
+  /** Цифровой фрагмент (чертёж, схема); без него — заглушка */
+  fragment?: ReactNode;
+  fragmentLabel?: string;
+  /** Фрагмент — изображение во всю ширину панели, без полей и фиксированной пропорции */
+  fragmentBleed?: boolean;
   /** Сложность / решение / роль STRUKTURA — добавить по материалам компании; выводится, когда заполнено */
   story?: { challenge: string; solution: string; role: string };
 };
@@ -108,24 +74,66 @@ const cases: Case[] = [
       { label: "Производство", value: "Макрофабрика" },
     ],
     href: "/projects/mezhbashennoye-prostranstvo",
-    fragment: <FragDome />,
-    fragmentLabel: "Триангуляция оболочки",
+    fragment: (
+      <FragScheme
+        src="/projects/sber-kozyrek-scheme.webp"
+        alt="Общий вид конструкций козырька: верхний и нижний ряды сэндвич-панелей, несущая балка"
+      />
+    ),
+    fragmentLabel: "Общий вид козырька",
+    fragmentBleed: true,
+  },
+  // Ниже — фото, чертежи и описания добавить по материалам компании; пока выводятся заглушки.
+  {
+    name: "Матрёшка",
+    fragment: (
+      <FragScheme
+        src="/projects/matreshka-scheme.webp"
+        scale={0.84}
+        alt="Матрёшка: общий вид подсистемы — ламели облицовки, несущий каркас и криволинейная балка"
+      />
+    ),
+    fragmentLabel: "Общий вид подсистемы",
+    fragmentBleed: true,
   },
   {
-    name: "Moscow Towers",
-    work: "Художественное панно из металлических пластин",
-    year: "2024",
-    image: "/projects/68362468.jpg",
-    fragment: <FragPlates />,
-    fragmentLabel: "Поле углов пластин",
+    name: "Акустический зал",
+    fragment: (
+      <FragScheme
+        src="/projects/acoustic-hall-scheme.webp"
+        scale={0.84}
+        alt="Акустический зал: несущий каркас подвесного потолка с главными балками и оболочка облицовки"
+      />
+    ),
+    fragmentLabel: "Общий вид подсистемы",
+    fragmentBleed: true,
+  },
+  // Тип работы и год — из раздела «Проекты» (projects/[slug], «02»)
+  {
+    name: "Лахта Центр",
+    work: "Арка главного входа",
+    year: "2022",
+    fragment: (
+      <FragScheme
+        src="/projects/lakhta-arch-scheme.webp"
+        scale={0.84}
+        alt="Лахта Центр, арка главного входа: подсистема свода — каркас, узлы крепления и панели облицовки"
+      />
+    ),
+    fragmentLabel: "Общий вид подсистемы",
+    fragmentBleed: true,
   },
   {
-    name: "Штаб-квартира крупного банка",
-    work: "Арт-потолок",
-    year: "2020",
-    image: "/projects/14200012.jpg",
-    fragment: <FragRibs />,
-    fragmentLabel: "Семейство рёбер",
+    name: "Призма",
+    fragment: (
+      <FragScheme
+        src="/projects/prism-scheme.webp"
+        scale={0.84}
+        alt="Призма: общий вид подсистемы — вертикальный каркас, ригели и закладные"
+      />
+    ),
+    fragmentLabel: "Общий вид подсистемы",
+    fragmentBleed: true,
   },
 ];
 
@@ -133,31 +141,49 @@ function CaseBody({ c, i }: { c: Case; i: number }) {
   return (
     <>
       <div className="relative aspect-[16/11] overflow-hidden lg:aspect-auto lg:min-h-[520px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={`${basePath}${c.image}`}
-          alt={`${c.name} — ${c.work}`}
-          loading="lazy"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-[1.04]"
-          style={{ transitionTimingFunction: "var(--ease-out)" }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+        {c.image ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`${basePath}${c.image}`}
+              alt={c.work ? `${c.name} — ${c.work}` : c.name}
+              loading="lazy"
+              className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-[1.04]"
+              style={{ transitionTimingFunction: "var(--ease-out)" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          </>
+        ) : (
+          <Placeholder label="Фото объекта" className="absolute inset-0" />
+        )}
         <span className="absolute bottom-5 left-5 font-mono text-[11px] uppercase tracking-[0.16em] text-white/85">
-          {String(i + 1).padStart(2, "0")} · {c.year}
+          {String(i + 1).padStart(2, "0")}
+          {c.year && ` · ${c.year}`}
         </span>
       </div>
       <div className="flex flex-col p-6 md:p-10">
-        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-orange">{c.work}</span>
-        <h3 className="mt-4 text-[clamp(26px,2.6vw,42px)] leading-[1]">{c.name}</h3>
+        {c.work && <span className="mb-4 font-mono text-[10px] uppercase tracking-[0.16em] text-orange">{c.work}</span>}
+        <h3 className="text-[clamp(26px,2.6vw,42px)] leading-[1]">{c.name}</h3>
         {c.summary && <p className="mt-5 font-body text-[15px] leading-[1.6] text-white/65">{c.summary}</p>}
 
-        <div className="mt-8 border border-white/12 bg-coal-deep">
-          <div className="aspect-[2/1] p-3">{c.fragment}</div>
-          <div className="flex items-center justify-between border-t border-white/12 px-3 py-2 font-mono text-[9px] uppercase tracking-[0.16em] text-white/45">
-            <span>Цифровой фрагмент</span>
-            <span>{c.fragmentLabel}</span>
-          </div>
-        </div>
+        {/* фрагмент занимает всю свободную высоту панели — чертёж центрируется по вертикали */}
+        <figure className="mt-8 flex flex-1 flex-col">
+          <figcaption className="flex items-center gap-3 font-mono text-[9px] uppercase tracking-[0.16em] text-white/45">
+            <span className="h-1.5 w-1.5 shrink-0 bg-orange" />
+            <span className="whitespace-nowrap">Цифровой фрагмент</span>
+            <span className="h-px flex-1 bg-white/12" />
+            {c.fragmentLabel && <span className="whitespace-nowrap text-right">{c.fragmentLabel}</span>}
+          </figcaption>
+          {!c.fragment ? (
+            <Placeholder label="Чертёж объекта" className="-mx-6 mt-4 aspect-[16/10] md:-mx-10" />
+          ) : c.fragmentBleed ? (
+            <div className="-mx-6 mt-4 flex flex-1 items-center md:-mx-10">
+              <div className="w-full">{c.fragment}</div>
+            </div>
+          ) : (
+            <div className="aspect-[2/1] py-4">{c.fragment}</div>
+          )}
+        </figure>
 
         {c.story && (
           <dl className="mt-6">
