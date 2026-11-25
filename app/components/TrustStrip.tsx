@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { useReveal } from "./useReveal";
 
 const metrics = [
-  { value: 14, suffix: "", label: "лет реализуем уникальные проекты" },
-  { value: 100, suffix: "+", label: "объектов" },
-  { value: 70, suffix: "+", label: "лучших экспертов в команде" },
+  { value: 15, suffix: "+", label: "лет реализуем уникальные проекты" },
+  { value: 100, suffix: "+", label: "проектов по всей России" },
+  { value: 200, suffix: "+", label: "экспертов в команде" },
 ];
 
 const clients = ["ЛАХТА ЦЕНТР", "СБЕР", "ATOM", "МУЗЕЙ КРЕМЛЯ", "МОСКВА-СИТИ", "ГАЗПРОМ"];

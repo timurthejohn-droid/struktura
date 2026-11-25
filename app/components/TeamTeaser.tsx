@@ -33,7 +33,7 @@ export default function TeamTeaser({ index = "09" }: { index?: string }) {
 
           <div>
             <div className="font-mono text-ink leading-none mb-3" style={{ fontSize: "clamp(96px, 13vw, 180px)" }}>
-              70<span className="text-orange">+</span>
+              200<span className="text-orange">+</span>
             </div>
             <p className="font-body text-ink-soft text-sm mb-10">экспертов в команде</p>
 

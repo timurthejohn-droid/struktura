@@ -4,8 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { useReveal } from "../useReveal";
 
 const metrics = [
-  { value: 14, suffix: "", label: "лет реализуем уникальные проекты" },
-  { value: 70, suffix: "+", label: "лучших экспертов в команде" },
+  { value: 15, suffix: "+", label: "лет реализуем уникальные проекты" },
+  { value: 200, suffix: "+", label: "экспертов в команде" },
   { value: 10, suffix: "", label: "отраслевых наград" },
 ];
 

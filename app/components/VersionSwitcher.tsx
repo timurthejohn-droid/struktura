@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 type Version = { href: string; label: string };
 
 export const digitalVersions: Version[] = [
-  { href: "/digital", label: "V1" },
+  { href: "/digital-v1", label: "V1" },
   { href: "/digital-copy", label: "V2" },
   { href: "/digital-story", label: "V3" },
 ];

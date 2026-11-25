@@ -38,7 +38,7 @@ const RANGES: [number, number][] = [
 ];
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
-export default function CoreStory({ part }: { part: 0 | 1 }) {
+export default function CoreStory({ part, index = "Цифровая среда" }: { part: 0 | 1; index?: string }) {
   const sectionRef = useRef<HTMLElement>(null);
   const reduced = useReducedMotion() ?? false;
   const [r0, r1] = RANGES[part];
@@ -100,7 +100,7 @@ export default function CoreStory({ part }: { part: 0 | 1 }) {
         <div className="cs-ui">
           <header className="cs-head container-x">
             <div className="cs-meta">
-              <span className="cs-meta-idx">Цифровая среда</span>
+              <span className="cs-meta-idx">{index}</span>
               <span className="cs-meta-mark" aria-hidden>
                 STRUKTURA<i>+</i>
               </span>

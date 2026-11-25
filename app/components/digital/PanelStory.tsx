@@ -110,7 +110,7 @@ export default function PanelStory() {
         <div className="ps-ui">
           <header className="ps-head container-x">
             <div className="ps-meta">
-              <span className="ps-meta-idx">Цифровая среда</span>
+              <span className="ps-meta-idx">01</span>
               <span>Одна деталь — весь объект</span>
               <span className="ps-meta-mark" aria-hidden>
                 STRUKTURA<i>+</i>

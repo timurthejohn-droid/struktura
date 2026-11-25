@@ -49,7 +49,7 @@ export default function MaterialsSubsystemsHome() {
       <div className="container-x">
         <div className="mb-10 md:mb-14 lg:flex lg:items-end lg:justify-between lg:gap-12">
           <div>
-            <div className="eyebrow text-ink mb-7">02 · Продукт</div>
+            <div className="eyebrow text-ink mb-7">03 · Продукт</div>
             <h2 className="text-ink" style={{ fontSize: "clamp(30px, 3.6vw, 56px)", lineHeight: 1.02 }}>
               Материалы и подсистемы
             </h2>

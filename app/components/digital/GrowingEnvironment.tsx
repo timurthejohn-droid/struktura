@@ -64,7 +64,7 @@ export default function GrowingEnvironment() {
         <div className="en-ui">
           <header className="en-head container-x">
             <div className="en-meta">
-              <span className="en-meta-idx">Цифровая среда</span>
+              <span className="en-meta-idx">02</span>
               <span>Информация накапливается — участники остаются связаны</span>
               <span className="en-meta-mark" aria-hidden>
                 STRUKTURA<i>+</i>

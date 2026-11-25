@@ -5,7 +5,7 @@ import { vacancies } from "./careersData";
 // страниц: служебная строка, крупный заголовок, лид и опорные цифры.
 
 const stats = [
-  { value: "70+", label: "Экспертов в команде" },
+  { value: "200+", label: "Экспертов в команде" },
   { value: String(vacancies.length).padStart(2, "0"), label: "Открытых вакансий" },
   { value: "Москва", label: "Офис и производство" },
 ];

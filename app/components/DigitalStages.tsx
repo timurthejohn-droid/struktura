@@ -139,7 +139,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
 
         <div className="tl-header container-x">
           <div className="tl-meta">
-            <span className="tl-meta-idx">02</span>
+            <span className="tl-meta-idx">03</span>
             <span>Этапы цифровой среды</span>
             <span className="tl-meta-mark" aria-hidden>
               STRUKTURA<i>+</i>

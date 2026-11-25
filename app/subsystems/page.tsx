@@ -30,7 +30,7 @@ export default function SubsystemsPage() {
         <section className="py-20 md:py-28">
           <div className="container-x grid gap-12 md:grid-cols-[0.95fr_1.05fr] md:gap-20">
             <div>
-              <span className="eyebrow text-orange">Производство</span>
+              <span className="eyebrow text-orange">02 · Производство</span>
               <p
                 className="mt-8 max-w-[520px] font-body text-ink"
                 style={{ fontSize: "clamp(24px, 2.6vw, 38px)", lineHeight: 1.22 }}
@@ -97,6 +97,7 @@ export default function SubsystemsPage() {
           />
 
           <div className="container-x relative z-10">
+            <span className="eyebrow mb-8 block text-orange">03 · Выгоды</span>
             <h2
               className="text-white"
               style={{ fontSize: "clamp(38px, 5.4vw, 84px)", lineHeight: 0.98, letterSpacing: "-0.01em" }}
@@ -146,12 +147,15 @@ export default function SubsystemsPage() {
 
         <section className="border-y border-black/10 py-16 md:py-20">
           <div className="container-x grid gap-10 md:grid-cols-2 md:gap-20">
-            <h2
-              className="text-ink"
-              style={{ fontSize: "clamp(34px, 4.2vw, 60px)", lineHeight: 1.05, letterSpacing: "-0.03em" }}
-            >
-              Ключевое отличие
-            </h2>
+            <div>
+              <span className="eyebrow mb-8 block text-orange">04 · Отличие</span>
+              <h2
+                className="text-ink"
+                style={{ fontSize: "clamp(34px, 4.2vw, 60px)", lineHeight: 1.05, letterSpacing: "-0.03em" }}
+              >
+                Ключевое отличие
+              </h2>
+            </div>
             <p className="max-w-[520px] font-mono text-[18px] uppercase leading-[1.35] text-ink">
               Каждая подсистема: кастомный инженерный продукт. Процесс ее разработки
               стандартизирован и управляем. Это позволяет сочетать индивидуальность решения
