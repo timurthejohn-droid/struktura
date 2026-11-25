@@ -26,7 +26,7 @@ export default function ProjectsSlider() {
         {/* Шапка блока */}
         <div className="mb-8 grid gap-6 border-b border-black/10 pb-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
           <div>
-            <p className="eyebrow text-ink/45">Избранные проекты</p>
+            <p className="eyebrow text-ink/45"><span className="text-orange">01</span> · Избранные проекты</p>
             <h2 className="mt-5 max-w-[720px] text-[clamp(28px,3.6vw,54px)] leading-[1.0] text-ink">
               Работаем с архитектурой в её реальном масштабе
             </h2>

@@ -21,13 +21,11 @@ const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 function CasePanel({
   item,
   index,
-  total,
   progress,
   steps,
 }: {
   item: CaseItem;
   index: number;
-  total: number;
   progress: MotionValue<number>;
   steps: number;
 }) {
@@ -90,10 +88,7 @@ function CasePanel({
           style={reduced ? undefined : { y: contentY, opacity: contentOpacity }}
         >
           {/* Служебная строка */}
-          <div className="container-x flex items-center justify-between border-b border-white/15 pb-3">
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/60">
-              {item.number} / {String(total).padStart(2, "0")}
-            </span>
+          <div className="container-x flex items-center justify-end border-b border-white/15 pb-3">
             <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/60">{item.category}</span>
           </div>
 
@@ -205,7 +200,6 @@ export default function CasesStack() {
           key={item.slug}
           item={item}
           index={index}
-          total={total}
           progress={scrollYProgress}
           steps={steps}
         />

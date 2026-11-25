@@ -147,7 +147,7 @@ export default function DigitalStages({ stages }: { stages: DigitalStage[] }) {
         />
 
         <div className="scanner-meta">
-          <span>02 · Этапы цифровой среды</span>
+          <span>04 · Этапы цифровой среды</span>
           <span>{selected.n} / {String(stages.length).padStart(2, "0")}</span>
         </div>
 

@@ -8,9 +8,6 @@ const fields = [
   { key: "email", label: "E-mail", type: "email" },
 ];
 
-const contactBackground =
-  "https://www.figma.com/api/mcp/asset/8cc5dc92-091d-467b-9918-dbabd554dea9";
-
 export default function ContactForm() {
   const revealRef = useReveal();
   const [form, setForm] = useState({ name: "", phone: "", email: "", message: "" });
@@ -29,19 +26,12 @@ export default function ContactForm() {
           className="relative min-h-[600px] overflow-hidden px-5 py-5 md:px-10 md:py-8"
           style={{ background: "var(--orange)" }}
         >
-          <img
-            src={contactBackground}
-            alt=""
-            className="absolute inset-0 h-full w-full object-cover"
-            draggable={false}
-          />
-          <div className="absolute inset-0 bg-orange/20 mix-blend-overlay" />
           <div className="relative z-10 grid min-h-[560px] gap-6 lg:grid-cols-2">
             <div className="flex items-end">
-              <div className="w-full max-w-[270px] bg-white px-5 py-6 md:px-8 md:py-7">
+              <div className="w-full max-w-[320px] bg-white px-5 py-6 md:px-8 md:py-7">
                 <a
                   href="tel:+74956642823"
-                  className="block font-mono text-[20px] uppercase tracking-[0.1em] text-ink transition-colors hover:text-orange"
+                  className="block whitespace-nowrap font-mono text-[20px] uppercase tracking-[0.1em] text-ink transition-colors hover:text-orange"
                 >
                   +7 495 664 28 23
                 </a>

@@ -15,21 +15,15 @@ export default function IntroBlock() {
       <div className="container-x">
         <div ref={ref} className="reveal grid lg:grid-cols-2 lg:items-center gap-12 lg:gap-16 xl:gap-20">
           <div className="flex flex-col items-start">
-            <div className="eyebrow text-ink mb-7">01 · О компании</div>
+            <div className="eyebrow text-ink mb-7">02 · О компании</div>
 
-            {/* Фирменная каска STRUKTURA — рендер из брендинга (STRUKTURA/3D/HardHat_Seq).
-                Левый край брима — по краю колонки, низ — на уровне кнопки справа. */}
-            <div className="relative w-full max-w-[480px]">
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-x-[8%] bottom-[-6%] h-[16%] rounded-[50%]"
-                style={{ background: "radial-gradient(closest-side, rgba(26,26,26,0.16), rgba(26,26,26,0))", filter: "blur(6px)" }}
-              />
+            {/* Фирменный рендер STRUKTURA+ — фото с фоном, поэтому без тени-подложки */}
+            <div className="relative w-full max-w-[270px]">
               <img
-                src={`${BP}/brand/hardhat-orange.webp`}
-                alt="Фирменная строительная каска STRUKTURA"
-                width={1400}
-                height={1245}
+                src={`${BP}/brand/struktura-device.png`}
+                alt="Фирменный объект STRUKTURA+"
+                width={795}
+                height={1264}
                 loading="lazy"
                 className="relative block h-auto w-full"
               />

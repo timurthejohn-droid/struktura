@@ -189,7 +189,7 @@ export default function FormulaBlock() {
   return (
     <section id="formula" className="relative overflow-hidden bg-paper py-24 md:py-36">
       <div className="container-x">
-        <SectionHead index="04 · Решение" kicker="Формула STRUKTURA" theme="light" />
+        <SectionHead index="05 · Решение" kicker="Формула STRUKTURA" theme="light" />
 
         <div ref={ref} className="reveal">
           <p className="max-w-[860px] font-body text-ink" style={{ fontSize: "clamp(19px, 1.8vw, 28px)", lineHeight: 1.38 }}>

@@ -24,7 +24,7 @@ export default function MaterialsPage() {
 
         {/* [02] КАТАЛОГ (вариант D) — рабочая шапка + вход крупными вкладками */}
         <MaterialsCatalogHead
-          eyebrow="Материалы · STRUKTURA+"
+          eyebrow="05 · Материалы · STRUKTURA+"
           title="Каталог"
           subtitle="Ищите не сплав, а архитектурную возможность: 9 возможностей, 29 материалов и проекты-доказательства."
         />

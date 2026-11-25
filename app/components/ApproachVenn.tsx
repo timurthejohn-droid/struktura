@@ -91,6 +91,9 @@ function SphereCircle({ progress, i }: { progress: MotionValue<number>; i: numbe
 function StaticVenn() {
   return (
     <section className="py-24 md:py-36" style={{ background: "var(--paper)", borderTop: "1px solid var(--line-light)" }}>
+      <div className="container-x mb-10">
+        <span className="eyebrow text-ink/50"><span className="text-orange">01</span> · Схема подхода</span>
+      </div>
       <div className="container-x flex justify-center">
         <svg viewBox="0 0 1000 1000" style={{ width: "min(92vw, 700px)", height: "auto" }} aria-label="Схема алгоритмического подхода">
           {CIRCLES.map((c) => (
@@ -167,7 +170,7 @@ export default function ApproachVenn() {
       <div className="sticky top-0 z-10 h-screen flex items-center justify-center overflow-hidden">
         <motion.div className="absolute top-24 left-0 right-0 pointer-events-none" style={{ opacity: headingOpacity }}>
           <div className="container-x">
-            <span className="eyebrow text-ink/50">Схема подхода</span>
+            <span className="eyebrow text-ink/50"><span className="text-orange">01</span> · Схема подхода</span>
           </div>
         </motion.div>
 
